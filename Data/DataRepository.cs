@@ -17,13 +17,15 @@ public class DataRepository
 
     private DataRepository()
     {
-        // Initialize with some sample data
-        Items.Add(new Item { Id = _nextItemId++, Name = "Cadeira", QuantityInStock = 50 });
-        Items.Add(new Item { Id = _nextItemId++, Name = "Mesa", QuantityInStock = 20 });
-        Items.Add(new Item { Id = _nextItemId++, Name = "Projetor", QuantityInStock = 5 });
+        var now = DateTime.Now;
 
-        Congregacoes.Add(new Congregacao { Id = _nextCongregacaoId++, Name = "Congregação Central", QuantityInStock = 0 });
-        Congregacoes.Add(new Congregacao { Id = _nextCongregacaoId++, Name = "Congregação Norte", QuantityInStock = 0 });
+        // Initialize with some sample data
+        Items.Add(new Item { Id = _nextItemId++, Name = "Cadeira", QuantityInStock = 50, DataCriacao = now, DataAlteracao = now });
+        Items.Add(new Item { Id = _nextItemId++, Name = "Mesa", QuantityInStock = 20, DataCriacao = now, DataAlteracao = now });
+        Items.Add(new Item { Id = _nextItemId++, Name = "Projetor", QuantityInStock = 5, DataCriacao = now, DataAlteracao = now });
+
+        Congregacoes.Add(new Congregacao { Id = _nextCongregacaoId++, Name = "Congregação Central", QuantityInStock = 0, DataCriacao = now, DataAlteracao = now });
+        Congregacoes.Add(new Congregacao { Id = _nextCongregacaoId++, Name = "Congregação Norte", QuantityInStock = 0, DataCriacao = now, DataAlteracao = now });
 
         // Empréstimo Em Andamento
         Emprestimos.Add(new Emprestimo
@@ -37,7 +39,9 @@ public class DataRepository
             ItemId = 3,
             ItemName = "Projetor",
             DataEmprestimo = DateTime.Now.AddDays(-5),
-            Status = StatusEmprestimo.EmAndamento
+            Status = StatusEmprestimo.EmAndamento,
+            DataCriacao = now.AddDays(-5),
+            DataAlteracao = now.AddDays(-5)
         });
 
         // Empréstimo Devolvido
@@ -52,7 +56,9 @@ public class DataRepository
             ItemId = 1,
             ItemName = "Cadeira",
             DataEmprestimo = DateTime.Now.AddDays(-10),
-            Status = StatusEmprestimo.Devolvido
+            Status = StatusEmprestimo.Devolvido,
+            DataCriacao = now.AddDays(-10),
+            DataAlteracao = now.AddDays(-3)
         };
         Emprestimos.Add(emprestimoDevolvido);
 
@@ -65,7 +71,9 @@ public class DataRepository
             QuantityInStock = 10,
             EmprestimoId = emprestimoDevolvido.Id,
             DataEmprestimo = emprestimoDevolvido.DataEmprestimo,
-            DataRecebimento = DateTime.Now.AddDays(-3)
+            DataRecebimento = DateTime.Now.AddDays(-3),
+            DataCriacao = now.AddDays(-3),
+            DataAlteracao = now.AddDays(-3)
         });
     }
 
@@ -74,13 +82,24 @@ public class DataRepository
     public int AddItem(Item item)
     {
         item.Id = _nextItemId++;
+        var now = DateTime.Now;
+        item.DataCriacao = now;
+        item.DataAlteracao = now;
         Items.Add(item);
         return item.Id;
+    }
+
+    public void UpdateItem(Item item)
+    {
+        item.DataAlteracao = DateTime.Now;
     }
 
     public int AddEmprestimo(Emprestimo emprestimo)
     {
         emprestimo.Id = _nextEmprestimoId++;
+        var now = DateTime.Now;
+        emprestimo.DataCriacao = now;
+        emprestimo.DataAlteracao = now;
 
         // Set congregation name if ID is provided
         if (emprestimo.CongregacaoId.HasValue)
@@ -121,6 +140,11 @@ public class DataRepository
         return emprestimo.Id;
     }
 
+    public void UpdateEmprestimo(Emprestimo emprestimo)
+    {
+        emprestimo.DataAlteracao = DateTime.Now;
+    }
+
     public void DevolverEmprestimo(Emprestimo emprestimo)
     {
         // Repor estoque ao devolver empréstimo
@@ -134,11 +158,15 @@ public class DataRepository
         }
 
         emprestimo.Status = StatusEmprestimo.Devolvido;
+        emprestimo.DataAlteracao = DateTime.Now;
     }
 
     public int AddRecebimento(RecebimentoEmprestimo recebimento)
     {
         recebimento.Id = _nextRecebimentoId++;
+        var now = DateTime.Now;
+        recebimento.DataCriacao = now;
+        recebimento.DataAlteracao = now;
 
         // Ensure DataRecebimento is set
         if (recebimento.DataRecebimento == default)
@@ -153,7 +181,15 @@ public class DataRepository
     public int AddCongregacao(Congregacao congregacao)
     {
         congregacao.Id = _nextCongregacaoId++;
+        var now = DateTime.Now;
+        congregacao.DataCriacao = now;
+        congregacao.DataAlteracao = now;
         Congregacoes.Add(congregacao);
         return congregacao.Id;
+    }
+
+    public void UpdateCongregacao(Congregacao congregacao)
+    {
+        congregacao.DataAlteracao = DateTime.Now;
     }
 }

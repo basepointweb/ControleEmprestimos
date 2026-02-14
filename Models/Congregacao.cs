@@ -8,4 +8,8 @@ public class Congregacao
     
     // Propriedade calculada - será preenchida pela listagem
     public int TotalItensEmprestados { get; set; }
+    
+    // Auditoria
+    public DateTime DataCriacao { get; set; } = DateTime.Now;
+    public DateTime DataAlteracao { get; set; } = DateTime.Now;
 }

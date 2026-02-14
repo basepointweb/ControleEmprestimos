@@ -21,6 +21,7 @@ partial class EmprestimoListForm
         this.btnCreate = new Button();
         this.btnEdit = new Button();
         this.btnDelete = new Button();
+        this.btnClonar = new Button();
         this.btnReceberDeVolta = new Button();
         this.panel1 = new Panel();
         this.titlePanel = new Panel();
@@ -72,6 +73,7 @@ partial class EmprestimoListForm
         this.panel1.Controls.Add(this.btnCreate);
         this.panel1.Controls.Add(this.btnEdit);
         this.panel1.Controls.Add(this.btnDelete);
+        this.panel1.Controls.Add(this.btnClonar);
         this.panel1.Controls.Add(this.btnReceberDeVolta);
         this.panel1.Dock = DockStyle.Bottom;
         this.panel1.Location = new Point(0, 400);
@@ -109,14 +111,26 @@ partial class EmprestimoListForm
         this.btnDelete.UseVisualStyleBackColor = true;
         this.btnDelete.Click += new EventHandler(this.BtnDelete_Click);
         // 
+        // btnClonar
+        // 
+        this.btnClonar.BackColor = Color.FromArgb(108, 117, 125);
+        this.btnClonar.ForeColor = Color.White;
+        this.btnClonar.Location = new Point(330, 10);
+        this.btnClonar.Name = "btnClonar";
+        this.btnClonar.Size = new Size(100, 30);
+        this.btnClonar.TabIndex = 3;
+        this.btnClonar.Text = "Clonar";
+        this.btnClonar.UseVisualStyleBackColor = false;
+        this.btnClonar.Click += new EventHandler(this.BtnClonar_Click);
+        // 
         // btnReceberDeVolta
         // 
         this.btnReceberDeVolta.BackColor = Color.FromArgb(40, 167, 69);
         this.btnReceberDeVolta.ForeColor = Color.White;
-        this.btnReceberDeVolta.Location = new Point(330, 10);
+        this.btnReceberDeVolta.Location = new Point(436, 10);
         this.btnReceberDeVolta.Name = "btnReceberDeVolta";
         this.btnReceberDeVolta.Size = new Size(120, 30);
-        this.btnReceberDeVolta.TabIndex = 3;
+        this.btnReceberDeVolta.TabIndex = 4;
         this.btnReceberDeVolta.Text = "Receber de Volta";
         this.btnReceberDeVolta.UseVisualStyleBackColor = false;
         this.btnReceberDeVolta.Click += new EventHandler(this.BtnReceberDeVolta_Click);
@@ -142,6 +156,7 @@ partial class EmprestimoListForm
     private Button btnCreate;
     private Button btnEdit;
     private Button btnDelete;
+    private Button btnClonar;
     private Button btnReceberDeVolta;
     private Panel panel1;
     private Panel titlePanel;

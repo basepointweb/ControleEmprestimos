@@ -6,6 +6,8 @@ namespace ControleEmprestimos.Forms;
 public partial class CongregacaoListForm : UserControl
 {
     private DataRepository _repository;
+    private List<Congregacao> _allCongregacoes = new();
+    private Dictionary<string, List<string>> _columnFilters = new();
 
     public CongregacaoListForm()
     {
@@ -51,6 +53,91 @@ public partial class CongregacaoListForm : UserControl
             Name = "colTotalEmprestados",
             Width = 180
         });
+
+        // Event handler para clique no header
+        dataGridView1.ColumnHeaderMouseClick += DataGridView1_ColumnHeaderMouseClick;
+    }
+
+    private void DataGridView1_ColumnHeaderMouseClick(object? sender, DataGridViewCellMouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.Left)
+        {
+            var column = dataGridView1.Columns[e.ColumnIndex];
+            ShowColumnFilter(column);
+        }
+    }
+
+    private void ShowColumnFilter(DataGridViewColumn column)
+    {
+        // Obter valores distintos da coluna
+        var distinctValues = _allCongregacoes
+            .Select(item => GetPropertyValue(item, column.DataPropertyName))
+            .Where(v => !string.IsNullOrEmpty(v))
+            .Distinct()
+            .OrderBy(v => v)
+            .ToList();
+
+        if (distinctValues.Count == 0)
+            return;
+
+        // Obter filtros atuais para esta coluna
+        var currentFilters = _columnFilters.ContainsKey(column.Name) 
+            ? _columnFilters[column.Name] 
+            : new List<string>();
+
+        // Mostrar dialog de filtro
+        using var filterDialog = new ColumnFilterDialog(column.HeaderText, distinctValues, currentFilters);
+        if (filterDialog.ShowDialog() == DialogResult.OK)
+        {
+            if (filterDialog.SelectedValues.Count == 0 || filterDialog.SelectedValues.Count == filterDialog.AllValues.Count)
+            {
+                // Remove filtro se todos estão selecionados ou nenhum
+                _columnFilters.Remove(column.Name);
+            }
+            else
+            {
+                // Salva filtros selecionados
+                _columnFilters[column.Name] = filterDialog.SelectedValues;
+            }
+
+            // Aplica filtros
+            ApplyFilters();
+        }
+    }
+
+    private string GetPropertyValue(Congregacao congregacao, string propertyName)
+    {
+        var property = typeof(Congregacao).GetProperty(propertyName);
+        if (property == null) return string.Empty;
+
+        var value = property.GetValue(congregacao);
+        return value?.ToString() ?? string.Empty;
+    }
+
+    private void ApplyFilters()
+    {
+        var filteredCongregacoes = _allCongregacoes.AsEnumerable();
+
+        foreach (var filter in _columnFilters)
+        {
+            var columnName = filter.Key;
+            var selectedValues = filter.Value;
+            
+            // Encontrar o DataPropertyName da coluna
+            var column = dataGridView1.Columns[columnName];
+            if (column == null) continue;
+
+            var propertyName = column.DataPropertyName;
+            
+            filteredCongregacoes = filteredCongregacoes.Where(congregacao =>
+            {
+                var value = GetPropertyValue(congregacao, propertyName);
+                return selectedValues.Contains(value);
+            });
+        }
+
+        dataGridView1.DataSource = null;
+        dataGridView1.DataSource = filteredCongregacoes.ToList();
     }
 
     private void LoadData()
@@ -59,12 +146,13 @@ public partial class CongregacaoListForm : UserControl
         foreach (var congregacao in _repository.Congregacoes)
         {
             congregacao.TotalItensEmprestados = _repository.Emprestimos
-                .Where(e => e.CongregacaoId == congregacao.Id)
+                .Where(e => e.CongregacaoId == congregacao.Id && e.Status == StatusEmprestimo.EmAndamento)
                 .Sum(e => e.QuantityInStock);
         }
 
-        dataGridView1.DataSource = null;
-        dataGridView1.DataSource = _repository.Congregacoes;
+        _allCongregacoes = _repository.Congregacoes.ToList();
+        _columnFilters.Clear();
+        ApplyFilters();
     }
 
     private void BtnCreate_Click(object sender, EventArgs e)
@@ -83,6 +171,7 @@ public partial class CongregacaoListForm : UserControl
             var form = new CongregacaoDetailForm(item);
             if (form.ShowDialog() == DialogResult.OK)
             {
+                _repository.UpdateCongregacao(item);
                 LoadData();
             }
         }

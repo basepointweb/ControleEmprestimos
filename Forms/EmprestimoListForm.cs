@@ -6,6 +6,8 @@ namespace ControleEmprestimos.Forms;
 public partial class EmprestimoListForm : UserControl
 {
     private DataRepository _repository;
+    private List<Emprestimo> _allEmprestimos = new();
+    private Dictionary<string, List<string>> _columnFilters = new();
 
     public EmprestimoListForm()
     {
@@ -93,12 +95,105 @@ public partial class EmprestimoListForm : UserControl
             Width = 150,
             AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
         });
+
+        // Event handler para clique no header
+        dataGridView1.ColumnHeaderMouseClick += DataGridView1_ColumnHeaderMouseClick;
+    }
+
+    private void DataGridView1_ColumnHeaderMouseClick(object? sender, DataGridViewCellMouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.Left)
+        {
+            var column = dataGridView1.Columns[e.ColumnIndex];
+            ShowColumnFilter(column);
+        }
+    }
+
+    private void ShowColumnFilter(DataGridViewColumn column)
+    {
+        // Obter valores distintos da coluna
+        var distinctValues = _allEmprestimos
+            .Select(item => GetPropertyValue(item, column.DataPropertyName))
+            .Where(v => !string.IsNullOrEmpty(v))
+            .Distinct()
+            .OrderBy(v => v)
+            .ToList();
+
+        if (distinctValues.Count == 0)
+            return;
+
+        // Obter filtros atuais para esta coluna
+        var currentFilters = _columnFilters.ContainsKey(column.Name) 
+            ? _columnFilters[column.Name] 
+            : new List<string>();
+
+        // Mostrar dialog de filtro
+        using var filterDialog = new ColumnFilterDialog(column.HeaderText, distinctValues, currentFilters);
+        if (filterDialog.ShowDialog() == DialogResult.OK)
+        {
+            if (filterDialog.SelectedValues.Count == 0 || filterDialog.SelectedValues.Count == filterDialog.AllValues.Count)
+            {
+                // Remove filtro se todos estão selecionados ou nenhum
+                _columnFilters.Remove(column.Name);
+            }
+            else
+            {
+                // Salva filtros selecionados
+                _columnFilters[column.Name] = filterDialog.SelectedValues;
+            }
+
+            // Aplica filtros
+            ApplyFilters();
+        }
+    }
+
+    private string GetPropertyValue(Emprestimo emprestimo, string propertyName)
+    {
+        var property = typeof(Emprestimo).GetProperty(propertyName);
+        if (property == null) return string.Empty;
+
+        var value = property.GetValue(emprestimo);
+        
+        // Tratamento especial para DateTime
+        if (value is DateTime dateValue)
+        {
+            return dateValue.ToString("dd/MM/yyyy");
+        }
+        
+        return value?.ToString() ?? string.Empty;
+    }
+
+    private void ApplyFilters()
+    {
+        var filteredEmprestimos = _allEmprestimos.AsEnumerable();
+
+        foreach (var filter in _columnFilters)
+        {
+            var columnName = filter.Key;
+            var selectedValues = filter.Value;
+            
+            // Encontrar o DataPropertyName da coluna
+            var column = dataGridView1.Columns[columnName];
+            if (column == null) continue;
+
+            var propertyName = column.DataPropertyName;
+            
+            filteredEmprestimos = filteredEmprestimos.Where(emprestimo =>
+            {
+                var value = GetPropertyValue(emprestimo, propertyName);
+                return selectedValues.Contains(value);
+            });
+        }
+
+        dataGridView1.DataSource = null;
+        dataGridView1.DataSource = filteredEmprestimos.ToList();
     }
 
     private void LoadData()
     {
-        dataGridView1.DataSource = null;
-        dataGridView1.DataSource = _repository.Emprestimos;
+        _allEmprestimos = _repository.Emprestimos.ToList();
+        _columnFilters.Clear();
+        ApplyFilters();
     }
 
     private void BtnCreate_Click(object sender, EventArgs e)
@@ -163,6 +258,37 @@ public partial class EmprestimoListForm : UserControl
         else
         {
             MessageBox.Show("Por favor, selecione um item para excluir.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    private void BtnClonar_Click(object sender, EventArgs e)
+    {
+        if (dataGridView1.CurrentRow?.DataBoundItem is Emprestimo itemOriginal)
+        {
+            // Criar novo empréstimo com dados clonados
+            var novoEmprestimo = new Emprestimo
+            {
+                Name = itemOriginal.Name,
+                Motivo = itemOriginal.Motivo,
+                QuantityInStock = itemOriginal.QuantityInStock,
+                ItemId = itemOriginal.ItemId,
+                ItemName = itemOriginal.ItemName,
+                CongregacaoId = itemOriginal.CongregacaoId,
+                CongregacaoName = itemOriginal.CongregacaoName,
+                DataEmprestimo = DateTime.Now,
+                Status = StatusEmprestimo.EmAndamento
+            };
+
+            // Abrir formulário em modo criação com dados clonados
+            var form = new EmprestimoDetailForm(novoEmprestimo, isCloning: true);
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                LoadData();
+            }
+        }
+        else
+        {
+            MessageBox.Show("Por favor, selecione um empréstimo para clonar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 

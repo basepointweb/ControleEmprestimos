@@ -7,45 +7,28 @@ public partial class EmprestimoDetailForm : Form
 {
     private Emprestimo? _item;
     private bool _isEditing;
+    private bool _isCloning;
     private DataRepository _repository;
     private Item? _itemPreSelecionado;
 
-    public EmprestimoDetailForm(Emprestimo? item = null)
+    public EmprestimoDetailForm(Emprestimo? item = null, bool isCloning = false)
     {
         InitializeComponent();
         _repository = DataRepository.Instance;
         _item = item;
-        _isEditing = item != null;
+        _isEditing = item != null && !isCloning;
+        _isCloning = isCloning;
 
         LoadItems();
         LoadCongregacoes();
 
-        if (_isEditing && _item != null)
+        if (_item != null)
         {
             txtRecebedor.Text = _item.Name;
             txtMotivo.Text = _item.Motivo;
             numQuantity.Value = _item.QuantityInStock;
             dtpDataEmprestimo.Value = _item.DataEmprestimo;
             txtStatus.Text = _item.StatusDescricao;
-            
-            // Mostrar botão Cancelar apenas se estiver Em Andamento
-            if (_item.Status == StatusEmprestimo.EmAndamento)
-            {
-                btnCancelar.Visible = true;
-            }
-            
-            // Se já foi devolvido ou cancelado, desabilitar edição
-            if (_item.Status != StatusEmprestimo.EmAndamento)
-            {
-                txtRecebedor.ReadOnly = true;
-                txtMotivo.ReadOnly = true;
-                cmbItem.Enabled = false;
-                numQuantity.Enabled = false;
-                cmbCongregacao.Enabled = false;
-                dtpDataEmprestimo.Enabled = false;
-                btnSave.Visible = false;
-                btnCancelar.Visible = false;
-            }
             
             if (_item.ItemId.HasValue)
             {
@@ -63,6 +46,37 @@ public partial class EmprestimoDetailForm : Form
                 {
                     cmbCongregacao.SelectedItem = congregacao;
                 }
+            }
+
+            if (_isEditing)
+            {
+                // Modo edição de empréstimo existente
+                // Mostrar botão Cancelar apenas se estiver Em Andamento
+                if (_item.Status == StatusEmprestimo.EmAndamento)
+                {
+                    btnCancelar.Visible = true;
+                }
+                
+                // Se já foi devolvido ou cancelado, desabilitar edição
+                if (_item.Status != StatusEmprestimo.EmAndamento)
+                {
+                    txtRecebedor.ReadOnly = true;
+                    txtMotivo.ReadOnly = true;
+                    cmbItem.Enabled = false;
+                    numQuantity.Enabled = false;
+                    cmbCongregacao.Enabled = false;
+                    dtpDataEmprestimo.Enabled = false;
+                    btnSave.Visible = false;
+                    btnCancelar.Visible = false;
+                }
+            }
+            else if (_isCloning)
+            {
+                // Modo clonagem - atualizar data e status
+                dtpDataEmprestimo.Value = DateTime.Now;
+                txtStatus.Text = "Em Andamento";
+                btnCancelar.Visible = false;
+                this.Text = "Clonar Empréstimo";
             }
         }
         else
@@ -138,6 +152,7 @@ public partial class EmprestimoDetailForm : Form
 
         if (_isEditing && _item != null)
         {
+            // Modo edição
             _item.Name = txtRecebedor.Text;
             _item.Motivo = txtMotivo.Text;
             _item.QuantityInStock = quantidadeEmprestimo;
@@ -146,9 +161,11 @@ public partial class EmprestimoDetailForm : Form
             _item.CongregacaoId = selectedCongregacao.Id;
             _item.CongregacaoName = selectedCongregacao.Name;
             _item.DataEmprestimo = dtpDataEmprestimo.Value;
+            _repository.UpdateEmprestimo(_item);
         }
         else
         {
+            // Modo criação (novo ou clonado)
             var newItem = new Emprestimo
             {
                 Name = txtRecebedor.Text,
@@ -181,6 +198,7 @@ public partial class EmprestimoDetailForm : Form
         if (result == DialogResult.Yes)
         {
             _item.Status = StatusEmprestimo.Cancelado;
+            _repository.UpdateEmprestimo(_item);
             this.DialogResult = DialogResult.OK;
             this.Close();
         }

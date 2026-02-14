@@ -6,6 +6,8 @@ namespace ControleEmprestimos.Forms;
 public partial class ItemListForm : UserControl
 {
     private DataRepository _repository;
+    private List<Item> _allItems = new();
+    private Dictionary<string, List<string>> _columnFilters = new();
 
     public ItemListForm()
     {
@@ -59,6 +61,91 @@ public partial class ItemListForm : UserControl
             Name = "colEmprestado",
             Width = 120
         });
+
+        // Event handler para clique no header
+        dataGridView1.ColumnHeaderMouseClick += DataGridView1_ColumnHeaderMouseClick;
+    }
+
+    private void DataGridView1_ColumnHeaderMouseClick(object? sender, DataGridViewCellMouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.Left)
+        {
+            var column = dataGridView1.Columns[e.ColumnIndex];
+            ShowColumnFilter(column);
+        }
+    }
+
+    private void ShowColumnFilter(DataGridViewColumn column)
+    {
+        // Obter valores distintos da coluna
+        var distinctValues = _allItems
+            .Select(item => GetPropertyValue(item, column.DataPropertyName))
+            .Where(v => !string.IsNullOrEmpty(v))
+            .Distinct()
+            .OrderBy(v => v)
+            .ToList();
+
+        if (distinctValues.Count == 0)
+            return;
+
+        // Obter filtros atuais para esta coluna
+        var currentFilters = _columnFilters.ContainsKey(column.Name) 
+            ? _columnFilters[column.Name] 
+            : new List<string>();
+
+        // Mostrar dialog de filtro
+        using var filterDialog = new ColumnFilterDialog(column.HeaderText, distinctValues, currentFilters);
+        if (filterDialog.ShowDialog() == DialogResult.OK)
+        {
+            if (filterDialog.SelectedValues.Count == 0 || filterDialog.SelectedValues.Count == filterDialog.AllValues.Count)
+            {
+                // Remove filtro se todos estão selecionados ou nenhum
+                _columnFilters.Remove(column.Name);
+            }
+            else
+            {
+                // Salva filtros selecionados
+                _columnFilters[column.Name] = filterDialog.SelectedValues;
+            }
+
+            // Aplica filtros
+            ApplyFilters();
+        }
+    }
+
+    private string GetPropertyValue(Item item, string propertyName)
+    {
+        var property = typeof(Item).GetProperty(propertyName);
+        if (property == null) return string.Empty;
+
+        var value = property.GetValue(item);
+        return value?.ToString() ?? string.Empty;
+    }
+
+    private void ApplyFilters()
+    {
+        var filteredItems = _allItems.AsEnumerable();
+
+        foreach (var filter in _columnFilters)
+        {
+            var columnName = filter.Key;
+            var selectedValues = filter.Value;
+            
+            // Encontrar o DataPropertyName da coluna
+            var column = dataGridView1.Columns[columnName];
+            if (column == null) continue;
+
+            var propertyName = column.DataPropertyName;
+            
+            filteredItems = filteredItems.Where(item =>
+            {
+                var value = GetPropertyValue(item, propertyName);
+                return selectedValues.Contains(value);
+            });
+        }
+
+        dataGridView1.DataSource = null;
+        dataGridView1.DataSource = filteredItems.ToList();
     }
 
     private void LoadData()
@@ -71,8 +158,9 @@ public partial class ItemListForm : UserControl
                 .Sum(e => e.QuantityInStock);
         }
 
-        dataGridView1.DataSource = null;
-        dataGridView1.DataSource = _repository.Items;
+        _allItems = _repository.Items.ToList();
+        _columnFilters.Clear();
+        ApplyFilters();
     }
 
     private void BtnCreate_Click(object sender, EventArgs e)
@@ -91,6 +179,7 @@ public partial class ItemListForm : UserControl
             var form = new ItemDetailForm(item);
             if (form.ShowDialog() == DialogResult.OK)
             {
+                _repository.UpdateItem(item);
                 LoadData();
             }
         }
@@ -114,6 +203,31 @@ public partial class ItemListForm : UserControl
         else
         {
             MessageBox.Show("Por favor, selecione um item para excluir.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    private void BtnClonar_Click(object sender, EventArgs e)
+    {
+        if (dataGridView1.CurrentRow?.DataBoundItem is Item itemOriginal)
+        {
+            // Criar novo item com dados clonados
+            var novoItem = new Item
+            {
+                Name = itemOriginal.Name,
+                QuantityInStock = itemOriginal.QuantityInStock
+                // DataCriacao e DataAlteracao serão definidas automaticamente pelo repositório
+            };
+
+            // Abrir formulário em modo criação com dados clonados
+            var form = new ItemDetailForm(novoItem, isCloning: true);
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                LoadData();
+            }
+        }
+        else
+        {
+            MessageBox.Show("Por favor, selecione um item para clonar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 

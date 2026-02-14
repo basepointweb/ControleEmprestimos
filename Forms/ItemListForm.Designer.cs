@@ -21,6 +21,7 @@ partial class ItemListForm
         this.btnCreate = new Button();
         this.btnEdit = new Button();
         this.btnDelete = new Button();
+        this.btnClonar = new Button();
         this.btnEmprestar = new Button();
         this.panel1 = new Panel();
         this.titlePanel = new Panel();
@@ -72,6 +73,7 @@ partial class ItemListForm
         this.panel1.Controls.Add(this.btnCreate);
         this.panel1.Controls.Add(this.btnEdit);
         this.panel1.Controls.Add(this.btnDelete);
+        this.panel1.Controls.Add(this.btnClonar);
         this.panel1.Controls.Add(this.btnEmprestar);
         this.panel1.Dock = DockStyle.Bottom;
         this.panel1.Location = new Point(0, 400);
@@ -109,14 +111,26 @@ partial class ItemListForm
         this.btnDelete.UseVisualStyleBackColor = true;
         this.btnDelete.Click += new EventHandler(this.BtnDelete_Click);
         // 
+        // btnClonar
+        // 
+        this.btnClonar.BackColor = Color.FromArgb(108, 117, 125);
+        this.btnClonar.ForeColor = Color.White;
+        this.btnClonar.Location = new Point(330, 10);
+        this.btnClonar.Name = "btnClonar";
+        this.btnClonar.Size = new Size(100, 30);
+        this.btnClonar.TabIndex = 3;
+        this.btnClonar.Text = "Clonar";
+        this.btnClonar.UseVisualStyleBackColor = false;
+        this.btnClonar.Click += new EventHandler(this.BtnClonar_Click);
+        // 
         // btnEmprestar
         // 
         this.btnEmprestar.BackColor = Color.FromArgb(0, 120, 215);
         this.btnEmprestar.ForeColor = Color.White;
-        this.btnEmprestar.Location = new Point(330, 10);
+        this.btnEmprestar.Location = new Point(436, 10);
         this.btnEmprestar.Name = "btnEmprestar";
         this.btnEmprestar.Size = new Size(100, 30);
-        this.btnEmprestar.TabIndex = 3;
+        this.btnEmprestar.TabIndex = 4;
         this.btnEmprestar.Text = "Emprestar";
         this.btnEmprestar.UseVisualStyleBackColor = false;
         this.btnEmprestar.Click += new EventHandler(this.BtnEmprestar_Click);
@@ -142,6 +156,7 @@ partial class ItemListForm
     private Button btnCreate;
     private Button btnEdit;
     private Button btnDelete;
+    private Button btnClonar;
     private Button btnEmprestar;
     private Panel panel1;
     private Panel titlePanel;

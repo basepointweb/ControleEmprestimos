@@ -21,4 +21,8 @@ public class Emprestimo
         StatusEmprestimo.Cancelado => "Cancelado",
         _ => "Desconhecido"
     };
+    
+    // Auditoria
+    public DateTime DataCriacao { get; set; } = DateTime.Now;
+    public DateTime DataAlteracao { get; set; } = DateTime.Now;
 }

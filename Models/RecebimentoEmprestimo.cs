@@ -9,4 +9,8 @@ public class RecebimentoEmprestimo
     public int? EmprestimoId { get; set; }
     public DateTime? DataEmprestimo { get; set; }
     public DateTime DataRecebimento { get; set; } = DateTime.Now;
+    
+    // Auditoria
+    public DateTime DataCriacao { get; set; } = DateTime.Now;
+    public DateTime DataAlteracao { get; set; } = DateTime.Now;
 }

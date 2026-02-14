@@ -8,4 +8,8 @@ public class Item
     
     // Propriedade calculada - será preenchida pela listagem
     public int TotalEmprestado { get; set; }
+    
+    // Auditoria
+    public DateTime DataCriacao { get; set; } = DateTime.Now;
+    public DateTime DataAlteracao { get; set; } = DateTime.Now;
 }

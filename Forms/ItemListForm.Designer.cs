@@ -23,6 +23,7 @@ partial class ItemListForm
         this.btnDelete = new Button();
         this.btnClonar = new Button();
         this.btnEmprestar = new Button();
+        this.btnListar = new Button();
         this.panel1 = new Panel();
         this.titlePanel = new Panel();
         this.titleLabel = new Label();
@@ -75,6 +76,7 @@ partial class ItemListForm
         this.panel1.Controls.Add(this.btnDelete);
         this.panel1.Controls.Add(this.btnClonar);
         this.panel1.Controls.Add(this.btnEmprestar);
+        this.panel1.Controls.Add(this.btnListar);
         this.panel1.Dock = DockStyle.Bottom;
         this.panel1.Location = new Point(0, 400);
         this.panel1.Name = "panel1";
@@ -135,6 +137,18 @@ partial class ItemListForm
         this.btnEmprestar.UseVisualStyleBackColor = false;
         this.btnEmprestar.Click += new EventHandler(this.BtnEmprestar_Click);
         // 
+        // btnListar
+        // 
+        this.btnListar.BackColor = Color.FromArgb(40, 167, 69);
+        this.btnListar.ForeColor = Color.White;
+        this.btnListar.Location = new Point(542, 10);
+        this.btnListar.Name = "btnListar";
+        this.btnListar.Size = new Size(100, 30);
+        this.btnListar.TabIndex = 5;
+        this.btnListar.Text = "Listar";
+        this.btnListar.UseVisualStyleBackColor = false;
+        this.btnListar.Click += new EventHandler(this.BtnListar_Click);
+        // 
         // ItemListForm
         // 
         this.AutoScaleDimensions = new SizeF(7F, 15F);
@@ -158,6 +172,7 @@ partial class ItemListForm
     private Button btnDelete;
     private Button btnClonar;
     private Button btnEmprestar;
+    private Button btnListar;
     private Panel panel1;
     private Panel titlePanel;
     private Label titleLabel;

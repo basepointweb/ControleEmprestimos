@@ -212,6 +212,9 @@ public partial class RecebimentoListForm : UserControl
 
     private void LoadData()
     {
+        // Recarregar dados do Excel
+        _repository.ReloadFromExcel();
+        
         _allRecebimentos = _repository.RecebimentoEmprestimos.ToList();
         _columnFilters.Clear();
         ApplyFilters();
@@ -311,7 +314,7 @@ public partial class RecebimentoListForm : UserControl
         _dataInicialFiltro = dtpDataInicial.Value.Date;
         _dataFinalFiltro = dtpDataFinal.Value.Date;
 
-        // Reaplicar filtros
-        ApplyFilters();
+        // Recarregar dados do Excel antes de aplicar filtros
+        LoadData();
     }
 }

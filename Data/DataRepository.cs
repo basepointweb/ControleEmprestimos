@@ -11,6 +11,9 @@ public class DataRepository
     private int _nextCongregacaoId = 1;
     private int _nextEmprestimoItemId = 1;
     private int _nextRecebimentoItemId = 1;
+    
+    private readonly ExcelDataRepository _excelRepository;
+    private readonly string _dataFilePath;
 
     public List<Item> Items { get; } = new();
     public List<Emprestimo> Emprestimos { get; } = new();
@@ -21,61 +24,73 @@ public class DataRepository
 
     private DataRepository()
     {
-        // Seed inicial de congregações com setores
-        var congregacoesIniciais = new (string Nome, string Setor)[]
-        {
-            ("Sede", ""),
-            ("Bonsucesso", "SETOR E"),
-            ("Sub-sede", ""),
-            ("Barroso", "SETOR A"),
-            ("Rosario", "SETOR A"),
-            ("Corta Vento", "SETOR B"),
-            ("Beira Linha", "SETOR A"),
-            ("Quinta Lebrão", "SETOR C"),
-            ("Fonte Santa", "SETOR C"),
-            ("Fischer", "SETOR C"),
-            ("Pessegueiros", "SETOR C"),
-            ("Granja Florestal", "SETOR B"),
-            ("Paineiras", "SETOR B"),
-            ("Campanha", "SETOR E"),
-            ("Vila do Pião", "SETOR C"),
-            ("Vale Alpino", "SETOR E"),
-            ("Brejal", "SETOR C"),
-            ("Venda Nova", "SETOR D"),
-            ("Caleme", "SETOR B"),
-            ("Ponte do Porto", "SETOR D"),
-            ("Albuquerque", "SETOR D"),
-            ("Barra do Imbuí", "SETOR B"),
-            ("Vargem Grande", "SETOR D"),
-            ("Arrieiros", "SETOR B"),
-            ("Jardim Feo", "SETOR B"),
-            ("Granja Guarani", "SETOR A"),
-            ("Posse", "SETOR B"),
-            ("Jardim Meudom", "SETOR A"),
-            ("Canoas", "SETOR D"),
-            ("Rezende", "SETOR C"),
-            ("Cascata do Imbuí", "SETOR B"),
-            ("Coreia", "SETOR A"),
-            ("Parque São Luiz", "SETOR A"),
-            ("Vieira", "SETOR E"),
-            ("Imbiú", "SETOR D"),
-            ("Castelinho", "SETOR A"),
-            ("Santa Rosa", "SETOR E"),
-            ("Estrelinha", "SETOR E"),
-            ("Cruzeiro", "SETOR C"),
-            ("Três Córregos", "SETOR C"),
-            ("Vila do Hélio", "SETOR D"),
-            ("Campo Limpo", "SETOR C")
-        };
+        // Caminho do arquivo Excel na pasta do executável
+        var exePath = AppDomain.CurrentDomain.BaseDirectory;
+        _dataFilePath = Path.Combine(exePath, "ControleEmprestimos.xlsx");
+        
+        _excelRepository = new ExcelDataRepository(_dataFilePath);
+        
+        // Carregar dados do Excel
+        LoadFromExcel();
+    }
 
-        foreach (var (nome, setor) in congregacoesIniciais)
+    private void LoadFromExcel()
+    {
+        try
         {
-            Congregacoes.Add(new Congregacao
-            {
-                Id = _nextCongregacaoId++,
-                Name = nome,
-                Setor = setor
-            });
+            var data = _excelRepository.LoadData();
+            
+            Items.Clear();
+            Items.AddRange(data.Items);
+            
+            Congregacoes.Clear();
+            Congregacoes.AddRange(data.Congregacoes);
+            
+            Emprestimos.Clear();
+            Emprestimos.AddRange(data.Emprestimos);
+            
+            EmprestimoItens.Clear();
+            EmprestimoItens.AddRange(data.EmprestimoItens);
+            
+            RecebimentoEmprestimos.Clear();
+            RecebimentoEmprestimos.AddRange(data.Recebimentos);
+            
+            RecebimentoItens.Clear();
+            RecebimentoItens.AddRange(data.RecebimentoItens);
+            
+            _nextItemId = data.NextItemId;
+            _nextCongregacaoId = data.NextCongregacaoId;
+            _nextEmprestimoId = data.NextEmprestimoId;
+            _nextEmprestimoItemId = data.NextEmprestimoItemId;
+            _nextRecebimentoId = data.NextRecebimentoId;
+            _nextRecebimentoItemId = data.NextRecebimentoItemId;
+        }
+        catch (Exception ex)
+        {
+            // Log do erro (em produção, usar um logger adequado)
+            System.Diagnostics.Debug.WriteLine($"Erro ao carregar dados do Excel: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Recarrega todos os dados do arquivo Excel
+    /// </summary>
+    public void ReloadFromExcel()
+    {
+        LoadFromExcel();
+    }
+
+    private void SaveToExcel()
+    {
+        try
+        {
+            _excelRepository.SaveData(Items, Congregacoes, Emprestimos, EmprestimoItens, RecebimentoEmprestimos, RecebimentoItens);
+        }
+        catch (Exception ex)
+        {
+            // Log do erro (em produção, usar um logger adequado)
+            System.Diagnostics.Debug.WriteLine($"Erro ao salvar dados no Excel: {ex.Message}");
+            throw; // Re-lançar para que o usuário saiba que houve um erro ao salvar
         }
     }
 
@@ -88,12 +103,14 @@ public class DataRepository
         item.DataCriacao = now;
         item.DataAlteracao = now;
         Items.Add(item);
+        SaveToExcel();
         return item.Id;
     }
 
     public void UpdateItem(Item item)
     {
         item.DataAlteracao = DateTime.Now;
+        SaveToExcel();
     }
 
     public int AddEmprestimo(Emprestimo emprestimo)
@@ -147,12 +164,14 @@ public class DataRepository
         }
 
         Emprestimos.Add(emprestimo);
+        SaveToExcel();
         return emprestimo.Id;
     }
 
     public void UpdateEmprestimo(Emprestimo emprestimo)
     {
         emprestimo.DataAlteracao = DateTime.Now;
+        SaveToExcel();
     }
 
     public void DevolverEmprestimo(Emprestimo emprestimo)
@@ -168,6 +187,7 @@ public class DataRepository
         }
 
         emprestimo.DataAlteracao = DateTime.Now;
+        SaveToExcel();
     }
 
     public int AddRecebimento(RecebimentoEmprestimo recebimento)
@@ -213,6 +233,7 @@ public class DataRepository
         }
 
         RecebimentoEmprestimos.Add(recebimento);
+        SaveToExcel();
         return recebimento.Id;
     }
 
@@ -223,12 +244,14 @@ public class DataRepository
         congregacao.DataCriacao = now;
         congregacao.DataAlteracao = now;
         Congregacoes.Add(congregacao);
+        SaveToExcel();
         return congregacao.Id;
     }
 
     public void UpdateCongregacao(Congregacao congregacao)
     {
         congregacao.DataAlteracao = DateTime.Now;
+        SaveToExcel();
     }
 
     public void RemoverEmprestimo(Emprestimo emprestimo)
@@ -252,6 +275,7 @@ public class DataRepository
 
         // Remover empréstimo
         Emprestimos.Remove(emprestimo);
+        SaveToExcel();
     }
 
     public void RemoverRecebimento(RecebimentoEmprestimo recebimento)
@@ -290,5 +314,6 @@ public class DataRepository
 
         // Remover recebimento
         RecebimentoEmprestimos.Remove(recebimento);
+        SaveToExcel();
     }
 }

@@ -108,7 +108,7 @@ public partial class CongregacaoListForm : UserControl
                 _columnFilters[column.Name] = filterDialog.SelectedValues;
             }
 
-            // Aplica filtros
+            // Aplica filtros (mas NÃO recarrega do Excel)
             ApplyFilters();
         }
     }
@@ -150,6 +150,9 @@ public partial class CongregacaoListForm : UserControl
 
     private void LoadData()
     {
+        // Recarregar dados do Excel
+        _repository.ReloadFromExcel();
+        
         // Calcular total de itens emprestados para cada congregação
         // Considerar apenas itens pendentes (não recebidos)
         foreach (var congregacao in _repository.Congregacoes)
@@ -162,6 +165,17 @@ public partial class CongregacaoListForm : UserControl
         _allCongregacoes = _repository.Congregacoes.ToList();
         _columnFilters.Clear();
         ApplyFilters();
+    }
+
+    private void BtnListar_Click(object sender, EventArgs e)
+    {
+        // Recarregar dados do Excel
+        LoadData();
+        MessageBox.Show(
+            "Dados recarregados com sucesso!",
+            "Listar",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
     }
 
     private void BtnCreate_Click(object sender, EventArgs e)

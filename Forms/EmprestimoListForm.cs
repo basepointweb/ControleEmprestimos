@@ -249,6 +249,9 @@ public partial class EmprestimoListForm : UserControl
 
     private void LoadData()
     {
+        // Recarregar dados do Excel
+        _repository.ReloadFromExcel();
+        
         _allEmprestimos = _repository.Emprestimos.ToList();
         _columnFilters.Clear();
         ApplyFilters();
@@ -271,8 +274,8 @@ public partial class EmprestimoListForm : UserControl
         _dataInicialFiltro = dtpDataInicial.Value.Date;
         _dataFinalFiltro = dtpDataFinal.Value.Date;
 
-        // Reaplicar filtros
-        ApplyFilters();
+        // Recarregar dados do Excel antes de aplicar filtros
+        LoadData();
     }
 
     private void BtnCreate_Click(object sender, EventArgs e)

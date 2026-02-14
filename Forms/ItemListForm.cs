@@ -108,7 +108,7 @@ public partial class ItemListForm : UserControl
                 _columnFilters[column.Name] = filterDialog.SelectedValues;
             }
 
-            // Aplica filtros
+            // Aplica filtros (mas NÃO recarrega do Excel)
             ApplyFilters();
         }
     }
@@ -150,6 +150,9 @@ public partial class ItemListForm : UserControl
 
     private void LoadData()
     {
+        // Recarregar dados do Excel
+        _repository.ReloadFromExcel();
+        
         // Calcular total emprestado para cada item (apenas empréstimos Em Andamento)
         // Usar EmprestimoItens para calcular corretamente com múltiplos itens
         foreach (var item in _repository.Items)
@@ -167,6 +170,17 @@ public partial class ItemListForm : UserControl
         _allItems = _repository.Items.ToList();
         _columnFilters.Clear();
         ApplyFilters();
+    }
+
+    private void BtnListar_Click(object sender, EventArgs e)
+    {
+        // Recarregar dados do Excel
+        LoadData();
+        MessageBox.Show(
+            "Dados recarregados com sucesso!",
+            "Listar",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
     }
 
     private void BtnCreate_Click(object sender, EventArgs e)

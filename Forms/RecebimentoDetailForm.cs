@@ -1,5 +1,6 @@
 using ControleEmprestimos.Data;
 using ControleEmprestimos.Models;
+using ControleEmprestimos.Reports;
 
 namespace ControleEmprestimos.Forms;
 
@@ -53,14 +54,19 @@ public partial class RecebimentoDetailForm : Form
                 txtDataEmprestimo.Text = _item.DataEmprestimo.Value.ToString("dd/MM/yyyy");
             }
             
-            txtRecebedor.Text = _item.NomeRecebedor;
+            txtQuemPegou.Text = _item.NomeRecebedor;
             numQuantity.Value = _item.QuantityInStock;
             dtpDataRecebimento.Value = _item.DataRecebimento;
+            txtQuemRecebeu.Text = _item.NomeQuemRecebeu;
             
             // Desabilitar edição
             cmbEmprestimo.Enabled = false;
             dtpDataRecebimento.Enabled = false;
+            txtQuemRecebeu.ReadOnly = true;
             btnSave.Visible = false;
+            
+            // Mostrar botão de impressão
+            btnImprimirRecibo.Visible = true;
         }
         else
         {
@@ -121,7 +127,7 @@ public partial class RecebimentoDetailForm : Form
                 if (emprestimo != null)
                 {
                     txtDataEmprestimo.Text = emprestimo.DataEmprestimo.ToString("dd/MM/yyyy");
-                    txtRecebedor.Text = emprestimo.Name;
+                    txtQuemPegou.Text = emprestimo.Name;
                     numQuantity.Value = emprestimo.QuantityInStock;
                     return;
                 }
@@ -129,7 +135,7 @@ public partial class RecebimentoDetailForm : Form
         }
         
         txtDataEmprestimo.Clear();
-        txtRecebedor.Clear();
+        txtQuemPegou.Clear();
         numQuantity.Value = 0;
     }
 
@@ -138,6 +144,12 @@ public partial class RecebimentoDetailForm : Form
         if (cmbEmprestimo.SelectedItem == null)
         {
             MessageBox.Show("Por favor, selecione um empréstimo.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(txtQuemRecebeu.Text))
+        {
+            MessageBox.Show("Por favor, informe quem recebeu de volta.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
 
@@ -164,6 +176,7 @@ public partial class RecebimentoDetailForm : Form
             {
                 Name = $"Recebimento - {emprestimoSelecionado.ItemName}",
                 NomeRecebedor = emprestimoSelecionado.Name,
+                NomeQuemRecebeu = txtQuemRecebeu.Text,
                 QuantityInStock = emprestimoSelecionado.QuantityInStock,
                 EmprestimoId = emprestimoSelecionado.Id,
                 DataEmprestimo = emprestimoSelecionado.DataEmprestimo,
@@ -173,10 +186,35 @@ public partial class RecebimentoDetailForm : Form
 
             // Devolver empréstimo (repõe estoque e atualiza status)
             _repository.DevolverEmprestimo(emprestimoSelecionado);
+
+            // Perguntar se deseja imprimir recibo
+            var resultado = MessageBox.Show(
+                "Recebimento registrado com sucesso!\n\nDeseja imprimir o recibo?",
+                "Sucesso",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (resultado == DialogResult.Yes)
+            {
+                var printer = new ReciboRecebimentoPrinter(newItem, emprestimoSelecionado);
+                printer.PrintPreview();
+            }
         }
 
         this.DialogResult = DialogResult.OK;
         this.Close();
+    }
+
+    private void BtnImprimirRecibo_Click(object sender, EventArgs e)
+    {
+        if (_item == null) return;
+
+        var emprestimo = _item.EmprestimoId.HasValue 
+            ? _repository.Emprestimos.FirstOrDefault(e => e.Id == _item.EmprestimoId.Value)
+            : null;
+
+        var printer = new ReciboRecebimentoPrinter(_item, emprestimo);
+        printer.PrintPreview();
     }
 
     private void BtnCancel_Click(object sender, EventArgs e)

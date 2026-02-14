@@ -21,14 +21,17 @@ partial class RecebimentoDetailForm
         this.cmbEmprestimo = new ComboBox();
         this.lblDataEmprestimo = new Label();
         this.txtDataEmprestimo = new TextBox();
-        this.lblRecebedor = new Label();
-        this.txtRecebedor = new TextBox();
+        this.lblQuemPegou = new Label();
+        this.txtQuemPegou = new TextBox();
         this.lblQuantity = new Label();
         this.numQuantity = new NumericUpDown();
         this.lblDataRecebimento = new Label();
         this.dtpDataRecebimento = new DateTimePicker();
+        this.lblQuemRecebeu = new Label();
+        this.txtQuemRecebeu = new TextBox();
         this.btnSave = new Button();
         this.btnCancel = new Button();
+        this.btnImprimirRecibo = new Button();
         ((System.ComponentModel.ISupportInitialize)(this.numQuantity)).BeginInit();
         this.SuspendLayout();
         // 
@@ -69,23 +72,23 @@ partial class RecebimentoDetailForm
         this.txtDataEmprestimo.TabIndex = 3;
         this.txtDataEmprestimo.BackColor = SystemColors.Control;
         // 
-        // lblRecebedor
+        // lblQuemPegou
         // 
-        this.lblRecebedor.AutoSize = true;
-        this.lblRecebedor.Location = new Point(20, 140);
-        this.lblRecebedor.Name = "lblRecebedor";
-        this.lblRecebedor.Size = new Size(64, 15);
-        this.lblRecebedor.TabIndex = 4;
-        this.lblRecebedor.Text = "Recebedor:";
+        this.lblQuemPegou.AutoSize = true;
+        this.lblQuemPegou.Location = new Point(20, 140);
+        this.lblQuemPegou.Name = "lblQuemPegou";
+        this.lblQuemPegou.Size = new Size(130, 15);
+        this.lblQuemPegou.TabIndex = 4;
+        this.lblQuemPegou.Text = "Quem Pegou Emprestado:";
         // 
-        // txtRecebedor
+        // txtQuemPegou
         // 
-        this.txtRecebedor.Location = new Point(20, 160);
-        this.txtRecebedor.Name = "txtRecebedor";
-        this.txtRecebedor.ReadOnly = true;
-        this.txtRecebedor.Size = new Size(560, 23);
-        this.txtRecebedor.TabIndex = 5;
-        this.txtRecebedor.BackColor = SystemColors.Control;
+        this.txtQuemPegou.Location = new Point(20, 160);
+        this.txtQuemPegou.Name = "txtQuemPegou";
+        this.txtQuemPegou.ReadOnly = true;
+        this.txtQuemPegou.Size = new Size(560, 23);
+        this.txtQuemPegou.TabIndex = 5;
+        this.txtQuemPegou.BackColor = SystemColors.Control;
         // 
         // lblQuantity
         // 
@@ -123,39 +126,71 @@ partial class RecebimentoDetailForm
         this.dtpDataRecebimento.Size = new Size(150, 23);
         this.dtpDataRecebimento.TabIndex = 9;
         // 
+        // lblQuemRecebeu
+        // 
+        this.lblQuemRecebeu.AutoSize = true;
+        this.lblQuemRecebeu.Location = new Point(20, 320);
+        this.lblQuemRecebeu.Name = "lblQuemRecebeu";
+        this.lblQuemRecebeu.Size = new Size(115, 15);
+        this.lblQuemRecebeu.TabIndex = 10;
+        this.lblQuemRecebeu.Text = "Quem Recebeu Volta:";
+        // 
+        // txtQuemRecebeu
+        // 
+        this.txtQuemRecebeu.Location = new Point(20, 340);
+        this.txtQuemRecebeu.Name = "txtQuemRecebeu";
+        this.txtQuemRecebeu.Size = new Size(560, 23);
+        this.txtQuemRecebeu.TabIndex = 11;
+        // 
         // btnSave
         // 
-        this.btnSave.Location = new Point(20, 330);
+        this.btnSave.Location = new Point(20, 380);
         this.btnSave.Name = "btnSave";
         this.btnSave.Size = new Size(100, 30);
-        this.btnSave.TabIndex = 10;
+        this.btnSave.TabIndex = 12;
         this.btnSave.Text = "Salvar";
         this.btnSave.UseVisualStyleBackColor = true;
         this.btnSave.Click += new EventHandler(this.BtnSave_Click);
         // 
         // btnCancel
         // 
-        this.btnCancel.Location = new Point(126, 330);
+        this.btnCancel.Location = new Point(126, 380);
         this.btnCancel.Name = "btnCancel";
         this.btnCancel.Size = new Size(100, 30);
-        this.btnCancel.TabIndex = 11;
+        this.btnCancel.TabIndex = 13;
         this.btnCancel.Text = "Cancelar";
         this.btnCancel.UseVisualStyleBackColor = true;
         this.btnCancel.Click += new EventHandler(this.BtnCancel_Click);
+        // 
+        // btnImprimirRecibo
+        // 
+        this.btnImprimirRecibo.BackColor = Color.FromArgb(23, 162, 184);
+        this.btnImprimirRecibo.ForeColor = Color.White;
+        this.btnImprimirRecibo.Location = new Point(232, 380);
+        this.btnImprimirRecibo.Name = "btnImprimirRecibo";
+        this.btnImprimirRecibo.Size = new Size(120, 30);
+        this.btnImprimirRecibo.TabIndex = 14;
+        this.btnImprimirRecibo.Text = "Imprimir Recibo";
+        this.btnImprimirRecibo.UseVisualStyleBackColor = false;
+        this.btnImprimirRecibo.Visible = false;
+        this.btnImprimirRecibo.Click += new EventHandler(this.BtnImprimirRecibo_Click);
         // 
         // RecebimentoDetailForm
         // 
         this.AutoScaleDimensions = new SizeF(7F, 15F);
         this.AutoScaleMode = AutoScaleMode.Font;
-        this.ClientSize = new Size(600, 380);
+        this.ClientSize = new Size(600, 430);
+        this.Controls.Add(this.btnImprimirRecibo);
         this.Controls.Add(this.btnCancel);
         this.Controls.Add(this.btnSave);
+        this.Controls.Add(this.txtQuemRecebeu);
+        this.Controls.Add(this.lblQuemRecebeu);
         this.Controls.Add(this.dtpDataRecebimento);
         this.Controls.Add(this.lblDataRecebimento);
         this.Controls.Add(this.numQuantity);
         this.Controls.Add(this.lblQuantity);
-        this.Controls.Add(this.txtRecebedor);
-        this.Controls.Add(this.lblRecebedor);
+        this.Controls.Add(this.txtQuemPegou);
+        this.Controls.Add(this.lblQuemPegou);
         this.Controls.Add(this.txtDataEmprestimo);
         this.Controls.Add(this.lblDataEmprestimo);
         this.Controls.Add(this.cmbEmprestimo);
@@ -177,12 +212,15 @@ partial class RecebimentoDetailForm
     private ComboBox cmbEmprestimo;
     private Label lblDataEmprestimo;
     private TextBox txtDataEmprestimo;
-    private Label lblRecebedor;
-    private TextBox txtRecebedor;
+    private Label lblQuemPegou;
+    private TextBox txtQuemPegou;
     private Label lblQuantity;
     private NumericUpDown numQuantity;
     private Label lblDataRecebimento;
     private DateTimePicker dtpDataRecebimento;
+    private Label lblQuemRecebeu;
+    private TextBox txtQuemRecebeu;
     private Button btnSave;
     private Button btnCancel;
+    private Button btnImprimirRecibo;
 }

@@ -1,5 +1,6 @@
 using ControleEmprestimos.Data;
 using ControleEmprestimos.Models;
+using ControleEmprestimos.Reports;
 
 namespace ControleEmprestimos.Forms;
 
@@ -289,6 +290,19 @@ public partial class EmprestimoListForm : UserControl
         else
         {
             MessageBox.Show("Por favor, selecione um empréstimo para clonar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    private void BtnImprimirRecibo_Click(object sender, EventArgs e)
+    {
+        if (dataGridView1.CurrentRow?.DataBoundItem is Emprestimo emprestimo)
+        {
+            var printer = new ReciboEmprestimoPrinter(emprestimo);
+            printer.PrintPreview();
+        }
+        else
+        {
+            MessageBox.Show("Por favor, selecione um empréstimo para imprimir o recibo.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 

@@ -4,7 +4,8 @@ public class RecebimentoEmprestimo
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public string NomeRecebedor { get; set; } = string.Empty;
+    public string NomeRecebedor { get; set; } = string.Empty; // Quem pegou emprestado
+    public string NomeQuemRecebeu { get; set; } = string.Empty; // Quem recebeu de volta (novo campo)
     public int QuantityInStock { get; set; }
     public int? EmprestimoId { get; set; }
     public DateTime? DataEmprestimo { get; set; }

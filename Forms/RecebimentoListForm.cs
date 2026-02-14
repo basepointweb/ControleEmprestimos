@@ -8,11 +8,22 @@ public partial class RecebimentoListForm : UserControl
     private DataRepository _repository;
     private List<RecebimentoEmprestimo> _allRecebimentos = new();
     private Dictionary<string, List<string>> _columnFilters = new();
+    private DateTime _dataInicialFiltro;
+    private DateTime _dataFinalFiltro;
 
     public RecebimentoListForm()
     {
         InitializeComponent();
         _repository = DataRepository.Instance;
+        
+        // Inicializar filtro de data com o mês atual
+        var hoje = DateTime.Now;
+        _dataInicialFiltro = new DateTime(hoje.Year, hoje.Month, 1); // Primeiro dia do mês
+        _dataFinalFiltro = new DateTime(hoje.Year, hoje.Month, DateTime.DaysInMonth(hoje.Year, hoje.Month)); // Último dia do mês
+        
+        dtpDataInicial.Value = _dataInicialFiltro;
+        dtpDataFinal.Value = _dataFinalFiltro;
+        
         ConfigureDataGridView();
     }
 
@@ -171,6 +182,11 @@ public partial class RecebimentoListForm : UserControl
     {
         var filteredRecebimentos = _allRecebimentos.AsEnumerable();
 
+        // Aplicar filtro de data (por DataRecebimento, ignorando hora)
+        filteredRecebimentos = filteredRecebimentos.Where(r => 
+            r.DataRecebimento.Date >= _dataInicialFiltro.Date && 
+            r.DataRecebimento.Date <= _dataFinalFiltro.Date);
+
         foreach (var filter in _columnFilters)
         {
             var columnName = filter.Key;
@@ -252,5 +268,26 @@ public partial class RecebimentoListForm : UserControl
         {
             MessageBox.Show("Por favor, selecione um item para excluir.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
+    }
+
+    private void BtnFiltrar_Click(object sender, EventArgs e)
+    {
+        // Validar datas
+        if (dtpDataInicial.Value.Date > dtpDataFinal.Value.Date)
+        {
+            MessageBox.Show(
+                "A data inicial não pode ser maior que a data final.",
+                "Validação",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return;
+        }
+
+        // Atualizar filtros
+        _dataInicialFiltro = dtpDataInicial.Value.Date;
+        _dataFinalFiltro = dtpDataFinal.Value.Date;
+
+        // Reaplicar filtros
+        ApplyFilters();
     }
 }

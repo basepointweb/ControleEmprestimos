@@ -43,7 +43,15 @@ public partial class CongregacaoListForm : UserControl
             DataPropertyName = "Name",
             HeaderText = "Nome",
             Name = "colName",
-            Width = 300
+            Width = 250
+        });
+
+        dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = "Setor",
+            HeaderText = "Setor",
+            Name = "colSetor",
+            Width = 100
         });
 
         dataGridView1.Columns.Add(new DataGridViewTextBoxColumn

@@ -21,15 +21,62 @@ public class DataRepository
 
     private DataRepository()
     {
-        var now = DateTime.Now;
+        // Seed inicial de congregações com setores
+        var congregacoesIniciais = new (string Nome, string Setor)[]
+        {
+            ("Sede", ""),
+            ("Bonsucesso", "SETOR E"),
+            ("Sub-sede", ""),
+            ("Barroso", "SETOR A"),
+            ("Rosario", "SETOR A"),
+            ("Corta Vento", "SETOR B"),
+            ("Beira Linha", "SETOR A"),
+            ("Quinta Lebrão", "SETOR C"),
+            ("Fonte Santa", "SETOR C"),
+            ("Fischer", "SETOR C"),
+            ("Pessegueiros", "SETOR C"),
+            ("Granja Florestal", "SETOR B"),
+            ("Paineiras", "SETOR B"),
+            ("Campanha", "SETOR E"),
+            ("Vila do Pião", "SETOR C"),
+            ("Vale Alpino", "SETOR E"),
+            ("Brejal", "SETOR C"),
+            ("Venda Nova", "SETOR D"),
+            ("Caleme", "SETOR B"),
+            ("Ponte do Porto", "SETOR D"),
+            ("Albuquerque", "SETOR D"),
+            ("Barra do Imbuí", "SETOR B"),
+            ("Vargem Grande", "SETOR D"),
+            ("Arrieiros", "SETOR B"),
+            ("Jardim Feo", "SETOR B"),
+            ("Granja Guarani", "SETOR A"),
+            ("Posse", "SETOR B"),
+            ("Jardim Meudom", "SETOR A"),
+            ("Canoas", "SETOR D"),
+            ("Rezende", "SETOR C"),
+            ("Cascata do Imbuí", "SETOR B"),
+            ("Coreia", "SETOR A"),
+            ("Parque São Luiz", "SETOR A"),
+            ("Vieira", "SETOR E"),
+            ("Imbiú", "SETOR D"),
+            ("Castelinho", "SETOR A"),
+            ("Santa Rosa", "SETOR E"),
+            ("Estrelinha", "SETOR E"),
+            ("Cruzeiro", "SETOR C"),
+            ("Três Córregos", "SETOR C"),
+            ("Vila do Hélio", "SETOR D"),
+            ("Campo Limpo", "SETOR C")
+        };
 
-        // Initialize with some sample data
-        Items.Add(new Item { Id = _nextItemId++, Name = "Cadeira", QuantityInStock = 50, DataCriacao = now, DataAlteracao = now });
-        Items.Add(new Item { Id = _nextItemId++, Name = "Mesa", QuantityInStock = 20, DataCriacao = now, DataAlteracao = now });
-        Items.Add(new Item { Id = _nextItemId++, Name = "Projetor", QuantityInStock = 5, DataCriacao = now, DataAlteracao = now });
-
-        Congregacoes.Add(new Congregacao { Id = _nextCongregacaoId++, Name = "Congregação Central", QuantityInStock = 0, DataCriacao = now, DataAlteracao = now });
-        Congregacoes.Add(new Congregacao { Id = _nextCongregacaoId++, Name = "Congregação Norte", QuantityInStock = 0, DataCriacao = now, DataAlteracao = now });
+        foreach (var (nome, setor) in congregacoesIniciais)
+        {
+            Congregacoes.Add(new Congregacao
+            {
+                Id = _nextCongregacaoId++,
+                Name = nome,
+                Setor = setor
+            });
+        }
     }
 
     public static DataRepository Instance => _instance ??= new DataRepository();

@@ -19,6 +19,8 @@ partial class CongregacaoDetailForm
     {
         this.lblName = new Label();
         this.txtName = new TextBox();
+        this.lblSetor = new Label();
+        this.txtSetor = new TextBox();
         this.btnSave = new Button();
         this.btnCancel = new Button();
         this.lblEmprestimosInfo = new Label();
@@ -39,8 +41,24 @@ partial class CongregacaoDetailForm
         // 
         this.txtName.Location = new Point(20, 40);
         this.txtName.Name = "txtName";
-        this.txtName.Size = new Size(560, 23);
+        this.txtName.Size = new Size(400, 23);
         this.txtName.TabIndex = 1;
+        // 
+        // lblSetor
+        // 
+        this.lblSetor.AutoSize = true;
+        this.lblSetor.Location = new Point(440, 20);
+        this.lblSetor.Name = "lblSetor";
+        this.lblSetor.Size = new Size(35, 15);
+        this.lblSetor.TabIndex = 2;
+        this.lblSetor.Text = "Setor:";
+        // 
+        // txtSetor
+        // 
+        this.txtSetor.Location = new Point(440, 40);
+        this.txtSetor.Name = "txtSetor";
+        this.txtSetor.Size = new Size(140, 23);
+        this.txtSetor.TabIndex = 3;
         // 
         // lblEmprestimosInfo
         // 
@@ -49,7 +67,7 @@ partial class CongregacaoDetailForm
         this.lblEmprestimosInfo.Location = new Point(20, 80);
         this.lblEmprestimosInfo.Name = "lblEmprestimosInfo";
         this.lblEmprestimosInfo.Size = new Size(300, 15);
-        this.lblEmprestimosInfo.TabIndex = 2;
+        this.lblEmprestimosInfo.TabIndex = 4;
         this.lblEmprestimosInfo.Text = "Empréstimos Pendentes: 0 empréstimo(s) - Totalizando 0 itens";
         this.lblEmprestimosInfo.Visible = false;
         // 
@@ -63,7 +81,7 @@ partial class CongregacaoDetailForm
         this.dgvEmprestimos.ReadOnly = true;
         this.dgvEmprestimos.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         this.dgvEmprestimos.Size = new Size(760, 250);
-        this.dgvEmprestimos.TabIndex = 3;
+        this.dgvEmprestimos.TabIndex = 5;
         this.dgvEmprestimos.Visible = false;
         // 
         // btnSave
@@ -71,7 +89,7 @@ partial class CongregacaoDetailForm
         this.btnSave.Location = new Point(20, 375);
         this.btnSave.Name = "btnSave";
         this.btnSave.Size = new Size(100, 30);
-        this.btnSave.TabIndex = 4;
+        this.btnSave.TabIndex = 6;
         this.btnSave.Text = "Salvar";
         this.btnSave.UseVisualStyleBackColor = true;
         this.btnSave.Click += new EventHandler(this.BtnSave_Click);
@@ -81,7 +99,7 @@ partial class CongregacaoDetailForm
         this.btnCancel.Location = new Point(126, 375);
         this.btnCancel.Name = "btnCancel";
         this.btnCancel.Size = new Size(100, 30);
-        this.btnCancel.TabIndex = 5;
+        this.btnCancel.TabIndex = 7;
         this.btnCancel.Text = "Cancelar";
         this.btnCancel.UseVisualStyleBackColor = true;
         this.btnCancel.Click += new EventHandler(this.BtnCancel_Click);
@@ -95,6 +113,8 @@ partial class CongregacaoDetailForm
         this.Controls.Add(this.btnSave);
         this.Controls.Add(this.dgvEmprestimos);
         this.Controls.Add(this.lblEmprestimosInfo);
+        this.Controls.Add(this.txtSetor);
+        this.Controls.Add(this.lblSetor);
         this.Controls.Add(this.txtName);
         this.Controls.Add(this.lblName);
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -112,6 +132,8 @@ partial class CongregacaoDetailForm
 
     private Label lblName;
     private TextBox txtName;
+    private Label lblSetor;
+    private TextBox txtSetor;
     private Label lblEmprestimosInfo;
     private DataGridView dgvEmprestimos;
     private Button btnSave;

@@ -15,54 +15,27 @@ public partial class CongregacaoDetailForm : Form
         InitializeComponent();
         _repository = DataRepository.Instance;
         _item = item;
-        _isEditing = item != null && !isCloning;
         _isCloning = isCloning;
+        _isEditing = item != null && !isCloning;
 
         if (_item != null)
         {
             txtName.Text = _item.Name;
+            txtSetor.Text = _item.Setor;
 
             if (_isEditing)
             {
-                // Modo edição - mostrar informações de empréstimos
-                lblEmprestimosInfo.Visible = true;
-                dgvEmprestimos.Visible = true;
+                // Configurar grid primeiro (sempre visível)
+                ConfigureEmprestimosGrid();
                 
-                // Carregar empréstimos da congregação
+                // Carregar empréstimos pendentes
                 LoadEmprestimos();
             }
-            else if (_isCloning)
-            {
-                // Modo clonagem
-                this.Text = "Clonar Congregação";
-                lblEmprestimosInfo.Visible = false;
-                dgvEmprestimos.Visible = false;
-            }
-        }
-        else
-        {
-            // Novo registro
-            lblEmprestimosInfo.Visible = false;
-            dgvEmprestimos.Visible = false;
         }
     }
 
-    private void LoadEmprestimos()
+    private void ConfigureEmprestimosGrid()
     {
-        if (_item == null) return;
-
-        // Carregar empréstimos em andamento da congregação
-        var emprestimos = _repository.Emprestimos
-            .Where(e => e.CongregacaoId == _item.Id && e.Status == StatusEmprestimo.EmAndamento)
-            .ToList();
-
-        // Calcular totais (apenas itens pendentes)
-        var totalEmprestimos = emprestimos.Count;
-        var totalItens = emprestimos.Sum(e => e.TotalPendente);
-
-        // Atualizar label
-        lblEmprestimosInfo.Text = $"Empréstimos Pendentes: {totalEmprestimos} empréstimo(s) - Totalizando {totalItens} itens";
-
         // Configurar grid
         dgvEmprestimos.AutoGenerateColumns = false;
         dgvEmprestimos.Columns.Clear();
@@ -121,33 +94,75 @@ public partial class CongregacaoDetailForm : Form
         };
         dgvEmprestimos.Columns.Add(btnReceberColumn);
 
-        // Preencher dados
-        dgvEmprestimos.DataSource = emprestimos;
-
-        // Preencher colunas calculadas
-        for (int i = 0; i < dgvEmprestimos.Rows.Count; i++)
-        {
-            var emprestimo = emprestimos[i];
-            
-            // Concatenar nomes dos bens
-            string bens;
-            if (emprestimo.Itens != null && emprestimo.Itens.Any())
-            {
-                bens = string.Join(", ", emprestimo.Itens.Select(ei => ei.ItemName).Distinct());
-            }
-            else
-            {
-                // Compatibilidade com dados antigos
-                bens = emprestimo.ItemName;
-            }
-            dgvEmprestimos.Rows[i].Cells["colBens"].Value = bens;
-            
-            // Total de itens pendentes
-            dgvEmprestimos.Rows[i].Cells["colQtd"].Value = emprestimo.TotalPendente;
-        }
-
         // Event handler para clique no botão
         dgvEmprestimos.CellClick += DgvEmprestimos_CellClick;
+        
+        // Event handler para preencher colunas calculadas após binding
+        dgvEmprestimos.DataBindingComplete += DgvEmprestimos_DataBindingComplete;
+        
+        // Grid sempre visível
+        dgvEmprestimos.Visible = true;
+    }
+
+    private void LoadEmprestimosData(List<Emprestimo> emprestimos)
+    {
+        // Preencher dados
+        dgvEmprestimos.DataSource = null;
+        dgvEmprestimos.DataSource = emprestimos;
+    }
+
+    private void DgvEmprestimos_DataBindingComplete(object? sender, DataGridViewBindingCompleteEventArgs e)
+    {
+        // Preencher colunas calculadas após binding
+        for (int i = 0; i < dgvEmprestimos.Rows.Count; i++)
+        {
+            if (dgvEmprestimos.Rows[i].DataBoundItem is Emprestimo emprestimo)
+            {
+                // Concatenar nomes dos bens
+                string bens;
+                if (emprestimo.Itens != null && emprestimo.Itens.Any())
+                {
+                    bens = string.Join(", ", emprestimo.Itens.Select(ei => ei.ItemName).Distinct());
+                }
+                else
+                {
+                    // Compatibilidade com dados antigos
+                    bens = emprestimo.ItemName;
+                }
+                dgvEmprestimos.Rows[i].Cells["colBens"].Value = bens;
+                
+                // Total de itens pendentes
+                dgvEmprestimos.Rows[i].Cells["colQtd"].Value = emprestimo.TotalPendente;
+            }
+        }
+    }
+
+    private void LoadEmprestimos()
+    {
+        if (_item == null) return;
+
+        // Carregar empréstimos em andamento da congregação
+        var emprestimos = _repository.Emprestimos
+            .Where(e => e.CongregacaoId == _item.Id && e.Status == StatusEmprestimo.EmAndamento)
+            .ToList();
+
+        // Calcular totais (apenas itens pendentes)
+        var totalEmprestimos = emprestimos.Count;
+        var totalItens = emprestimos.Sum(e => e.TotalPendente);
+
+        // Atualizar label (sempre visível)
+        if (totalEmprestimos > 0)
+        {
+            lblEmprestimosInfo.Text = $"Empréstimos Pendentes: {totalEmprestimos} empréstimo(s) - Totalizando {totalItens} itens pendentes";
+        }
+        else
+        {
+            lblEmprestimosInfo.Text = "Nenhum empréstimo pendente para esta congregação.";
+        }
+        lblEmprestimosInfo.Visible = true;
+
+        // Carregar dados no grid (mesmo que vazio)
+        LoadEmprestimosData(emprestimos);
     }
 
     private void DgvEmprestimos_CellClick(object? sender, DataGridViewCellEventArgs e)
@@ -174,21 +189,19 @@ public partial class CongregacaoDetailForm : Form
     {
         if (string.IsNullOrWhiteSpace(txtName.Text))
         {
-            MessageBox.Show("Por favor, informe o nome da congregação.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show("Por favor, preencha o nome.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
 
         if (_isEditing && _item != null)
         {
             _item.Name = txtName.Text;
-            _repository.UpdateCongregacao(_item);
+            _item.Setor = txtSetor.Text;
+            _item.DataAlteracao = DateTime.Now;
         }
         else
         {
-            var newItem = new Congregacao
-            {
-                Name = txtName.Text
-            };
+            var newItem = new Congregacao { Name = txtName.Text, Setor = txtSetor.Text };
             _repository.AddCongregacao(newItem);
         }
 

@@ -47,21 +47,23 @@ public partial class EmprestimoListForm : UserControl
             Width = 130
         });
 
-        dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+        // Coluna de Bens (concatenados) - não tem DataPropertyName pois será preenchida manualmente
+        var colBem = new DataGridViewTextBoxColumn
         {
-            DataPropertyName = "ItemName",
             HeaderText = "Bem",
             Name = "colItem",
-            Width = 110
-        });
+            Width = 200
+        };
+        dataGridView1.Columns.Add(colBem);
 
-        dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+        // Coluna de Quantidade (total de itens) - não tem DataPropertyName pois será preenchida manualmente
+        var colQtd = new DataGridViewTextBoxColumn
         {
-            DataPropertyName = "QuantityInStock",
             HeaderText = "Qtd",
             Name = "colQuantity",
             Width = 50
-        });
+        };
+        dataGridView1.Columns.Add(colQtd);
 
         dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
         {
@@ -99,6 +101,45 @@ public partial class EmprestimoListForm : UserControl
 
         // Event handler para clique no header
         dataGridView1.ColumnHeaderMouseClick += DataGridView1_ColumnHeaderMouseClick;
+        
+        // Event handler para preencher colunas calculadas
+        dataGridView1.DataBindingComplete += DataGridView1_DataBindingComplete;
+    }
+
+    private void DataGridView1_DataBindingComplete(object? sender, DataGridViewBindingCompleteEventArgs e)
+    {
+        // Preencher colunas calculadas após binding
+        for (int i = 0; i < dataGridView1.Rows.Count; i++)
+        {
+            if (dataGridView1.Rows[i].DataBoundItem is Emprestimo emprestimo)
+            {
+                // Concatenar nomes dos bens
+                string bens;
+                if (emprestimo.Itens != null && emprestimo.Itens.Any())
+                {
+                    bens = string.Join(", ", emprestimo.Itens.Select(ei => ei.ItemName).Distinct());
+                }
+                else
+                {
+                    // Compatibilidade com dados antigos
+                    bens = emprestimo.ItemName;
+                }
+                dataGridView1.Rows[i].Cells["colItem"].Value = bens;
+                
+                // Total de itens
+                int totalItens;
+                if (emprestimo.Itens != null && emprestimo.Itens.Any())
+                {
+                    totalItens = emprestimo.TotalItens;
+                }
+                else
+                {
+                    // Compatibilidade com dados antigos
+                    totalItens = emprestimo.QuantityInStock;
+                }
+                dataGridView1.Rows[i].Cells["colQuantity"].Value = totalItens;
+            }
+        }
     }
 
     private void DataGridView1_ColumnHeaderMouseClick(object? sender, DataGridViewCellMouseEventArgs e)
@@ -224,33 +265,86 @@ public partial class EmprestimoListForm : UserControl
 
     private void BtnDelete_Click(object sender, EventArgs e)
     {
-        if (dataGridView1.CurrentRow?.DataBoundItem is Emprestimo item)
+        if (dataGridView1.CurrentRow?.DataBoundItem is Emprestimo emprestimo)
         {
+            // Verificar se há recebimentos para este empréstimo
+            var recebimentos = _repository.RecebimentoEmprestimos
+                .Where(r => r.EmprestimoId == emprestimo.Id)
+                .ToList();
+
+            if (recebimentos.Any())
+            {
+                MessageBox.Show(
+                    $"Não é possível excluir este empréstimo porque já possui {recebimentos.Count} recebimento(s) registrado(s).\n\n" +
+                    $"Para excluir este empréstimo, primeiro exclua todos os recebimentos relacionados.",
+                    "Exclusão Não Permitida",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Construir mensagem detalhada com itens a repor
+            string mensagemItens;
+            int totalARepor = 0;
+            
+            if (emprestimo.Itens != null && emprestimo.Itens.Any())
+            {
+                // Múltiplos itens - calcular quantidades pendentes
+                var itensComPendencia = emprestimo.Itens
+                    .Where(ei => ei.QuantidadePendente > 0)
+                    .ToList();
+                
+                if (itensComPendencia.Any())
+                {
+                    var listaItens = itensComPendencia
+                        .Select(ei => $"  • {ei.ItemName}: {ei.QuantidadePendente} unidade(s)")
+                        .ToList();
+                    
+                    mensagemItens = "Itens a serem repostos no estoque:\n" + 
+                                   string.Join("\n", listaItens);
+                    totalARepor = itensComPendencia.Sum(ei => ei.QuantidadePendente);
+                }
+                else
+                {
+                    mensagemItens = "Todos os itens já foram recebidos de volta.";
+                }
+            }
+            else
+            {
+                // Compatibilidade com dados antigos (item único)
+                if (emprestimo.Status == StatusEmprestimo.EmAndamento)
+                {
+                    mensagemItens = $"Item a ser reposto no estoque:\n  • {emprestimo.ItemName}: {emprestimo.QuantityInStock} unidade(s)";
+                    totalARepor = emprestimo.QuantityInStock;
+                }
+                else
+                {
+                    mensagemItens = "Item já foi devolvido.";
+                }
+            }
+
+            var statusInfo = emprestimo.Status == StatusEmprestimo.EmAndamento
+                ? $"\n\nStatus: Em Andamento\nTotal a repor: {totalARepor} unidade(s)"
+                : $"\n\nStatus: {emprestimo.StatusDescricao}";
+
             var result = MessageBox.Show(
-                $"Tem certeza que deseja excluir o empréstimo para '{item.Name}'?\n\n" +
-                $"ATENÇÃO: O estoque de '{item.ItemName}' será reposto ({item.QuantityInStock} unidades).",
+                $"Tem certeza que deseja excluir o empréstimo para '{emprestimo.Name}'?\n\n" +
+                mensagemItens +
+                statusInfo,
                 "Confirmar Exclusão",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
             if (result == DialogResult.Yes)
             {
-                // Repor estoque antes de excluir (apenas se status Em Andamento)
-                if (item.Status == StatusEmprestimo.EmAndamento && item.ItemId.HasValue)
-                {
-                    var itemEstoque = _repository.Items.FirstOrDefault(i => i.Id == item.ItemId.Value);
-                    if (itemEstoque != null)
-                    {
-                        itemEstoque.QuantityInStock += item.QuantityInStock;
-                    }
-                }
-
-                _repository.Emprestimos.Remove(item);
+                // Usar método correto do repository que já trata tudo
+                _repository.RemoverEmprestimo(emprestimo);
+                
                 LoadData();
                 
                 MessageBox.Show(
                     "Empréstimo excluído com sucesso!" +
-                    (item.Status == StatusEmprestimo.EmAndamento ? "\nEstoque reposto." : ""),
+                    (totalARepor > 0 ? $"\nEstoque reposto: {totalARepor} unidade(s)" : ""),
                     "Sucesso",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
@@ -266,21 +360,33 @@ public partial class EmprestimoListForm : UserControl
     {
         if (dataGridView1.CurrentRow?.DataBoundItem is Emprestimo itemOriginal)
         {
+            // Carregar os itens do empréstimo original
+            var itensOriginais = _repository.EmprestimoItens
+                .Where(ei => ei.EmprestimoId == itemOriginal.Id)
+                .ToList();
+
+            // Criar cópia dos itens para o novo empréstimo
+            var itensClonados = itensOriginais.Select(ei => new EmprestimoItem
+            {
+                ItemId = ei.ItemId,
+                ItemName = ei.ItemName,
+                Quantidade = ei.Quantidade,
+                QuantidadeRecebida = 0 // Resetar recebimentos
+            }).ToList();
+
             // Criar novo empréstimo com dados clonados
             var novoEmprestimo = new Emprestimo
             {
                 Name = itemOriginal.Name,
                 Motivo = itemOriginal.Motivo,
-                QuantityInStock = itemOriginal.QuantityInStock,
-                ItemId = itemOriginal.ItemId,
-                ItemName = itemOriginal.ItemName,
                 CongregacaoId = itemOriginal.CongregacaoId,
                 CongregacaoName = itemOriginal.CongregacaoName,
                 DataEmprestimo = DateTime.Now,
-                Status = StatusEmprestimo.EmAndamento
+                Status = StatusEmprestimo.EmAndamento,
+                Itens = itensClonados // Atribuir itens clonados
             };
 
-            // Abrir formulário em modo criação com dados clonados
+            // Abrir formulário em modo clonagem com dados clonados
             var form = new EmprestimoDetailForm(novoEmprestimo, isCloning: true);
             if (form.ShowDialog() == DialogResult.OK)
             {

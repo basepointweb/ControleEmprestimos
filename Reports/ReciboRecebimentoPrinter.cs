@@ -7,22 +7,11 @@ public class ReciboRecebimentoPrinter
 {
     private RecebimentoEmprestimo _recebimento;
     private Emprestimo? _emprestimo;
-    private string _itemName = "";
 
     public ReciboRecebimentoPrinter(RecebimentoEmprestimo recebimento, Emprestimo? emprestimo = null)
     {
         _recebimento = recebimento;
         _emprestimo = emprestimo;
-        
-        // Extrair nome do item do Name se não tiver empréstimo
-        if (emprestimo == null && !string.IsNullOrEmpty(recebimento.Name))
-        {
-            _itemName = recebimento.Name.Replace("Recebimento - ", "");
-        }
-        else if (emprestimo != null)
-        {
-            _itemName = emprestimo.ItemName;
-        }
     }
 
     public void Print()
@@ -78,9 +67,11 @@ public class ReciboRecebimentoPrinter
         var headerFont = new Font("Arial", 10, FontStyle.Bold);
         var normalFont = new Font("Arial", 9, FontStyle.Regular);
         var smallFont = new Font("Arial", 8, FontStyle.Regular);
+        var warningFont = new Font("Arial", 9, FontStyle.Bold | FontStyle.Italic);
 
         // Título
-        graphics.DrawString("RECIBO DE RECEBIMENTO", titleFont, Brushes.Black, leftMargin, currentY);
+        var tituloRecebimento = _recebimento.RecebimentoParcial ? "RECIBO DE RECEBIMENTO PARCIAL" : "RECIBO DE RECEBIMENTO";
+        graphics.DrawString(tituloRecebimento, titleFont, Brushes.Black, leftMargin, currentY);
         currentY += 30;
 
         // Linha separadora
@@ -103,11 +94,27 @@ public class ReciboRecebimentoPrinter
         graphics.DrawString(_recebimento.NomeRecebedor, normalFont, Brushes.Black, leftMargin + 10, currentY);
         currentY += lineHeight + 10;
 
-        // Bem
-        graphics.DrawString("Bem Devolvido:", headerFont, Brushes.Black, leftMargin, currentY);
+        // Bens Devolvidos (itens recebidos neste recebimento)
+        graphics.DrawString("Bens Devolvidos:", headerFont, Brushes.Black, leftMargin, currentY);
         currentY += lineHeight;
-        graphics.DrawString($"{_itemName} - Quantidade: {_recebimento.QuantityInStock}", normalFont, Brushes.Black, leftMargin + 10, currentY);
-        currentY += lineHeight + 10;
+        
+        if (_recebimento.ItensRecebidos != null && _recebimento.ItensRecebidos.Any())
+        {
+            foreach (var item in _recebimento.ItensRecebidos)
+            {
+                graphics.DrawString($"• {item.ItemName} - Quantidade: {item.QuantidadeRecebida}", normalFont, Brushes.Black, leftMargin + 10, currentY);
+                currentY += lineHeight;
+            }
+        }
+        else
+        {
+            // Compatibilidade com dados antigos
+            var itemName = _recebimento.Name.Replace("Recebimento - ", "");
+            graphics.DrawString($"• {itemName} - Quantidade: {_recebimento.QuantityInStock}", normalFont, Brushes.Black, leftMargin + 10, currentY);
+            currentY += lineHeight;
+        }
+        
+        currentY += 5;
 
         // Congregação (se houver empréstimo)
         if (_emprestimo != null)
@@ -116,6 +123,40 @@ public class ReciboRecebimentoPrinter
             currentY += lineHeight;
             graphics.DrawString(_emprestimo.CongregacaoName, normalFont, Brushes.Black, leftMargin + 10, currentY);
             currentY += lineHeight + 10;
+        }
+
+        // Indicador de recebimento parcial com lista de itens pendentes
+        if (_recebimento.RecebimentoParcial && _emprestimo != null)
+        {
+            graphics.DrawString("? RECEBIMENTO PARCIAL - Ainda há itens pendentes de devolução", 
+                warningFont, 
+                Brushes.DarkOrange, 
+                leftMargin, 
+                currentY);
+            currentY += lineHeight + 5;
+
+            // Listar itens pendentes
+            var itensPendentes = _emprestimo.Itens
+                .Where(ei => ei.QuantidadePendente > 0)
+                .ToList();
+
+            if (itensPendentes.Any())
+            {
+                graphics.DrawString("Itens ainda pendentes:", headerFont, Brushes.DarkOrange, leftMargin, currentY);
+                currentY += lineHeight;
+
+                foreach (var itemPendente in itensPendentes)
+                {
+                    graphics.DrawString(
+                        $"• {itemPendente.ItemName} - Pendente: {itemPendente.QuantidadePendente} unidade(s)",
+                        normalFont,
+                        Brushes.DarkOrange,
+                        leftMargin + 10,
+                        currentY);
+                    currentY += lineHeight;
+                }
+                currentY += 5;
+            }
         }
 
         // Linha separadora

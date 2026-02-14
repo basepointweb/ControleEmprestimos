@@ -19,12 +19,11 @@ partial class CongregacaoDetailForm
     {
         this.lblName = new Label();
         this.txtName = new TextBox();
-        this.lblEmprestimos = new Label();
-        this.dataGridView1 = new DataGridView();
-        this.btnReceber = new Button();
         this.btnSave = new Button();
         this.btnCancel = new Button();
-        ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+        this.lblEmprestimosInfo = new Label();
+        this.dgvEmprestimos = new DataGridView();
+        ((System.ComponentModel.ISupportInitialize)(this.dgvEmprestimos)).BeginInit();
         this.SuspendLayout();
         // 
         // lblName
@@ -40,60 +39,50 @@ partial class CongregacaoDetailForm
         // 
         this.txtName.Location = new Point(20, 40);
         this.txtName.Name = "txtName";
-        this.txtName.Size = new Size(760, 23);
+        this.txtName.Size = new Size(560, 23);
         this.txtName.TabIndex = 1;
         // 
-        // lblEmprestimos
+        // lblEmprestimosInfo
         // 
-        this.lblEmprestimos.AutoSize = true;
-        this.lblEmprestimos.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-        this.lblEmprestimos.Location = new Point(20, 80);
-        this.lblEmprestimos.Name = "lblEmprestimos";
-        this.lblEmprestimos.Size = new Size(199, 19);
-        this.lblEmprestimos.TabIndex = 2;
-        this.lblEmprestimos.Text = "Itens Emprestados (Em Andamento):";
+        this.lblEmprestimosInfo.AutoSize = true;
+        this.lblEmprestimosInfo.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+        this.lblEmprestimosInfo.Location = new Point(20, 80);
+        this.lblEmprestimosInfo.Name = "lblEmprestimosInfo";
+        this.lblEmprestimosInfo.Size = new Size(300, 15);
+        this.lblEmprestimosInfo.TabIndex = 2;
+        this.lblEmprestimosInfo.Text = "Empréstimos Pendentes: 0 empréstimo(s) - Totalizando 0 itens";
+        this.lblEmprestimosInfo.Visible = false;
         // 
-        // dataGridView1
+        // dgvEmprestimos
         // 
-        this.dataGridView1.AllowUserToAddRows = false;
-        this.dataGridView1.AllowUserToDeleteRows = false;
-        this.dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        this.dataGridView1.Location = new Point(20, 110);
-        this.dataGridView1.Name = "dataGridView1";
-        this.dataGridView1.ReadOnly = true;
-        this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-        this.dataGridView1.Size = new Size(760, 250);
-        this.dataGridView1.TabIndex = 3;
-        // 
-        // btnReceber
-        // 
-        this.btnReceber.BackColor = Color.FromArgb(40, 167, 69);
-        this.btnReceber.ForeColor = Color.White;
-        this.btnReceber.Location = new Point(20, 370);
-        this.btnReceber.Name = "btnReceber";
-        this.btnReceber.Size = new Size(120, 30);
-        this.btnReceber.TabIndex = 4;
-        this.btnReceber.Text = "Receber de Volta";
-        this.btnReceber.UseVisualStyleBackColor = false;
-        this.btnReceber.Click += new EventHandler(this.BtnReceber_Click);
+        this.dgvEmprestimos.AllowUserToAddRows = false;
+        this.dgvEmprestimos.AllowUserToDeleteRows = false;
+        this.dgvEmprestimos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+        this.dgvEmprestimos.Location = new Point(20, 105);
+        this.dgvEmprestimos.Name = "dgvEmprestimos";
+        this.dgvEmprestimos.ReadOnly = true;
+        this.dgvEmprestimos.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        this.dgvEmprestimos.Size = new Size(760, 250);
+        this.dgvEmprestimos.TabIndex = 3;
+        this.dgvEmprestimos.Visible = false;
         // 
         // btnSave
         // 
-        this.btnSave.Location = new Point(560, 370);
+        this.btnSave.Location = new Point(20, 375);
         this.btnSave.Name = "btnSave";
         this.btnSave.Size = new Size(100, 30);
-        this.btnSave.TabIndex = 5;
+        this.btnSave.TabIndex = 4;
         this.btnSave.Text = "Salvar";
         this.btnSave.UseVisualStyleBackColor = true;
         this.btnSave.Click += new EventHandler(this.BtnSave_Click);
         // 
         // btnCancel
         // 
-        this.btnCancel.Location = new Point(666, 370);
+        this.btnCancel.Location = new Point(126, 375);
         this.btnCancel.Name = "btnCancel";
         this.btnCancel.Size = new Size(100, 30);
-        this.btnCancel.TabIndex = 6;
-        this.btnCancel.Text = "Fechar";
+        this.btnCancel.TabIndex = 5;
+        this.btnCancel.Text = "Cancelar";
         this.btnCancel.UseVisualStyleBackColor = true;
         this.btnCancel.Click += new EventHandler(this.BtnCancel_Click);
         // 
@@ -104,9 +93,8 @@ partial class CongregacaoDetailForm
         this.ClientSize = new Size(800, 420);
         this.Controls.Add(this.btnCancel);
         this.Controls.Add(this.btnSave);
-        this.Controls.Add(this.btnReceber);
-        this.Controls.Add(this.dataGridView1);
-        this.Controls.Add(this.lblEmprestimos);
+        this.Controls.Add(this.dgvEmprestimos);
+        this.Controls.Add(this.lblEmprestimosInfo);
         this.Controls.Add(this.txtName);
         this.Controls.Add(this.lblName);
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -114,8 +102,8 @@ partial class CongregacaoDetailForm
         this.MinimizeBox = false;
         this.Name = "CongregacaoDetailForm";
         this.StartPosition = FormStartPosition.CenterScreen;
-        this.Text = "Detalhes da Congregacao";
-        ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+        this.Text = "Detalhes da Congregação";
+        ((System.ComponentModel.ISupportInitialize)(this.dgvEmprestimos)).EndInit();
         this.ResumeLayout(false);
         this.PerformLayout();
     }
@@ -124,9 +112,8 @@ partial class CongregacaoDetailForm
 
     private Label lblName;
     private TextBox txtName;
-    private Label lblEmprestimos;
-    private DataGridView dataGridView1;
-    private Button btnReceber;
+    private Label lblEmprestimosInfo;
+    private DataGridView dgvEmprestimos;
     private Button btnSave;
     private Button btnCancel;
 }

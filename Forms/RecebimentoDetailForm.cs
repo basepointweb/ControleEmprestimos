@@ -10,6 +10,19 @@ public partial class RecebimentoDetailForm : Form
     private bool _isEditing;
     private DataRepository _repository;
     private Emprestimo? _emprestimoPreSelecionado;
+    private List<ItemRecebimentoView> _itensParaReceber = new();
+
+    // Classe auxiliar para o grid
+    private class ItemRecebimentoView
+    {
+        public int EmprestimoItemId { get; set; }
+        public int ItemId { get; set; }
+        public string ItemName { get; set; } = string.Empty;
+        public int QuantidadeEmprestada { get; set; }
+        public int QuantidadeRecebida { get; set; }
+        public int QuantidadePendente { get; set; }
+        public int QuantidadeAReceber { get; set; }
+    }
 
     public RecebimentoDetailForm(RecebimentoEmprestimo? item = null)
     {
@@ -19,6 +32,7 @@ public partial class RecebimentoDetailForm : Form
         _isEditing = item != null;
 
         LoadEmprestimos();
+        ConfigureDataGridView();
 
         if (_isEditing && _item != null)
         {
@@ -28,34 +42,29 @@ public partial class RecebimentoDetailForm : Form
                 var emprestimo = _repository.Emprestimos.FirstOrDefault(e => e.Id == _item.EmprestimoId.Value);
                 if (emprestimo != null)
                 {
-                    // Adicionar o empréstimo à lista para visualização (mesmo que não esteja Em Andamento)
-                    var emprestimoDisplay = new
-                    {
-                        Emprestimo = emprestimo,
-                        DisplayText = $"{emprestimo.CongregacaoName} - {emprestimo.ItemName} - {emprestimo.Name}"
-                    };
+                    txtDataEmprestimo.Text = emprestimo.DataEmprestimo.ToString("dd/MM/yyyy");
+                    txtQuemPegou.Text = emprestimo.Name;
                     
-                    var currentList = cmbEmprestimo.DataSource as List<dynamic>;
-                    if (currentList != null && !currentList.Any(x => x.Emprestimo.Id == emprestimo.Id))
+                    // Carregar itens recebidos
+                    _itensParaReceber = _item.ItensRecebidos.Select(ir =>
                     {
-                        currentList.Add(emprestimoDisplay);
-                        cmbEmprestimo.DataSource = null;
-                        cmbEmprestimo.DataSource = currentList;
-                        cmbEmprestimo.DisplayMember = "DisplayText";
-                        cmbEmprestimo.ValueMember = "Emprestimo";
-                    }
+                        var emprestimoItem = _repository.EmprestimoItens.FirstOrDefault(ei => ei.Id == ir.EmprestimoItemId);
+                        return new ItemRecebimentoView
+                        {
+                            EmprestimoItemId = ir.EmprestimoItemId,
+                            ItemId = ir.ItemId,
+                            ItemName = ir.ItemName,
+                            QuantidadeEmprestada = emprestimoItem?.Quantidade ?? 0,
+                            QuantidadeRecebida = emprestimoItem?.QuantidadeRecebida ?? 0,
+                            QuantidadePendente = 0,
+                            QuantidadeAReceber = ir.QuantidadeRecebida
+                        };
+                    }).ToList();
                     
-                    cmbEmprestimo.SelectedItem = emprestimoDisplay;
+                    RefreshItensGrid();
                 }
             }
             
-            if (_item.DataEmprestimo.HasValue)
-            {
-                txtDataEmprestimo.Text = _item.DataEmprestimo.Value.ToString("dd/MM/yyyy");
-            }
-            
-            txtQuemPegou.Text = _item.NomeRecebedor;
-            numQuantity.Value = _item.QuantityInStock;
             dtpDataRecebimento.Value = _item.DataRecebimento;
             txtQuemRecebeu.Text = _item.NomeQuemRecebeu;
             
@@ -63,6 +72,11 @@ public partial class RecebimentoDetailForm : Form
             cmbEmprestimo.Enabled = false;
             dtpDataRecebimento.Enabled = false;
             txtQuemRecebeu.ReadOnly = true;
+            dgvItensReceber.ReadOnly = true;
+            if (dgvItensReceber.Columns.Contains("colQuantidadeAReceber"))
+            {
+                dgvItensReceber.Columns["colQuantidadeAReceber"].ReadOnly = true;
+            }
             btnSave.Visible = false;
             
             // Mostrar botão de impressão
@@ -82,19 +96,180 @@ public partial class RecebimentoDetailForm : Form
         
         if (_emprestimoPreSelecionado != null)
         {
-            // Encontrar o item no ComboBox e selecionar
+            // Carregar itens disponíveis para receber ANTES de selecionar no combo
+            LoadItensDoEmprestimo(_emprestimoPreSelecionado);
+            
+            // Preencher campos
+            txtDataEmprestimo.Text = _emprestimoPreSelecionado.DataEmprestimo.ToString("dd/MM/yyyy");
+            txtQuemPegou.Text = _emprestimoPreSelecionado.Name;
+            dtpDataRecebimento.Value = DateTime.Now;
+            
+            // Selecionar no ComboBox DEPOIS de carregar itens
             var dataSource = cmbEmprestimo.DataSource as List<dynamic>;
             if (dataSource != null)
             {
-                var item = dataSource.FirstOrDefault(x => x.Emprestimo.Id == _emprestimoPreSelecionado.Id);
+                var item = dataSource.FirstOrDefault(x => 
+                {
+                    var emp = x.Emprestimo as Emprestimo;
+                    return emp != null && emp.Id == _emprestimoPreSelecionado.Id;
+                });
+                
                 if (item != null)
                 {
+                    // Temporariamente remover o event handler para evitar recarregar itens
+                    cmbEmprestimo.SelectedIndexChanged -= CmbEmprestimo_SelectedIndexChanged;
                     cmbEmprestimo.SelectedItem = item;
+                    cmbEmprestimo.SelectedIndexChanged += CmbEmprestimo_SelectedIndexChanged;
                 }
             }
-            
-            dtpDataRecebimento.Value = DateTime.Now;
         }
+    }
+
+    private void ConfigureDataGridView()
+    {
+        dgvItensReceber.AutoGenerateColumns = false;
+        dgvItensReceber.Columns.Clear();
+
+        dgvItensReceber.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = "ItemName",
+            HeaderText = "Bem",
+            Name = "colItemName",
+            Width = 200,
+            ReadOnly = true
+        });
+
+        dgvItensReceber.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = "QuantidadeEmprestada",
+            HeaderText = "Emprestada",
+            Name = "colEmprestada",
+            Width = 90,
+            ReadOnly = true
+        });
+
+        dgvItensReceber.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = "QuantidadeRecebida",
+            HeaderText = "Recebida",
+            Name = "colRecebida",
+            Width = 80,
+            ReadOnly = true
+        });
+
+        dgvItensReceber.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = "QuantidadePendente",
+            HeaderText = "Pendente",
+            Name = "colPendente",
+            Width = 80,
+            ReadOnly = true
+        });
+
+        dgvItensReceber.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = "QuantidadeAReceber",
+            HeaderText = "A Receber",
+            Name = "colQuantidadeAReceber",
+            Width = 90
+        });
+
+        dgvItensReceber.CellEndEdit += DgvItensReceber_CellEndEdit;
+        dgvItensReceber.CellValidating += DgvItensReceber_CellValidating;
+        dgvItensReceber.DataError += DgvItensReceber_DataError;
+    }
+
+    private void DgvItensReceber_DataError(object? sender, DataGridViewDataErrorEventArgs e)
+    {
+        // Prevenir erro ao digitar valor inválido
+        if (dgvItensReceber.Columns[e.ColumnIndex].Name == "colQuantidadeAReceber")
+        {
+            MessageBox.Show(
+                "Por favor, digite um valor numérico válido.",
+                "Valor Inválido",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            e.ThrowException = false;
+            e.Cancel = true;
+        }
+    }
+
+    private void DgvItensReceber_CellValidating(object? sender, DataGridViewCellValidatingEventArgs e)
+    {
+        if (dgvItensReceber.Columns[e.ColumnIndex].Name == "colQuantidadeAReceber")
+        {
+            var item = dgvItensReceber.Rows[e.RowIndex].DataBoundItem as ItemRecebimentoView;
+            if (item != null)
+            {
+                // Tentar converter o valor
+                if (int.TryParse(e.FormattedValue?.ToString(), out int quantidade))
+                {
+                    if (quantidade < 0)
+                    {
+                        MessageBox.Show(
+                            "A quantidade não pode ser negativa.",
+                            "Validação",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                        e.Cancel = true;
+                    }
+                    else if (quantidade > item.QuantidadePendente)
+                    {
+                        MessageBox.Show(
+                            $"Quantidade não pode ser maior que a pendente ({item.QuantidadePendente}).",
+                            "Validação",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                        e.Cancel = true;
+                    }
+                }
+                else if (!string.IsNullOrWhiteSpace(e.FormattedValue?.ToString()))
+                {
+                    MessageBox.Show(
+                        "Por favor, digite um valor numérico válido.",
+                        "Valor Inválido",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    e.Cancel = true;
+                }
+            }
+        }
+    }
+
+    private void DgvItensReceber_CellEndEdit(object? sender, DataGridViewCellEventArgs e)
+    {
+        if (dgvItensReceber.Columns[e.ColumnIndex].Name == "colQuantidadeAReceber")
+        {
+            var item = dgvItensReceber.Rows[e.RowIndex].DataBoundItem as ItemRecebimentoView;
+            if (item != null)
+            {
+                // Validar quantidade
+                if (item.QuantidadeAReceber < 0)
+                {
+                    item.QuantidadeAReceber = 0;
+                    dgvItensReceber.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = 0;
+                }
+                else if (item.QuantidadeAReceber > item.QuantidadePendente)
+                {
+                    MessageBox.Show(
+                        $"Quantidade a receber não pode ser maior que a pendente ({item.QuantidadePendente}).",
+                        "Validação",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    item.QuantidadeAReceber = item.QuantidadePendente;
+                    dgvItensReceber.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = item.QuantidadePendente;
+                }
+                
+                // Atualizar total sem recriar o datasource
+                UpdateTotalAReceber();
+            }
+        }
+    }
+
+    private void UpdateTotalAReceber()
+    {
+        var totalAReceber = _itensParaReceber.Sum(i => i.QuantidadeAReceber);
+        lblTotalRecebido.Text = $"Total a Receber: {totalAReceber} itens";
     }
 
     private void LoadEmprestimos()
@@ -105,7 +280,7 @@ public partial class RecebimentoDetailForm : Form
             .Select(e => new
             {
                 Emprestimo = e,
-                DisplayText = $"{e.CongregacaoName} - {e.ItemName} - {e.Name}"
+                DisplayText = $"{e.CongregacaoName} - {e.Name} - Total Itens: {e.TotalItens} - Pendente: {e.TotalPendente}"
             })
             .ToList<dynamic>();
 
@@ -128,7 +303,7 @@ public partial class RecebimentoDetailForm : Form
                 {
                     txtDataEmprestimo.Text = emprestimo.DataEmprestimo.ToString("dd/MM/yyyy");
                     txtQuemPegou.Text = emprestimo.Name;
-                    numQuantity.Value = emprestimo.QuantityInStock;
+                    LoadItensDoEmprestimo(emprestimo);
                     return;
                 }
             }
@@ -136,12 +311,50 @@ public partial class RecebimentoDetailForm : Form
         
         txtDataEmprestimo.Clear();
         txtQuemPegou.Clear();
-        numQuantity.Value = 0;
+        _itensParaReceber.Clear();
+        RefreshItensGrid();
+    }
+
+    private void LoadItensDoEmprestimo(Emprestimo emprestimo)
+    {
+        _itensParaReceber = _repository.EmprestimoItens
+            .Where(ei => ei.EmprestimoId == emprestimo.Id && ei.QuantidadePendente > 0)
+            .Select(ei => new ItemRecebimentoView
+            {
+                EmprestimoItemId = ei.Id,
+                ItemId = ei.ItemId,
+                ItemName = ei.ItemName,
+                QuantidadeEmprestada = ei.Quantidade,
+                QuantidadeRecebida = ei.QuantidadeRecebida,
+                QuantidadePendente = ei.QuantidadePendente,
+                QuantidadeAReceber = ei.QuantidadePendente // Por padrão, receber tudo pendente
+            })
+            .ToList();
+        
+        RefreshItensGrid();
+    }
+
+    private void RefreshItensGrid()
+    {
+        // Suspender layout para evitar flickering
+        dgvItensReceber.SuspendLayout();
+        
+        try
+        {
+            dgvItensReceber.DataSource = null;
+            dgvItensReceber.DataSource = _itensParaReceber;
+            
+            UpdateTotalAReceber();
+        }
+        finally
+        {
+            dgvItensReceber.ResumeLayout();
+        }
     }
 
     private void BtnSave_Click(object sender, EventArgs e)
     {
-        if (cmbEmprestimo.SelectedItem == null)
+        if (cmbEmprestimo.SelectedItem == null && _emprestimoPreSelecionado == null)
         {
             MessageBox.Show("Por favor, selecione um empréstimo.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
@@ -153,9 +366,20 @@ public partial class RecebimentoDetailForm : Form
             return;
         }
 
-        var selectedItem = cmbEmprestimo.SelectedItem;
-        var emprestimoProperty = selectedItem.GetType().GetProperty("Emprestimo");
-        var emprestimoSelecionado = emprestimoProperty?.GetValue(selectedItem) as Emprestimo;
+        var itensComQuantidade = _itensParaReceber.Where(i => i.QuantidadeAReceber > 0).ToList();
+        if (!itensComQuantidade.Any())
+        {
+            MessageBox.Show("Por favor, informe a quantidade a receber de pelo menos um item.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        Emprestimo? emprestimoSelecionado = _emprestimoPreSelecionado;
+        if (emprestimoSelecionado == null && cmbEmprestimo.SelectedItem != null)
+        {
+            var selectedItem = cmbEmprestimo.SelectedItem;
+            var emprestimoProperty = selectedItem.GetType().GetProperty("Emprestimo");
+            emprestimoSelecionado = emprestimoProperty?.GetValue(selectedItem) as Emprestimo;
+        }
 
         if (emprestimoSelecionado == null)
         {
@@ -163,42 +387,44 @@ public partial class RecebimentoDetailForm : Form
             return;
         }
 
-        if (_isEditing && _item != null)
+        // Criar novo recebimento
+        var itemNames = string.Join(", ", itensComQuantidade.Select(i => i.ItemName).Distinct());
+        var newItem = new RecebimentoEmprestimo
         {
-            // Não deve acontecer porque desabilitamos a edição
-            MessageBox.Show("Não é possível editar um recebimento já registrado.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            return;
-        }
-        else
+            Name = $"Recebimento - {itemNames}",
+            NomeRecebedor = emprestimoSelecionado.Name,
+            NomeQuemRecebeu = txtQuemRecebeu.Text,
+            EmprestimoId = emprestimoSelecionado.Id,
+            DataEmprestimo = emprestimoSelecionado.DataEmprestimo,
+            DataRecebimento = dtpDataRecebimento.Value,
+            RecebimentoParcial = itensComQuantidade.Sum(i => i.QuantidadeAReceber) < emprestimoSelecionado.TotalPendente,
+            ItensRecebidos = itensComQuantidade.Select(i => new RecebimentoItem
+            {
+                EmprestimoItemId = i.EmprestimoItemId,
+                ItemId = i.ItemId,
+                ItemName = i.ItemName,
+                QuantidadeRecebida = i.QuantidadeAReceber
+            }).ToList()
+        };
+        
+        _repository.AddRecebimento(newItem);
+
+        // Atualizar status do empréstimo
+        _repository.DevolverEmprestimo(emprestimoSelecionado);
+
+        // Perguntar se deseja imprimir recibo
+        var resultado = MessageBox.Show(
+            $"Recebimento registrado com sucesso!\n\n" +
+            $"Status do empréstimo: {(emprestimoSelecionado.TodosItensRecebidos ? "Devolvido (completo)" : "Em Andamento (parcial)")}\n\n" +
+            $"Deseja imprimir o recibo?",
+            "Sucesso",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question);
+
+        if (resultado == DialogResult.Yes)
         {
-            // Criar novo recebimento
-            var newItem = new RecebimentoEmprestimo
-            {
-                Name = $"Recebimento - {emprestimoSelecionado.ItemName}",
-                NomeRecebedor = emprestimoSelecionado.Name,
-                NomeQuemRecebeu = txtQuemRecebeu.Text,
-                QuantityInStock = emprestimoSelecionado.QuantityInStock,
-                EmprestimoId = emprestimoSelecionado.Id,
-                DataEmprestimo = emprestimoSelecionado.DataEmprestimo,
-                DataRecebimento = dtpDataRecebimento.Value
-            };
-            _repository.AddRecebimento(newItem);
-
-            // Devolver empréstimo (repõe estoque e atualiza status)
-            _repository.DevolverEmprestimo(emprestimoSelecionado);
-
-            // Perguntar se deseja imprimir recibo
-            var resultado = MessageBox.Show(
-                "Recebimento registrado com sucesso!\n\nDeseja imprimir o recibo?",
-                "Sucesso",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
-
-            if (resultado == DialogResult.Yes)
-            {
-                var printer = new ReciboRecebimentoPrinter(newItem, emprestimoSelecionado);
-                printer.PrintPreview();
-            }
+            var printer = new ReciboRecebimentoPrinter(newItem, emprestimoSelecionado);
+            printer.PrintPreview();
         }
 
         this.DialogResult = DialogResult.OK;

@@ -21,6 +21,7 @@ partial class CongregacaoListForm
         this.btnCreate = new Button();
         this.btnEdit = new Button();
         this.btnDelete = new Button();
+        this.btnClonar = new Button();
         this.panel1 = new Panel();
         this.titlePanel = new Panel();
         this.titleLabel = new Label();
@@ -71,6 +72,7 @@ partial class CongregacaoListForm
         this.panel1.Controls.Add(this.btnCreate);
         this.panel1.Controls.Add(this.btnEdit);
         this.panel1.Controls.Add(this.btnDelete);
+        this.panel1.Controls.Add(this.btnClonar);
         this.panel1.Dock = DockStyle.Bottom;
         this.panel1.Location = new Point(0, 400);
         this.panel1.Name = "panel1";
@@ -107,6 +109,16 @@ partial class CongregacaoListForm
         this.btnDelete.UseVisualStyleBackColor = true;
         this.btnDelete.Click += new EventHandler(this.BtnDelete_Click);
         // 
+        // btnClonar
+        // 
+        this.btnClonar.Location = new Point(330, 10);
+        this.btnClonar.Name = "btnClonar";
+        this.btnClonar.Size = new Size(100, 30);
+        this.btnClonar.TabIndex = 3;
+        this.btnClonar.Text = "Clonar";
+        this.btnClonar.UseVisualStyleBackColor = true;
+        this.btnClonar.Click += new EventHandler(this.BtnClonar_Click);
+        // 
         // CongregacaoListForm
         // 
         this.AutoScaleDimensions = new SizeF(7F, 15F);
@@ -128,6 +140,7 @@ partial class CongregacaoListForm
     private Button btnCreate;
     private Button btnEdit;
     private Button btnDelete;
+    private Button btnClonar;
     private Panel panel1;
     private Panel titlePanel;
     private Label titleLabel;

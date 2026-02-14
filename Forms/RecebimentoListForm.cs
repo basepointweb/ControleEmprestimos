@@ -49,17 +49,33 @@ public partial class RecebimentoListForm : UserControl
         dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
         {
             DataPropertyName = "NomeRecebedor",
-            HeaderText = "Recebedor",
+            HeaderText = "Quem Pegou",
             Name = "colRecebedor",
-            Width = 150
+            Width = 130
         });
 
         dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
         {
-            DataPropertyName = "QuantityInStock",
-            HeaderText = "Quantidade",
+            DataPropertyName = "NomeQuemRecebeu",
+            HeaderText = "Quem Recebeu",
+            Name = "colQuemRecebeu",
+            Width = 130
+        });
+
+        dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = "TotalItensRecebidos",
+            HeaderText = "Qtd Itens",
             Name = "colQuantity",
-            Width = 90
+            Width = 80
+        });
+
+        dataGridView1.Columns.Add(new DataGridViewCheckBoxColumn
+        {
+            DataPropertyName = "RecebimentoParcial",
+            HeaderText = "Parcial",
+            Name = "colParcial",
+            Width = 60
         });
 
         dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
@@ -67,7 +83,7 @@ public partial class RecebimentoListForm : UserControl
             DataPropertyName = "DataEmprestimo",
             HeaderText = "Data Empréstimo",
             Name = "colDataEmprestimo",
-            Width = 120,
+            Width = 110,
             DefaultCellStyle = new DataGridViewCellStyle { Format = "dd/MM/yyyy" }
         });
 
@@ -76,7 +92,7 @@ public partial class RecebimentoListForm : UserControl
             DataPropertyName = "DataRecebimento",
             HeaderText = "Data Recebimento",
             Name = "colDataRecebimento",
-            Width = 130,
+            Width = 120,
             DefaultCellStyle = new DataGridViewCellStyle { Format = "dd/MM/yyyy HH:mm" }
         });
 
@@ -211,41 +227,22 @@ public partial class RecebimentoListForm : UserControl
         if (dataGridView1.CurrentRow?.DataBoundItem is RecebimentoEmprestimo item)
         {
             var result = MessageBox.Show(
-                $"Tem certeza que deseja excluir '{item.Name}'?\n\n" +
-                $"ATENÇÃO: O empréstimo voltará ao status 'Em Andamento' e o estoque será reduzido novamente.",
+                $"Tem certeza que deseja excluir este recebimento?\n\n" +
+                $"ATENÇÃO: As quantidades serão revertidas e o empréstimo voltará ao status anterior.",
                 "Confirmar Exclusão",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning);
 
             if (result == DialogResult.Yes)
             {
-                // Reverter empréstimo e estoque
-                if (item.EmprestimoId.HasValue)
-                {
-                    var emprestimo = _repository.Emprestimos.FirstOrDefault(e => e.Id == item.EmprestimoId.Value);
-                    if (emprestimo != null)
-                    {
-                        // Voltar status do empréstimo para Em Andamento
-                        emprestimo.Status = StatusEmprestimo.EmAndamento;
-
-                        // Reduzir estoque novamente
-                        if (emprestimo.ItemId.HasValue)
-                        {
-                            var itemEstoque = _repository.Items.FirstOrDefault(i => i.Id == emprestimo.ItemId.Value);
-                            if (itemEstoque != null)
-                            {
-                                itemEstoque.QuantityInStock -= emprestimo.QuantityInStock;
-                            }
-                        }
-                    }
-                }
-
-                _repository.RecebimentoEmprestimos.Remove(item);
+                // Usar método do repository que já reverte tudo corretamente
+                _repository.RemoverRecebimento(item);
+                
                 LoadData();
 
                 MessageBox.Show(
                     "Recebimento excluído com sucesso!\n" +
-                    "O empréstimo voltou ao status 'Em Andamento' e o estoque foi reduzido.",
+                    "As quantidades foram revertidas e o empréstimo foi atualizado.",
                     "Sucesso",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);

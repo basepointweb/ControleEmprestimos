@@ -143,11 +143,12 @@ public partial class CongregacaoListForm : UserControl
     private void LoadData()
     {
         // Calcular total de itens emprestados para cada congregação
+        // Considerar apenas itens pendentes (não recebidos)
         foreach (var congregacao in _repository.Congregacoes)
         {
             congregacao.TotalItensEmprestados = _repository.Emprestimos
                 .Where(e => e.CongregacaoId == congregacao.Id && e.Status == StatusEmprestimo.EmAndamento)
-                .Sum(e => e.QuantityInStock);
+                .Sum(e => e.TotalPendente); // ✅ Usar TotalPendente em vez de TotalItens
         }
 
         _allCongregacoes = _repository.Congregacoes.ToList();
@@ -195,6 +196,29 @@ public partial class CongregacaoListForm : UserControl
         else
         {
             MessageBox.Show("Por favor, selecione um item para excluir.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    private void BtnClonar_Click(object sender, EventArgs e)
+    {
+        if (dataGridView1.CurrentRow?.DataBoundItem is Congregacao itemOriginal)
+        {
+            // Criar nova congregação com dados clonados
+            var novaCongregacao = new Congregacao
+            {
+                Name = itemOriginal.Name
+            };
+
+            // Abrir formulário em modo criação com dados clonados
+            var form = new CongregacaoDetailForm(novaCongregacao, isCloning: true);
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                LoadData();
+            }
+        }
+        else
+        {
+            MessageBox.Show("Por favor, selecione uma congregação para clonar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 }

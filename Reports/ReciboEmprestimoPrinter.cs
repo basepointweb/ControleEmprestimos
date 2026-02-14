@@ -6,7 +6,6 @@ namespace ControleEmprestimos.Reports;
 public class ReciboEmprestimoPrinter
 {
     private Emprestimo _emprestimo;
-    private int _pageHeight = 0;
 
     public ReciboEmprestimoPrinter(Emprestimo emprestimo)
     {
@@ -94,11 +93,26 @@ public class ReciboEmprestimoPrinter
         graphics.DrawString(_emprestimo.CongregacaoName, normalFont, Brushes.Black, leftMargin + 10, currentY);
         currentY += lineHeight + 10;
 
-        // Bem
-        graphics.DrawString("Bem Emprestado:", headerFont, Brushes.Black, leftMargin, currentY);
+        // Bens Emprestados (múltiplos itens)
+        graphics.DrawString("Bens Emprestados:", headerFont, Brushes.Black, leftMargin, currentY);
         currentY += lineHeight;
-        graphics.DrawString($"{_emprestimo.ItemName} - Quantidade: {_emprestimo.QuantityInStock}", normalFont, Brushes.Black, leftMargin + 10, currentY);
-        currentY += lineHeight + 10;
+        
+        if (_emprestimo.Itens != null && _emprestimo.Itens.Any())
+        {
+            foreach (var item in _emprestimo.Itens)
+            {
+                graphics.DrawString($"• {item.ItemName} - Quantidade: {item.Quantidade}", normalFont, Brushes.Black, leftMargin + 10, currentY);
+                currentY += lineHeight;
+            }
+        }
+        else
+        {
+            // Compatibilidade com dados antigos
+            graphics.DrawString($"• {_emprestimo.ItemName} - Quantidade: {_emprestimo.QuantityInStock}", normalFont, Brushes.Black, leftMargin + 10, currentY);
+            currentY += lineHeight;
+        }
+        
+        currentY += 5;
 
         // Motivo
         graphics.DrawString("Motivo:", headerFont, Brushes.Black, leftMargin, currentY);

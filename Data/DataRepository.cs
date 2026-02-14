@@ -9,11 +9,15 @@ public class DataRepository
     private int _nextEmprestimoId = 1;
     private int _nextRecebimentoId = 1;
     private int _nextCongregacaoId = 1;
+    private int _nextEmprestimoItemId = 1;
+    private int _nextRecebimentoItemId = 1;
 
     public List<Item> Items { get; } = new();
     public List<Emprestimo> Emprestimos { get; } = new();
     public List<RecebimentoEmprestimo> RecebimentoEmprestimos { get; } = new();
     public List<Congregacao> Congregacoes { get; } = new();
+    public List<EmprestimoItem> EmprestimoItens { get; } = new();
+    public List<RecebimentoItem> RecebimentoItens { get; } = new();
 
     private DataRepository()
     {
@@ -26,55 +30,6 @@ public class DataRepository
 
         Congregacoes.Add(new Congregacao { Id = _nextCongregacaoId++, Name = "Congregação Central", QuantityInStock = 0, DataCriacao = now, DataAlteracao = now });
         Congregacoes.Add(new Congregacao { Id = _nextCongregacaoId++, Name = "Congregação Norte", QuantityInStock = 0, DataCriacao = now, DataAlteracao = now });
-
-        // Empréstimo Em Andamento
-        Emprestimos.Add(new Emprestimo
-        {
-            Id = _nextEmprestimoId++,
-            Name = "João Silva", // Recebedor
-            Motivo = "Evento especial de fim de ano",
-            QuantityInStock = 2,
-            CongregacaoId = 1,
-            CongregacaoName = "Congregação Central",
-            ItemId = 3,
-            ItemName = "Projetor",
-            DataEmprestimo = DateTime.Now.AddDays(-5),
-            Status = StatusEmprestimo.EmAndamento,
-            DataCriacao = now.AddDays(-5),
-            DataAlteracao = now.AddDays(-5)
-        });
-
-        // Empréstimo Devolvido
-        var emprestimoDevolvido = new Emprestimo
-        {
-            Id = _nextEmprestimoId++,
-            Name = "Maria Santos",
-            Motivo = "Reunião administrativa",
-            QuantityInStock = 10,
-            CongregacaoId = 2,
-            CongregacaoName = "Congregação Norte",
-            ItemId = 1,
-            ItemName = "Cadeira",
-            DataEmprestimo = DateTime.Now.AddDays(-10),
-            Status = StatusEmprestimo.Devolvido,
-            DataCriacao = now.AddDays(-10),
-            DataAlteracao = now.AddDays(-3)
-        };
-        Emprestimos.Add(emprestimoDevolvido);
-
-        // Recebimento correspondente
-        RecebimentoEmprestimos.Add(new RecebimentoEmprestimo
-        {
-            Id = _nextRecebimentoId++,
-            Name = "Recebimento - Cadeira",
-            NomeRecebedor = "Maria Santos",
-            QuantityInStock = 10,
-            EmprestimoId = emprestimoDevolvido.Id,
-            DataEmprestimo = emprestimoDevolvido.DataEmprestimo,
-            DataRecebimento = DateTime.Now.AddDays(-3),
-            DataCriacao = now.AddDays(-3),
-            DataAlteracao = now.AddDays(-3)
-        });
     }
 
     public static DataRepository Instance => _instance ??= new DataRepository();
@@ -111,17 +66,25 @@ public class DataRepository
             }
         }
 
-        // Set item name if ID is provided
-        if (emprestimo.ItemId.HasValue)
+        // Processar itens do empréstimo
+        foreach (var emprestimoItem in emprestimo.Itens)
         {
-            var item = Items.FirstOrDefault(i => i.Id == emprestimo.ItemId.Value);
+            emprestimoItem.Id = _nextEmprestimoItemId++;
+            emprestimoItem.EmprestimoId = emprestimo.Id;
+            emprestimoItem.DataCriacao = now;
+            emprestimoItem.DataAlteracao = now;
+
+            // Obter nome do item
+            var item = Items.FirstOrDefault(i => i.Id == emprestimoItem.ItemId);
             if (item != null)
             {
-                emprestimo.ItemName = item.Name;
+                emprestimoItem.ItemName = item.Name;
 
-                // Reduzir estoque ao criar empréstimo
-                item.QuantityInStock -= emprestimo.QuantityInStock;
+                // Reduzir estoque
+                item.QuantityInStock -= emprestimoItem.Quantidade;
             }
+
+            EmprestimoItens.Add(emprestimoItem);
         }
 
         // Ensure DataEmprestimo is set
@@ -147,17 +110,16 @@ public class DataRepository
 
     public void DevolverEmprestimo(Emprestimo emprestimo)
     {
-        // Repor estoque ao devolver empréstimo
-        if (emprestimo.ItemId.HasValue)
+        // Verificar se todos os itens foram recebidos
+        if (emprestimo.TodosItensRecebidos)
         {
-            var item = Items.FirstOrDefault(i => i.Id == emprestimo.ItemId.Value);
-            if (item != null)
-            {
-                item.QuantityInStock += emprestimo.QuantityInStock;
-            }
+            emprestimo.Status = StatusEmprestimo.Devolvido;
+        }
+        else
+        {
+            emprestimo.Status = StatusEmprestimo.EmAndamento;
         }
 
-        emprestimo.Status = StatusEmprestimo.Devolvido;
         emprestimo.DataAlteracao = DateTime.Now;
     }
 
@@ -167,6 +129,35 @@ public class DataRepository
         var now = DateTime.Now;
         recebimento.DataCriacao = now;
         recebimento.DataAlteracao = now;
+
+        // Processar itens recebidos
+        foreach (var recebimentoItem in recebimento.ItensRecebidos)
+        {
+            recebimentoItem.Id = _nextRecebimentoItemId++;
+            recebimentoItem.RecebimentoEmprestimoId = recebimento.Id;
+            recebimentoItem.DataCriacao = now;
+            recebimentoItem.DataAlteracao = now;
+
+            // Atualizar quantidade recebida no EmprestimoItem
+            var emprestimoItem = EmprestimoItens.FirstOrDefault(ei => ei.Id == recebimentoItem.EmprestimoItemId);
+            if (emprestimoItem != null)
+            {
+                emprestimoItem.QuantidadeRecebida += recebimentoItem.QuantidadeRecebida;
+                emprestimoItem.DataAlteracao = now;
+
+                // Obter nome do item
+                var item = Items.FirstOrDefault(i => i.Id == emprestimoItem.ItemId);
+                if (item != null)
+                {
+                    recebimentoItem.ItemName = item.Name;
+
+                    // Repor estoque
+                    item.QuantityInStock += recebimentoItem.QuantidadeRecebida;
+                }
+            }
+
+            RecebimentoItens.Add(recebimentoItem);
+        }
 
         // Ensure DataRecebimento is set
         if (recebimento.DataRecebimento == default)
@@ -191,5 +182,66 @@ public class DataRepository
     public void UpdateCongregacao(Congregacao congregacao)
     {
         congregacao.DataAlteracao = DateTime.Now;
+    }
+
+    public void RemoverEmprestimo(Emprestimo emprestimo)
+    {
+        // Repor estoque de todos os itens não recebidos
+        foreach (var emprestimoItem in emprestimo.Itens)
+        {
+            var quantidadePendente = emprestimoItem.QuantidadePendente;
+            if (quantidadePendente > 0)
+            {
+                var item = Items.FirstOrDefault(i => i.Id == emprestimoItem.ItemId);
+                if (item != null)
+                {
+                    item.QuantityInStock += quantidadePendente;
+                }
+            }
+
+            // Remover EmprestimoItem
+            EmprestimoItens.Remove(emprestimoItem);
+        }
+
+        // Remover empréstimo
+        Emprestimos.Remove(emprestimo);
+    }
+
+    public void RemoverRecebimento(RecebimentoEmprestimo recebimento)
+    {
+        if (recebimento.EmprestimoId.HasValue)
+        {
+            var emprestimo = Emprestimos.FirstOrDefault(e => e.Id == recebimento.EmprestimoId.Value);
+            if (emprestimo != null)
+            {
+                // Reverter quantidades recebidas e estoque
+                foreach (var recebimentoItem in recebimento.ItensRecebidos)
+                {
+                    var emprestimoItem = EmprestimoItens.FirstOrDefault(ei => ei.Id == recebimentoItem.EmprestimoItemId);
+                    if (emprestimoItem != null)
+                    {
+                        // Reverter quantidade recebida
+                        emprestimoItem.QuantidadeRecebida -= recebimentoItem.QuantidadeRecebida;
+                        emprestimoItem.DataAlteracao = DateTime.Now;
+                    }
+
+                    // Reduzir estoque novamente
+                    var item = Items.FirstOrDefault(i => i.Id == recebimentoItem.ItemId);
+                    if (item != null)
+                    {
+                        item.QuantityInStock -= recebimentoItem.QuantidadeRecebida;
+                    }
+
+                    // Remover RecebimentoItem
+                    RecebimentoItens.Remove(recebimentoItem);
+                }
+
+                // Atualizar status do empréstimo
+                emprestimo.Status = emprestimo.TodosItensRecebidos ? StatusEmprestimo.Devolvido : StatusEmprestimo.EmAndamento;
+            }
+        }
+
+        // Remover recebimento
+        RecebimentoEmprestimos.Remove(recebimento);
     }
 }

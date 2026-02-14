@@ -151,11 +151,17 @@ public partial class ItemListForm : UserControl
     private void LoadData()
     {
         // Calcular total emprestado para cada item (apenas empréstimos Em Andamento)
+        // Usar EmprestimoItens para calcular corretamente com múltiplos itens
         foreach (var item in _repository.Items)
         {
-            item.TotalEmprestado = _repository.Emprestimos
-                .Where(e => e.ItemId == item.Id && e.Status == StatusEmprestimo.EmAndamento)
-                .Sum(e => e.QuantityInStock);
+            item.TotalEmprestado = _repository.EmprestimoItens
+                .Where(ei => ei.ItemId == item.Id)
+                .Join(_repository.Emprestimos,
+                    ei => ei.EmprestimoId,
+                    e => e.Id,
+                    (ei, e) => new { EmprestimoItem = ei, Emprestimo = e })
+                .Where(x => x.Emprestimo.Status == StatusEmprestimo.EmAndamento)
+                .Sum(x => x.EmprestimoItem.QuantidadePendente); // Soma apenas o que ainda está emprestado
         }
 
         _allItems = _repository.Items.ToList();

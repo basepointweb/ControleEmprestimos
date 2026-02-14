@@ -1,5 +1,6 @@
 using ControleEmprestimos.Data;
 using ControleEmprestimos.Models;
+using ControleEmprestimos.Reports;
 
 namespace ControleEmprestimos.Forms;
 
@@ -235,6 +236,23 @@ public partial class RecebimentoListForm : UserControl
         else
         {
             MessageBox.Show("Por favor, selecione um item para visualizar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    private void BtnImprimirRecibo_Click(object sender, EventArgs e)
+    {
+        if (dataGridView1.CurrentRow?.DataBoundItem is RecebimentoEmprestimo recebimento)
+        {
+            var emprestimo = recebimento.EmprestimoId.HasValue 
+                ? _repository.Emprestimos.FirstOrDefault(e => e.Id == recebimento.EmprestimoId.Value)
+                : null;
+
+            var printer = new ReciboRecebimentoPrinter(recebimento, emprestimo);
+            printer.PrintPreview();
+        }
+        else
+        {
+            MessageBox.Show("Por favor, selecione um recebimento para imprimir o recibo.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 

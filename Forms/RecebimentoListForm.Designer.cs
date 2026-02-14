@@ -21,6 +21,7 @@ partial class RecebimentoListForm
         this.btnCreate = new Button();
         this.btnEdit = new Button();
         this.btnDelete = new Button();
+        this.btnImprimirRecibo = new Button();
         this.panel1 = new Panel();
         this.titlePanel = new Panel();
         this.titleLabel = new Label();
@@ -134,6 +135,7 @@ partial class RecebimentoListForm
         this.panel1.Controls.Add(this.btnCreate);
         this.panel1.Controls.Add(this.btnEdit);
         this.panel1.Controls.Add(this.btnDelete);
+        this.panel1.Controls.Add(this.btnImprimirRecibo);
         this.panel1.Dock = DockStyle.Bottom;
         this.panel1.Location = new Point(0, 400);
         this.panel1.Name = "panel1";
@@ -170,6 +172,18 @@ partial class RecebimentoListForm
         this.btnDelete.UseVisualStyleBackColor = true;
         this.btnDelete.Click += new EventHandler(this.BtnDelete_Click);
         // 
+        // btnImprimirRecibo
+        // 
+        this.btnImprimirRecibo.BackColor = Color.FromArgb(23, 162, 184);
+        this.btnImprimirRecibo.ForeColor = Color.White;
+        this.btnImprimirRecibo.Location = new Point(330, 10);
+        this.btnImprimirRecibo.Name = "btnImprimirRecibo";
+        this.btnImprimirRecibo.Size = new Size(120, 30);
+        this.btnImprimirRecibo.TabIndex = 3;
+        this.btnImprimirRecibo.Text = "Imprimir Recibo";
+        this.btnImprimirRecibo.UseVisualStyleBackColor = false;
+        this.btnImprimirRecibo.Click += new EventHandler(this.BtnImprimirRecibo_Click);
+        // 
         // RecebimentoListForm
         // 
         this.AutoScaleDimensions = new SizeF(7F, 15F);
@@ -192,6 +206,7 @@ partial class RecebimentoListForm
     private Button btnCreate;
     private Button btnEdit;
     private Button btnDelete;
+    private Button btnImprimirRecibo;
     private Panel panel1;
     private Panel titlePanel;
     private Label titleLabel;

@@ -199,11 +199,52 @@ public partial class ItemListForm : UserControl
     {
         if (dataGridView1.CurrentRow?.DataBoundItem is Item item)
         {
-            var result = MessageBox.Show($"Tem certeza que deseja excluir '{item.Name}'?", "Confirmar Exclusão", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            // Verificar se o bem possui empréstimos (independente do status)
+            var emprestimosComItem = _repository.EmprestimoItens
+                .Where(ei => ei.ItemId == item.Id)
+                .ToList();
+
+            if (emprestimosComItem.Any())
+            {
+                // Buscar informações dos empréstimos para exibição
+                var emprestimosInfo = emprestimosComItem
+                    .Select(ei => _repository.Emprestimos.FirstOrDefault(e => e.Id == ei.EmprestimoId))
+                    .Where(e => e != null)
+                    .GroupBy(e => e!.Status)
+                    .Select(g => $"{g.Count()} empréstimo(s) {g.Key switch 
+                    {
+                        StatusEmprestimo.EmAndamento => "Em Andamento",
+                        StatusEmprestimo.Devolvido => "Devolvido(s)",
+                        _ => g.Key.ToString()
+                    }}")
+                    .ToList();
+
+                MessageBox.Show(
+                    $"Não é possível excluir o bem '{item.Name}' porque ele possui empréstimos registrados:\n\n" +
+                    string.Join("\n", emprestimosInfo) + "\n\n" +
+                    "Para excluir este bem, primeiro exclua todos os empréstimos relacionados a ele.",
+                    "Exclusão Não Permitida",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show(
+                $"Tem certeza que deseja excluir '{item.Name}'?", 
+                "Confirmar Exclusão", 
+                MessageBoxButtons.YesNo, 
+                MessageBoxIcon.Question);
+                
             if (result == DialogResult.Yes)
             {
                 _repository.Items.Remove(item);
                 LoadData();
+                
+                MessageBox.Show(
+                    "Bem excluído com sucesso!",
+                    "Sucesso",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
             }
         }
         else

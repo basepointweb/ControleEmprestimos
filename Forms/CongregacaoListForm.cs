@@ -194,11 +194,50 @@ public partial class CongregacaoListForm : UserControl
     {
         if (dataGridView1.CurrentRow?.DataBoundItem is Congregacao item)
         {
-            var result = MessageBox.Show($"Tem certeza que deseja excluir '{item.Name}'?", "Confirmar Exclusão", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            // Verificar se há empréstimos para esta congregação (independente do status)
+            var emprestimos = _repository.Emprestimos
+                .Where(e => e.CongregacaoId == item.Id)
+                .ToList();
+
+            if (emprestimos.Any())
+            {
+                // Agrupar por status para exibir informações detalhadas
+                var emprestimosInfo = emprestimos
+                    .GroupBy(e => e.Status)
+                    .Select(g => $"{g.Count()} empréstimo(s) {g.Key switch 
+                    {
+                        StatusEmprestimo.EmAndamento => "Em Andamento",
+                        StatusEmprestimo.Devolvido => "Devolvido(s)",
+                        _ => g.Key.ToString()
+                    }}")
+                    .ToList();
+
+                MessageBox.Show(
+                    $"Não é possível excluir a congregação '{item.Name}' porque ela possui empréstimos registrados:\n\n" +
+                    string.Join("\n", emprestimosInfo) + "\n\n" +
+                    "Para excluir esta congregação, primeiro exclua todos os empréstimos relacionados a ela.",
+                    "Exclusão Não Permitida",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show(
+                $"Tem certeza que deseja excluir '{item.Name}'?", 
+                "Confirmar Exclusão", 
+                MessageBoxButtons.YesNo, 
+                MessageBoxIcon.Question);
+                
             if (result == DialogResult.Yes)
             {
                 _repository.Congregacoes.Remove(item);
                 LoadData();
+                
+                MessageBox.Show(
+                    "Congregação excluída com sucesso!",
+                    "Sucesso",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
             }
         }
         else

@@ -24,6 +24,7 @@ partial class EmprestimoListForm
         this.btnClonar = new Button();
         this.btnReceberDeVolta = new Button();
         this.btnImprimirRecibo = new Button();
+        this.btnRelatorio = new Button();
         this.panel1 = new Panel();
         this.titlePanel = new Panel();
         this.titleLabel = new Label();
@@ -140,6 +141,7 @@ partial class EmprestimoListForm
         this.panel1.Controls.Add(this.btnClonar);
         this.panel1.Controls.Add(this.btnImprimirRecibo);
         this.panel1.Controls.Add(this.btnReceberDeVolta);
+        this.panel1.Controls.Add(this.btnRelatorio);
         this.panel1.Dock = DockStyle.Bottom;
         this.panel1.Location = new Point(0, 400);
         this.panel1.Name = "panel1";
@@ -212,6 +214,18 @@ partial class EmprestimoListForm
         this.btnReceberDeVolta.UseVisualStyleBackColor = false;
         this.btnReceberDeVolta.Click += new EventHandler(this.BtnReceberDeVolta_Click);
         // 
+        // btnRelatorio
+        // 
+        this.btnRelatorio.BackColor = Color.FromArgb(220, 53, 69);
+        this.btnRelatorio.ForeColor = Color.White;
+        this.btnRelatorio.Location = new Point(688, 10);
+        this.btnRelatorio.Name = "btnRelatorio";
+        this.btnRelatorio.Size = new Size(100, 30);
+        this.btnRelatorio.TabIndex = 6;
+        this.btnRelatorio.Text = "Relatório";
+        this.btnRelatorio.UseVisualStyleBackColor = false;
+        this.btnRelatorio.Click += new EventHandler(this.BtnRelatorio_Click);
+        // 
         // EmprestimoListForm
         // 
         this.AutoScaleDimensions = new SizeF(7F, 15F);
@@ -237,6 +251,7 @@ partial class EmprestimoListForm
     private Button btnClonar;
     private Button btnImprimirRecibo;
     private Button btnReceberDeVolta;
+    private Button btnRelatorio;
     private Panel panel1;
     private Panel titlePanel;
     private Label titleLabel;

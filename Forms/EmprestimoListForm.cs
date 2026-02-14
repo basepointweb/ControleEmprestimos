@@ -476,4 +476,10 @@ public partial class EmprestimoListForm : UserControl
             MessageBox.Show("Por favor, selecione um empréstimo para receber de volta.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
+
+    private void BtnRelatorio_Click(object sender, EventArgs e)
+    {
+        var form = new RelatorioEmprestimosFilterForm();
+        form.ShowDialog();
+    }
 }

@@ -288,6 +288,12 @@ public partial class RecebimentoListForm : UserControl
         }
     }
 
+    private void BtnRelatorio_Click(object sender, EventArgs e)
+    {
+        var form = new RelatorioRecebimentosFilterForm();
+        form.ShowDialog();
+    }
+
     private void BtnFiltrar_Click(object sender, EventArgs e)
     {
         // Validar datas

@@ -3,7 +3,7 @@ using ControleEmprestimos.Models;
 
 namespace ControleEmprestimos.Forms;
 
-public partial class CongregacaoListForm : Form
+public partial class CongregacaoListForm : UserControl
 {
     private DataRepository _repository;
 
@@ -11,11 +11,58 @@ public partial class CongregacaoListForm : Form
     {
         InitializeComponent();
         _repository = DataRepository.Instance;
-        LoadData();
+        ConfigureDataGridView();
+    }
+
+    protected override void OnVisibleChanged(EventArgs e)
+    {
+        base.OnVisibleChanged(e);
+        if (Visible)
+        {
+            LoadData();
+        }
+    }
+
+    private void ConfigureDataGridView()
+    {
+        dataGridView1.AutoGenerateColumns = false;
+        dataGridView1.Columns.Clear();
+
+        dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = "Id",
+            HeaderText = "ID",
+            Name = "colId",
+            Width = 50
+        });
+
+        dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = "Name",
+            HeaderText = "Nome",
+            Name = "colName",
+            Width = 300
+        });
+
+        dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = "TotalItensEmprestados",
+            HeaderText = "Total de Itens Emprestados",
+            Name = "colTotalEmprestados",
+            Width = 180
+        });
     }
 
     private void LoadData()
     {
+        // Calcular total de itens emprestados para cada congregação
+        foreach (var congregacao in _repository.Congregacoes)
+        {
+            congregacao.TotalItensEmprestados = _repository.Emprestimos
+                .Where(e => e.CongregacaoId == congregacao.Id)
+                .Sum(e => e.QuantityInStock);
+        }
+
         dataGridView1.DataSource = null;
         dataGridView1.DataSource = _repository.Congregacoes;
     }

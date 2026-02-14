@@ -13,7 +13,7 @@ partial class RecebimentoListForm
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+    #region Component Designer generated code
 
     private void InitializeComponent()
     {
@@ -22,9 +22,36 @@ partial class RecebimentoListForm
         this.btnEdit = new Button();
         this.btnDelete = new Button();
         this.panel1 = new Panel();
+        this.titlePanel = new Panel();
+        this.titleLabel = new Label();
         ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
         this.panel1.SuspendLayout();
+        this.titlePanel.SuspendLayout();
         this.SuspendLayout();
+        // 
+        // titlePanel
+        // 
+        this.titlePanel.BackColor = Color.FromArgb(0, 120, 215);
+        this.titlePanel.Controls.Add(this.titleLabel);
+        this.titlePanel.Dock = DockStyle.Top;
+        this.titlePanel.Location = new Point(0, 0);
+        this.titlePanel.Name = "titlePanel";
+        this.titlePanel.Size = new Size(800, 50);
+        this.titlePanel.TabIndex = 2;
+        // 
+        // titleLabel
+        // 
+        this.titleLabel.AutoSize = false;
+        this.titleLabel.Dock = DockStyle.Fill;
+        this.titleLabel.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+        this.titleLabel.ForeColor = Color.White;
+        this.titleLabel.Location = new Point(0, 0);
+        this.titleLabel.Name = "titleLabel";
+        this.titleLabel.Size = new Size(800, 50);
+        this.titleLabel.TabIndex = 0;
+        this.titleLabel.Text = "Recebimento de Emprestimo";
+        this.titleLabel.TextAlign = ContentAlignment.MiddleLeft;
+        this.titleLabel.Padding = new Padding(20, 0, 0, 0);
         // 
         // dataGridView1
         // 
@@ -32,11 +59,11 @@ partial class RecebimentoListForm
         this.dataGridView1.AllowUserToDeleteRows = false;
         this.dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
         this.dataGridView1.Dock = DockStyle.Fill;
-        this.dataGridView1.Location = new Point(0, 0);
+        this.dataGridView1.Location = new Point(0, 50);
         this.dataGridView1.Name = "dataGridView1";
         this.dataGridView1.ReadOnly = true;
         this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-        this.dataGridView1.Size = new Size(800, 400);
+        this.dataGridView1.Size = new Size(800, 350);
         this.dataGridView1.TabIndex = 0;
         // 
         // panel1
@@ -84,14 +111,14 @@ partial class RecebimentoListForm
         // 
         this.AutoScaleDimensions = new SizeF(7F, 15F);
         this.AutoScaleMode = AutoScaleMode.Font;
-        this.ClientSize = new Size(800, 450);
         this.Controls.Add(this.dataGridView1);
         this.Controls.Add(this.panel1);
+        this.Controls.Add(this.titlePanel);
         this.Name = "RecebimentoListForm";
-        this.StartPosition = FormStartPosition.CenterScreen;
-        this.Text = "Recebimento de Emprestimo";
+        this.Size = new Size(800, 450);
         ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
         this.panel1.ResumeLayout(false);
+        this.titlePanel.ResumeLayout(false);
         this.ResumeLayout(false);
     }
 
@@ -102,4 +129,6 @@ partial class RecebimentoListForm
     private Button btnEdit;
     private Button btnDelete;
     private Panel panel1;
+    private Panel titlePanel;
+    private Label titleLabel;
 }

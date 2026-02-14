@@ -13,7 +13,7 @@ partial class EmprestimoListForm
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+    #region Component Designer generated code
 
     private void InitializeComponent()
     {
@@ -21,10 +21,38 @@ partial class EmprestimoListForm
         this.btnCreate = new Button();
         this.btnEdit = new Button();
         this.btnDelete = new Button();
+        this.btnReceberDeVolta = new Button();
         this.panel1 = new Panel();
+        this.titlePanel = new Panel();
+        this.titleLabel = new Label();
         ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
         this.panel1.SuspendLayout();
+        this.titlePanel.SuspendLayout();
         this.SuspendLayout();
+        // 
+        // titlePanel
+        // 
+        this.titlePanel.BackColor = Color.FromArgb(0, 120, 215);
+        this.titlePanel.Controls.Add(this.titleLabel);
+        this.titlePanel.Dock = DockStyle.Top;
+        this.titlePanel.Location = new Point(0, 0);
+        this.titlePanel.Name = "titlePanel";
+        this.titlePanel.Size = new Size(800, 50);
+        this.titlePanel.TabIndex = 2;
+        // 
+        // titleLabel
+        // 
+        this.titleLabel.AutoSize = false;
+        this.titleLabel.Dock = DockStyle.Fill;
+        this.titleLabel.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+        this.titleLabel.ForeColor = Color.White;
+        this.titleLabel.Location = new Point(0, 0);
+        this.titleLabel.Name = "titleLabel";
+        this.titleLabel.Size = new Size(800, 50);
+        this.titleLabel.TabIndex = 0;
+        this.titleLabel.Text = "Emprestimo";
+        this.titleLabel.TextAlign = ContentAlignment.MiddleLeft;
+        this.titleLabel.Padding = new Padding(20, 0, 0, 0);
         // 
         // dataGridView1
         // 
@@ -32,11 +60,11 @@ partial class EmprestimoListForm
         this.dataGridView1.AllowUserToDeleteRows = false;
         this.dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
         this.dataGridView1.Dock = DockStyle.Fill;
-        this.dataGridView1.Location = new Point(0, 0);
+        this.dataGridView1.Location = new Point(0, 50);
         this.dataGridView1.Name = "dataGridView1";
         this.dataGridView1.ReadOnly = true;
         this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-        this.dataGridView1.Size = new Size(800, 400);
+        this.dataGridView1.Size = new Size(800, 350);
         this.dataGridView1.TabIndex = 0;
         // 
         // panel1
@@ -44,6 +72,7 @@ partial class EmprestimoListForm
         this.panel1.Controls.Add(this.btnCreate);
         this.panel1.Controls.Add(this.btnEdit);
         this.panel1.Controls.Add(this.btnDelete);
+        this.panel1.Controls.Add(this.btnReceberDeVolta);
         this.panel1.Dock = DockStyle.Bottom;
         this.panel1.Location = new Point(0, 400);
         this.panel1.Name = "panel1";
@@ -80,18 +109,30 @@ partial class EmprestimoListForm
         this.btnDelete.UseVisualStyleBackColor = true;
         this.btnDelete.Click += new EventHandler(this.BtnDelete_Click);
         // 
+        // btnReceberDeVolta
+        // 
+        this.btnReceberDeVolta.BackColor = Color.FromArgb(40, 167, 69);
+        this.btnReceberDeVolta.ForeColor = Color.White;
+        this.btnReceberDeVolta.Location = new Point(330, 10);
+        this.btnReceberDeVolta.Name = "btnReceberDeVolta";
+        this.btnReceberDeVolta.Size = new Size(120, 30);
+        this.btnReceberDeVolta.TabIndex = 3;
+        this.btnReceberDeVolta.Text = "Receber de Volta";
+        this.btnReceberDeVolta.UseVisualStyleBackColor = false;
+        this.btnReceberDeVolta.Click += new EventHandler(this.BtnReceberDeVolta_Click);
+        // 
         // EmprestimoListForm
         // 
         this.AutoScaleDimensions = new SizeF(7F, 15F);
         this.AutoScaleMode = AutoScaleMode.Font;
-        this.ClientSize = new Size(800, 450);
         this.Controls.Add(this.dataGridView1);
         this.Controls.Add(this.panel1);
+        this.Controls.Add(this.titlePanel);
         this.Name = "EmprestimoListForm";
-        this.StartPosition = FormStartPosition.CenterScreen;
-        this.Text = "Emprestimo";
+        this.Size = new Size(800, 450);
         ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
         this.panel1.ResumeLayout(false);
+        this.titlePanel.ResumeLayout(false);
         this.ResumeLayout(false);
     }
 
@@ -101,5 +142,8 @@ partial class EmprestimoListForm
     private Button btnCreate;
     private Button btnEdit;
     private Button btnDelete;
+    private Button btnReceberDeVolta;
     private Panel panel1;
+    private Panel titlePanel;
+    private Label titleLabel;
 }

@@ -4,5 +4,9 @@ public class RecebimentoEmprestimo
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
+    public string NomeRecebedor { get; set; } = string.Empty;
     public int QuantityInStock { get; set; }
+    public int? EmprestimoId { get; set; }
+    public DateTime? DataEmprestimo { get; set; }
+    public DateTime DataRecebimento { get; set; } = DateTime.Now;
 }

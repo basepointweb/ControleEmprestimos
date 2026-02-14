@@ -19,11 +19,12 @@ partial class CongregacaoDetailForm
     {
         this.lblName = new Label();
         this.txtName = new TextBox();
-        this.lblQuantity = new Label();
-        this.numQuantity = new NumericUpDown();
+        this.lblEmprestimos = new Label();
+        this.dataGridView1 = new DataGridView();
+        this.btnReceber = new Button();
         this.btnSave = new Button();
         this.btnCancel = new Button();
-        ((System.ComponentModel.ISupportInitialize)(this.numQuantity)).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
         this.SuspendLayout();
         // 
         // lblName
@@ -39,43 +40,60 @@ partial class CongregacaoDetailForm
         // 
         this.txtName.Location = new Point(20, 40);
         this.txtName.Name = "txtName";
-        this.txtName.Size = new Size(360, 23);
+        this.txtName.Size = new Size(760, 23);
         this.txtName.TabIndex = 1;
         // 
-        // lblQuantity
+        // lblEmprestimos
         // 
-        this.lblQuantity.AutoSize = true;
-        this.lblQuantity.Location = new Point(20, 80);
-        this.lblQuantity.Name = "lblQuantity";
-        this.lblQuantity.Size = new Size(121, 15);
-        this.lblQuantity.TabIndex = 2;
-        this.lblQuantity.Text = "Quantidade em Estoque:";
+        this.lblEmprestimos.AutoSize = true;
+        this.lblEmprestimos.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+        this.lblEmprestimos.Location = new Point(20, 80);
+        this.lblEmprestimos.Name = "lblEmprestimos";
+        this.lblEmprestimos.Size = new Size(199, 19);
+        this.lblEmprestimos.TabIndex = 2;
+        this.lblEmprestimos.Text = "Itens Emprestados (Em Andamento):";
         // 
-        // numQuantity
+        // dataGridView1
         // 
-        this.numQuantity.Location = new Point(20, 100);
-        this.numQuantity.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-        this.numQuantity.Name = "numQuantity";
-        this.numQuantity.Size = new Size(120, 23);
-        this.numQuantity.TabIndex = 3;
+        this.dataGridView1.AllowUserToAddRows = false;
+        this.dataGridView1.AllowUserToDeleteRows = false;
+        this.dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+        this.dataGridView1.Location = new Point(20, 110);
+        this.dataGridView1.Name = "dataGridView1";
+        this.dataGridView1.ReadOnly = true;
+        this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        this.dataGridView1.Size = new Size(760, 250);
+        this.dataGridView1.TabIndex = 3;
+        // 
+        // btnReceber
+        // 
+        this.btnReceber.BackColor = Color.FromArgb(40, 167, 69);
+        this.btnReceber.ForeColor = Color.White;
+        this.btnReceber.Location = new Point(20, 370);
+        this.btnReceber.Name = "btnReceber";
+        this.btnReceber.Size = new Size(120, 30);
+        this.btnReceber.TabIndex = 4;
+        this.btnReceber.Text = "Receber de Volta";
+        this.btnReceber.UseVisualStyleBackColor = false;
+        this.btnReceber.Click += new EventHandler(this.BtnReceber_Click);
         // 
         // btnSave
         // 
-        this.btnSave.Location = new Point(20, 150);
+        this.btnSave.Location = new Point(560, 370);
         this.btnSave.Name = "btnSave";
         this.btnSave.Size = new Size(100, 30);
-        this.btnSave.TabIndex = 4;
+        this.btnSave.TabIndex = 5;
         this.btnSave.Text = "Salvar";
         this.btnSave.UseVisualStyleBackColor = true;
         this.btnSave.Click += new EventHandler(this.BtnSave_Click);
         // 
         // btnCancel
         // 
-        this.btnCancel.Location = new Point(126, 150);
+        this.btnCancel.Location = new Point(666, 370);
         this.btnCancel.Name = "btnCancel";
         this.btnCancel.Size = new Size(100, 30);
-        this.btnCancel.TabIndex = 5;
-        this.btnCancel.Text = "Cancelar";
+        this.btnCancel.TabIndex = 6;
+        this.btnCancel.Text = "Fechar";
         this.btnCancel.UseVisualStyleBackColor = true;
         this.btnCancel.Click += new EventHandler(this.BtnCancel_Click);
         // 
@@ -83,11 +101,12 @@ partial class CongregacaoDetailForm
         // 
         this.AutoScaleDimensions = new SizeF(7F, 15F);
         this.AutoScaleMode = AutoScaleMode.Font;
-        this.ClientSize = new Size(400, 200);
+        this.ClientSize = new Size(800, 420);
         this.Controls.Add(this.btnCancel);
         this.Controls.Add(this.btnSave);
-        this.Controls.Add(this.numQuantity);
-        this.Controls.Add(this.lblQuantity);
+        this.Controls.Add(this.btnReceber);
+        this.Controls.Add(this.dataGridView1);
+        this.Controls.Add(this.lblEmprestimos);
         this.Controls.Add(this.txtName);
         this.Controls.Add(this.lblName);
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -96,7 +115,7 @@ partial class CongregacaoDetailForm
         this.Name = "CongregacaoDetailForm";
         this.StartPosition = FormStartPosition.CenterScreen;
         this.Text = "Detalhes da Congregacao";
-        ((System.ComponentModel.ISupportInitialize)(this.numQuantity)).EndInit();
+        ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
         this.ResumeLayout(false);
         this.PerformLayout();
     }
@@ -105,8 +124,9 @@ partial class CongregacaoDetailForm
 
     private Label lblName;
     private TextBox txtName;
-    private Label lblQuantity;
-    private NumericUpDown numQuantity;
+    private Label lblEmprestimos;
+    private DataGridView dataGridView1;
+    private Button btnReceber;
     private Button btnSave;
     private Button btnCancel;
 }

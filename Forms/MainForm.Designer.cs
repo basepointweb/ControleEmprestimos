@@ -33,6 +33,7 @@ partial class MainForm
         this.menuEmprestimo = new ToolStripMenuItem();
         this.menuRecebimento = new ToolStripMenuItem();
         this.menuCongregacoes = new ToolStripMenuItem();
+        this.contentPanel = new Panel();
         this.menuStrip1.SuspendLayout();
         this.SuspendLayout();
         // 
@@ -45,7 +46,7 @@ partial class MainForm
             this.menuCongregacoes});
         this.menuStrip1.Location = new Point(0, 0);
         this.menuStrip1.Name = "menuStrip1";
-        this.menuStrip1.Size = new Size(800, 24);
+        this.menuStrip1.Size = new Size(1000, 24);
         this.menuStrip1.TabIndex = 0;
         this.menuStrip1.Text = "menuStrip1";
         // 
@@ -77,11 +78,20 @@ partial class MainForm
         this.menuCongregacoes.Text = "Congregacoes";
         this.menuCongregacoes.Click += new EventHandler(this.MenuCongregacoes_Click);
         // 
+        // contentPanel
+        // 
+        this.contentPanel.Dock = DockStyle.Fill;
+        this.contentPanel.Location = new Point(0, 24);
+        this.contentPanel.Name = "contentPanel";
+        this.contentPanel.Size = new Size(1000, 576);
+        this.contentPanel.TabIndex = 1;
+        // 
         // MainForm
         // 
         this.AutoScaleDimensions = new SizeF(7F, 15F);
         this.AutoScaleMode = AutoScaleMode.Font;
-        this.ClientSize = new Size(800, 450);
+        this.ClientSize = new Size(1000, 600);
+        this.Controls.Add(this.contentPanel);
         this.Controls.Add(this.menuStrip1);
         this.MainMenuStrip = this.menuStrip1;
         this.Name = "MainForm";
@@ -100,4 +110,5 @@ partial class MainForm
     private ToolStripMenuItem menuEmprestimo;
     private ToolStripMenuItem menuRecebimento;
     private ToolStripMenuItem menuCongregacoes;
+    private Panel contentPanel;
 }

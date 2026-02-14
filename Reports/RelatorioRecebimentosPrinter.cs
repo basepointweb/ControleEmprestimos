@@ -10,6 +10,7 @@ public class RelatorioRecebimentosPrinter
     private DateTime _dataFinal;
     private string _congregacaoFiltro;
     private string _itemFiltro;
+    private int _currentRecebimentoIndex = 0;
 
     public RelatorioRecebimentosPrinter(
         List<RecebimentoEmprestimo> recebimentos, 
@@ -61,60 +62,63 @@ public class RelatorioRecebimentosPrinter
         var headerFont = new Font("Arial", 11, FontStyle.Bold);
         var normalFont = new Font("Arial", 9, FontStyle.Regular);
         var smallFont = new Font("Arial", 8, FontStyle.Regular);
+        var tinyFont = new Font("Arial", 7, FontStyle.Regular);
 
-        // Título
-        graphics.DrawString("RELATÓRIO DE RECEBIMENTOS", titleFont, Brushes.Black, leftMargin, currentY);
-        currentY += 35;
+        // Título (apenas na primeira página)
+        if (_currentRecebimentoIndex == 0)
+        {
+            graphics.DrawString("RELATÓRIO DE RECEBIMENTOS", titleFont, Brushes.Black, leftMargin, currentY);
+            currentY += 35;
 
-        // Período e filtros
-        graphics.DrawString($"Período: {_dataInicial:dd/MM/yyyy} a {_dataFinal:dd/MM/yyyy}", normalFont, Brushes.Black, leftMargin, currentY);
-        currentY += lineHeight;
-        graphics.DrawString($"Congregação: {_congregacaoFiltro}", normalFont, Brushes.Black, leftMargin, currentY);
-        currentY += lineHeight;
-        graphics.DrawString($"Bem: {_itemFiltro}", normalFont, Brushes.Black, leftMargin, currentY);
-        currentY += lineHeight + 10;
+            // Período e filtros
+            graphics.DrawString($"Período: {_dataInicial:dd/MM/yyyy} a {_dataFinal:dd/MM/yyyy}", normalFont, Brushes.Black, leftMargin, currentY);
+            currentY += lineHeight;
+            graphics.DrawString($"Congregação: {_congregacaoFiltro}", normalFont, Brushes.Black, leftMargin, currentY);
+            currentY += lineHeight;
+            graphics.DrawString($"Bem: {_itemFiltro}", normalFont, Brushes.Black, leftMargin, currentY);
+            currentY += lineHeight + 10;
 
-        // Linha separadora
-        graphics.DrawLine(Pens.Black, leftMargin, currentY, rightMargin, currentY);
-        currentY += 15;
+            // Linha separadora
+            graphics.DrawLine(Pens.Black, leftMargin, currentY, rightMargin, currentY);
+            currentY += 15;
 
-        // Resumo
-        var totalRecebimentos = _recebimentos.Count;
-        var totalItens = _recebimentos.Sum(r => r.TotalItensRecebidos);
-        var recebimentosParciais = _recebimentos.Count(r => r.RecebimentoParcial);
-        var recebimentosCompletos = _recebimentos.Count(r => !r.RecebimentoParcial);
+            // Resumo
+            var totalRecebimentos = _recebimentos.Count;
+            var totalItens = _recebimentos.Sum(r => r.TotalItensRecebidos);
+            var recebimentosParciais = _recebimentos.Count(r => r.RecebimentoParcial);
+            var recebimentosCompletos = _recebimentos.Count(r => !r.RecebimentoParcial);
 
-        graphics.DrawString("RESUMO", headerFont, Brushes.Black, leftMargin, currentY);
-        currentY += lineHeight + 5;
+            graphics.DrawString("RESUMO", headerFont, Brushes.Black, leftMargin, currentY);
+            currentY += lineHeight + 5;
 
-        graphics.DrawString($"Total de Recebimentos: {totalRecebimentos}", normalFont, Brushes.Black, leftMargin + 10, currentY);
-        currentY += lineHeight;
-        graphics.DrawString($"Total de Itens Recebidos: {totalItens}", normalFont, Brushes.Black, leftMargin + 10, currentY);
-        currentY += lineHeight;
-        graphics.DrawString($"Recebimentos Parciais: {recebimentosParciais}", normalFont, Brushes.Black, leftMargin + 10, currentY);
-        currentY += lineHeight;
-        graphics.DrawString($"Recebimentos Completos: {recebimentosCompletos}", normalFont, Brushes.Black, leftMargin + 10, currentY);
-        currentY += lineHeight + 15;
+            graphics.DrawString($"Total de Recebimentos: {totalRecebimentos}", normalFont, Brushes.Black, leftMargin + 10, currentY);
+            currentY += lineHeight;
+            graphics.DrawString($"Total de Itens Recebidos: {totalItens}", normalFont, Brushes.Black, leftMargin + 10, currentY);
+            currentY += lineHeight;
+            graphics.DrawString($"Recebimentos Parciais: {recebimentosParciais}", normalFont, Brushes.Black, leftMargin + 10, currentY);
+            currentY += lineHeight;
+            graphics.DrawString($"Recebimentos Completos: {recebimentosCompletos}", normalFont, Brushes.Black, leftMargin + 10, currentY);
+            currentY += lineHeight + 15;
 
-        // Linha separadora
-        graphics.DrawLine(Pens.Black, leftMargin, currentY, rightMargin, currentY);
-        currentY += 15;
+            // Linha separadora
+            graphics.DrawLine(Pens.Black, leftMargin, currentY, rightMargin, currentY);
+            currentY += 15;
 
-        // Cabeçalho da tabela
-        graphics.DrawString("DETALHAMENTO", headerFont, Brushes.Black, leftMargin, currentY);
-        currentY += lineHeight + 10;
+            // Cabeçalho da tabela
+            graphics.DrawString("DETALHAMENTO", headerFont, Brushes.Black, leftMargin, currentY);
+            currentY += lineHeight + 10;
+        }
 
+        // Cabeçalho das colunas
         var colData = leftMargin;
-        var colQuemPegou = leftMargin + 80;
-        var colQuemRecebeu = leftMargin + 200;
-        var colItens = leftMargin + 330;
-        var colQtd = leftMargin + 530;
-        var colTipo = leftMargin + 580;
+        var colQuemPegou = leftMargin + 70;
+        var colQuemRecebeu = leftMargin + 180;
+        var colQtd = leftMargin + 290;
+        var colTipo = leftMargin + 340;
 
         graphics.DrawString("Data", smallFont, Brushes.Black, colData, currentY);
         graphics.DrawString("Quem Pegou", smallFont, Brushes.Black, colQuemPegou, currentY);
         graphics.DrawString("Quem Recebeu", smallFont, Brushes.Black, colQuemRecebeu, currentY);
-        graphics.DrawString("Bens", smallFont, Brushes.Black, colItens, currentY);
         graphics.DrawString("Qtd", smallFont, Brushes.Black, colQtd, currentY);
         graphics.DrawString("Tipo", smallFont, Brushes.Black, colTipo, currentY);
         currentY += 15;
@@ -124,35 +128,44 @@ public class RelatorioRecebimentosPrinter
         currentY += 10;
 
         // Dados dos recebimentos
-        foreach (var recebimento in _recebimentos)
+        for (int i = _currentRecebimentoIndex; i < _recebimentos.Count; i++)
         {
-            // Verificar se precisa de nova página
-            if (currentY > e.PageBounds.Height - 100)
-            {
-                e.HasMorePages = true;
-                return;
-            }
+            var recebimento = _recebimentos[i];
 
-            graphics.DrawString(recebimento.DataRecebimento.ToString("dd/MM/yy"), smallFont, Brushes.Black, colData, currentY);
-            
-            var nomeQuemPegou = recebimento.NomeRecebedor.Length > 15 ? recebimento.NomeRecebedor.Substring(0, 15) + "..." : recebimento.NomeRecebedor;
-            graphics.DrawString(nomeQuemPegou, smallFont, Brushes.Black, colQuemPegou, currentY);
-            
-            var nomeQuemRecebeu = recebimento.NomeQuemRecebeu.Length > 18 ? recebimento.NomeQuemRecebeu.Substring(0, 18) + "..." : recebimento.NomeQuemRecebeu;
-            graphics.DrawString(nomeQuemRecebeu, smallFont, Brushes.Black, colQuemRecebeu, currentY);
-            
-            // Bens
-            string bens;
+            // Calcular altura necessária para este recebimento
+            int numItens = 0;
             if (recebimento.ItensRecebidos != null && recebimento.ItensRecebidos.Any())
             {
-                var nomes = string.Join(", ", recebimento.ItensRecebidos.Select(i => i.ItemName).Distinct());
-                bens = nomes.Length > 30 ? nomes.Substring(0, 30) + "..." : nomes;
+                numItens = recebimento.ItensRecebidos.Count;
             }
             else
             {
-                bens = "N/A";
+                numItens = 1; // Mínimo
             }
-            graphics.DrawString(bens, smallFont, Brushes.Black, colItens, currentY);
+
+            var alturaRecebimento = lineHeight + (numItens * 14); // Linha principal + itens
+
+            // Verificar se precisa de nova página
+            if (currentY + alturaRecebimento > e.PageBounds.Height - 100)
+            {
+                _currentRecebimentoIndex = i;
+                e.HasMorePages = true;
+                
+                // Rodapé da página
+                var rodapeY = e.PageBounds.Height - 60;
+                graphics.DrawString($"Emitido em: {DateTime.Now:dd/MM/yyyy HH:mm}", smallFont, Brushes.Gray, leftMargin, rodapeY);
+                graphics.DrawString($"Página {(_currentRecebimentoIndex / 10) + 1}", smallFont, Brushes.Gray, rightMargin - 100, rodapeY);
+                return;
+            }
+
+            // Linha principal do recebimento
+            graphics.DrawString(recebimento.DataRecebimento.ToString("dd/MM/yy"), smallFont, Brushes.Black, colData, currentY);
+            
+            var nomeQuemPegou = recebimento.NomeRecebedor.Length > 14 ? recebimento.NomeRecebedor.Substring(0, 14) + "..." : recebimento.NomeRecebedor;
+            graphics.DrawString(nomeQuemPegou, smallFont, Brushes.Black, colQuemPegou, currentY);
+            
+            var nomeQuemRecebeu = recebimento.NomeQuemRecebeu.Length > 14 ? recebimento.NomeQuemRecebeu.Substring(0, 14) + "..." : recebimento.NomeQuemRecebeu;
+            graphics.DrawString(nomeQuemRecebeu, smallFont, Brushes.Black, colQuemRecebeu, currentY);
             
             graphics.DrawString(recebimento.TotalItensRecebidos.ToString(), smallFont, Brushes.Black, colQtd, currentY);
             
@@ -160,6 +173,29 @@ public class RelatorioRecebimentosPrinter
             graphics.DrawString(tipo, smallFont, Brushes.Black, colTipo, currentY);
             
             currentY += lineHeight;
+
+            // Bens recebidos em linhas separadas (indentados)
+            if (recebimento.ItensRecebidos != null && recebimento.ItensRecebidos.Any())
+            {
+                foreach (var item in recebimento.ItensRecebidos)
+                {
+                    var bemTexto = $"• {item.ItemName} ({item.QuantidadeRecebida} un.)";
+                    if (bemTexto.Length > 50)
+                    {
+                        bemTexto = bemTexto.Substring(0, 50) + "...";
+                    }
+                    graphics.DrawString(bemTexto, tinyFont, Brushes.DarkGray, colQuemPegou, currentY);
+                    currentY += 14;
+                }
+            }
+            else
+            {
+                // Sem itens
+                graphics.DrawString("• N/A", tinyFont, Brushes.DarkGray, colQuemPegou, currentY);
+                currentY += 14;
+            }
+
+            currentY += 5; // Espaço entre recebimentos
         }
 
         currentY += 10;
@@ -169,8 +205,9 @@ public class RelatorioRecebimentosPrinter
         // Rodapé
         currentY = e.PageBounds.Height - 60;
         graphics.DrawString($"Emitido em: {DateTime.Now:dd/MM/yyyy HH:mm}", smallFont, Brushes.Gray, leftMargin, currentY);
-        graphics.DrawString($"Total de registros: {totalRecebimentos}", smallFont, Brushes.Gray, rightMargin - 150, currentY);
+        graphics.DrawString($"Total de registros: {_recebimentos.Count}", smallFont, Brushes.Gray, rightMargin - 150, currentY);
 
         e.HasMorePages = false;
+        _currentRecebimentoIndex = 0; // Reset para próxima impressão
     }
 }

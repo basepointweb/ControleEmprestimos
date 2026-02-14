@@ -10,6 +10,7 @@ public class RelatorioEmprestimosPrinter
     private DateTime _dataFinal;
     private string _congregacaoFiltro;
     private string _itemFiltro;
+    private int _currentEmprestimoIndex = 0;
 
     public RelatorioEmprestimosPrinter(
         List<Emprestimo> emprestimos, 
@@ -61,60 +62,63 @@ public class RelatorioEmprestimosPrinter
         var headerFont = new Font("Arial", 11, FontStyle.Bold);
         var normalFont = new Font("Arial", 9, FontStyle.Regular);
         var smallFont = new Font("Arial", 8, FontStyle.Regular);
+        var tinyFont = new Font("Arial", 7, FontStyle.Regular);
 
-        // Título
-        graphics.DrawString("RELATÓRIO DE EMPRÉSTIMOS", titleFont, Brushes.Black, leftMargin, currentY);
-        currentY += 35;
+        // Título (apenas na primeira página)
+        if (_currentEmprestimoIndex == 0)
+        {
+            graphics.DrawString("RELATÓRIO DE EMPRÉSTIMOS", titleFont, Brushes.Black, leftMargin, currentY);
+            currentY += 35;
 
-        // Período e filtros
-        graphics.DrawString($"Período: {_dataInicial:dd/MM/yyyy} a {_dataFinal:dd/MM/yyyy}", normalFont, Brushes.Black, leftMargin, currentY);
-        currentY += lineHeight;
-        graphics.DrawString($"Congregação: {_congregacaoFiltro}", normalFont, Brushes.Black, leftMargin, currentY);
-        currentY += lineHeight;
-        graphics.DrawString($"Bem: {_itemFiltro}", normalFont, Brushes.Black, leftMargin, currentY);
-        currentY += lineHeight + 10;
+            // Período e filtros
+            graphics.DrawString($"Período: {_dataInicial:dd/MM/yyyy} a {_dataFinal:dd/MM/yyyy}", normalFont, Brushes.Black, leftMargin, currentY);
+            currentY += lineHeight;
+            graphics.DrawString($"Congregação: {_congregacaoFiltro}", normalFont, Brushes.Black, leftMargin, currentY);
+            currentY += lineHeight;
+            graphics.DrawString($"Bem: {_itemFiltro}", normalFont, Brushes.Black, leftMargin, currentY);
+            currentY += lineHeight + 10;
 
-        // Linha separadora
-        graphics.DrawLine(Pens.Black, leftMargin, currentY, rightMargin, currentY);
-        currentY += 15;
+            // Linha separadora
+            graphics.DrawLine(Pens.Black, leftMargin, currentY, rightMargin, currentY);
+            currentY += 15;
 
-        // Resumo
-        var totalEmprestimos = _emprestimos.Count;
-        var totalItens = _emprestimos.Sum(e => e.TotalItens);
-        var totalEmAndamento = _emprestimos.Count(e => e.Status == StatusEmprestimo.EmAndamento);
-        var totalDevolvidos = _emprestimos.Count(e => e.Status == StatusEmprestimo.Devolvido);
+            // Resumo
+            var totalEmprestimos = _emprestimos.Count;
+            var totalItens = _emprestimos.Sum(e => e.TotalItens);
+            var totalEmAndamento = _emprestimos.Count(e => e.Status == StatusEmprestimo.EmAndamento);
+            var totalDevolvidos = _emprestimos.Count(e => e.Status == StatusEmprestimo.Devolvido);
 
-        graphics.DrawString("RESUMO", headerFont, Brushes.Black, leftMargin, currentY);
-        currentY += lineHeight + 5;
+            graphics.DrawString("RESUMO", headerFont, Brushes.Black, leftMargin, currentY);
+            currentY += lineHeight + 5;
 
-        graphics.DrawString($"Total de Empréstimos: {totalEmprestimos}", normalFont, Brushes.Black, leftMargin + 10, currentY);
-        currentY += lineHeight;
-        graphics.DrawString($"Total de Itens Emprestados: {totalItens}", normalFont, Brushes.Black, leftMargin + 10, currentY);
-        currentY += lineHeight;
-        graphics.DrawString($"Em Andamento: {totalEmAndamento}", normalFont, Brushes.Black, leftMargin + 10, currentY);
-        currentY += lineHeight;
-        graphics.DrawString($"Devolvidos: {totalDevolvidos}", normalFont, Brushes.Black, leftMargin + 10, currentY);
-        currentY += lineHeight + 15;
+            graphics.DrawString($"Total de Empréstimos: {totalEmprestimos}", normalFont, Brushes.Black, leftMargin + 10, currentY);
+            currentY += lineHeight;
+            graphics.DrawString($"Total de Itens Emprestados: {totalItens}", normalFont, Brushes.Black, leftMargin + 10, currentY);
+            currentY += lineHeight;
+            graphics.DrawString($"Em Andamento: {totalEmAndamento}", normalFont, Brushes.Black, leftMargin + 10, currentY);
+            currentY += lineHeight;
+            graphics.DrawString($"Devolvidos: {totalDevolvidos}", normalFont, Brushes.Black, leftMargin + 10, currentY);
+            currentY += lineHeight + 15;
 
-        // Linha separadora
-        graphics.DrawLine(Pens.Black, leftMargin, currentY, rightMargin, currentY);
-        currentY += 15;
+            // Linha separadora
+            graphics.DrawLine(Pens.Black, leftMargin, currentY, rightMargin, currentY);
+            currentY += 15;
 
-        // Cabeçalho da tabela
-        graphics.DrawString("DETALHAMENTO", headerFont, Brushes.Black, leftMargin, currentY);
-        currentY += lineHeight + 10;
+            // Cabeçalho da tabela
+            graphics.DrawString("DETALHAMENTO", headerFont, Brushes.Black, leftMargin, currentY);
+            currentY += lineHeight + 10;
+        }
 
+        // Cabeçalho das colunas
         var colData = leftMargin;
-        var colRecebedor = leftMargin + 80;
-        var colCongregacao = leftMargin + 200;
-        var colItens = leftMargin + 330;
-        var colQtd = leftMargin + 530;
-        var colStatus = leftMargin + 580;
+        var colRecebedor = leftMargin + 70;
+        var colCongregacao = leftMargin + 180;
+        var colQtd = leftMargin + 310;
+        var colStatus = leftMargin + 360;
 
         graphics.DrawString("Data", smallFont, Brushes.Black, colData, currentY);
         graphics.DrawString("Recebedor", smallFont, Brushes.Black, colRecebedor, currentY);
         graphics.DrawString("Congregação", smallFont, Brushes.Black, colCongregacao, currentY);
-        graphics.DrawString("Bens", smallFont, Brushes.Black, colItens, currentY);
         graphics.DrawString("Qtd", smallFont, Brushes.Black, colQtd, currentY);
         graphics.DrawString("Status", smallFont, Brushes.Black, colStatus, currentY);
         currentY += 15;
@@ -124,35 +128,44 @@ public class RelatorioEmprestimosPrinter
         currentY += 10;
 
         // Dados dos empréstimos
-        foreach (var emprestimo in _emprestimos)
+        for (int i = _currentEmprestimoIndex; i < _emprestimos.Count; i++)
         {
-            // Verificar se precisa de nova página
-            if (currentY > e.PageBounds.Height - 100)
-            {
-                e.HasMorePages = true;
-                return;
-            }
+            var emprestimo = _emprestimos[i];
 
-            graphics.DrawString(emprestimo.DataEmprestimo.ToString("dd/MM/yy"), smallFont, Brushes.Black, colData, currentY);
-            
-            var nomeRecebedor = emprestimo.Name.Length > 15 ? emprestimo.Name.Substring(0, 15) + "..." : emprestimo.Name;
-            graphics.DrawString(nomeRecebedor, smallFont, Brushes.Black, colRecebedor, currentY);
-            
-            var nomeCongregacao = emprestimo.CongregacaoName.Length > 18 ? emprestimo.CongregacaoName.Substring(0, 18) + "..." : emprestimo.CongregacaoName;
-            graphics.DrawString(nomeCongregacao, smallFont, Brushes.Black, colCongregacao, currentY);
-            
-            // Bens
-            string bens;
+            // Calcular altura necessária para este empréstimo
+            int numItens = 0;
             if (emprestimo.Itens != null && emprestimo.Itens.Any())
             {
-                var nomes = string.Join(", ", emprestimo.Itens.Select(i => i.ItemName).Distinct());
-                bens = nomes.Length > 30 ? nomes.Substring(0, 30) + "..." : nomes;
+                numItens = emprestimo.Itens.Count;
             }
             else
             {
-                bens = emprestimo.ItemName.Length > 30 ? emprestimo.ItemName.Substring(0, 30) + "..." : emprestimo.ItemName;
+                numItens = 1; // Compatibilidade com dados antigos
             }
-            graphics.DrawString(bens, smallFont, Brushes.Black, colItens, currentY);
+
+            var alturaEmprestimo = lineHeight + (numItens * 14); // Linha principal + itens
+
+            // Verificar se precisa de nova página
+            if (currentY + alturaEmprestimo > e.PageBounds.Height - 100)
+            {
+                _currentEmprestimoIndex = i;
+                e.HasMorePages = true;
+                
+                // Rodapé da página
+                var rodapeY = e.PageBounds.Height - 60;
+                graphics.DrawString($"Emitido em: {DateTime.Now:dd/MM/yyyy HH:mm}", smallFont, Brushes.Gray, leftMargin, rodapeY);
+                graphics.DrawString($"Página {(_currentEmprestimoIndex / 10) + 1}", smallFont, Brushes.Gray, rightMargin - 100, rodapeY);
+                return;
+            }
+
+            // Linha principal do empréstimo
+            graphics.DrawString(emprestimo.DataEmprestimo.ToString("dd/MM/yy"), smallFont, Brushes.Black, colData, currentY);
+            
+            var nomeRecebedor = emprestimo.Name.Length > 14 ? emprestimo.Name.Substring(0, 14) + "..." : emprestimo.Name;
+            graphics.DrawString(nomeRecebedor, smallFont, Brushes.Black, colRecebedor, currentY);
+            
+            var nomeCongregacao = emprestimo.CongregacaoName.Length > 16 ? emprestimo.CongregacaoName.Substring(0, 16) + "..." : emprestimo.CongregacaoName;
+            graphics.DrawString(nomeCongregacao, smallFont, Brushes.Black, colCongregacao, currentY);
             
             graphics.DrawString(emprestimo.TotalItens.ToString(), smallFont, Brushes.Black, colQtd, currentY);
             
@@ -160,6 +173,34 @@ public class RelatorioEmprestimosPrinter
             graphics.DrawString(statusAbrev, smallFont, Brushes.Black, colStatus, currentY);
             
             currentY += lineHeight;
+
+            // Bens em linhas separadas (indentados)
+            if (emprestimo.Itens != null && emprestimo.Itens.Any())
+            {
+                foreach (var item in emprestimo.Itens)
+                {
+                    var bemTexto = $"• {item.ItemName} ({item.Quantidade} un.)";
+                    if (bemTexto.Length > 50)
+                    {
+                        bemTexto = bemTexto.Substring(0, 50) + "...";
+                    }
+                    graphics.DrawString(bemTexto, tinyFont, Brushes.DarkGray, colRecebedor, currentY);
+                    currentY += 14;
+                }
+            }
+            else
+            {
+                // Compatibilidade com dados antigos
+                var bemTexto = $"• {emprestimo.ItemName} ({emprestimo.QuantityInStock} un.)";
+                if (bemTexto.Length > 50)
+                {
+                    bemTexto = bemTexto.Substring(0, 50) + "...";
+                }
+                graphics.DrawString(bemTexto, tinyFont, Brushes.DarkGray, colRecebedor, currentY);
+                currentY += 14;
+            }
+
+            currentY += 5; // Espaço entre empréstimos
         }
 
         currentY += 10;
@@ -169,8 +210,9 @@ public class RelatorioEmprestimosPrinter
         // Rodapé
         currentY = e.PageBounds.Height - 60;
         graphics.DrawString($"Emitido em: {DateTime.Now:dd/MM/yyyy HH:mm}", smallFont, Brushes.Gray, leftMargin, currentY);
-        graphics.DrawString($"Total de registros: {totalEmprestimos}", smallFont, Brushes.Gray, rightMargin - 150, currentY);
+        graphics.DrawString($"Total de registros: {_emprestimos.Count}", smallFont, Brushes.Gray, rightMargin - 150, currentY);
 
         e.HasMorePages = false;
+        _currentEmprestimoIndex = 0; // Reset para próxima impressão
     }
 }

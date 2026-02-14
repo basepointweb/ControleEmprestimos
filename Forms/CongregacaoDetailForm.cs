@@ -1,5 +1,6 @@
 using ControleEmprestimos.Data;
 using ControleEmprestimos.Models;
+using ControleEmprestimos.Helpers;
 
 namespace ControleEmprestimos.Forms;
 
@@ -13,6 +14,10 @@ public partial class CongregacaoDetailForm : Form
     public CongregacaoDetailForm(Congregacao? item = null, bool isCloning = false)
     {
         InitializeComponent();
+        
+        // Configurar controles para caixa alta
+        FormControlHelper.ConfigureAllTextBoxesToUpperCase(this);
+        
         _repository = DataRepository.Instance;
         _item = item;
         _isCloning = isCloning;
@@ -195,13 +200,17 @@ public partial class CongregacaoDetailForm : Form
 
         if (_isEditing && _item != null)
         {
-            _item.Name = txtName.Text;
-            _item.Setor = txtSetor.Text;
+            _item.Name = txtName.Text.Trim().ToUpper();
+            _item.Setor = txtSetor.Text.Trim().ToUpper();
             _item.DataAlteracao = DateTime.Now;
         }
         else
         {
-            var newItem = new Congregacao { Name = txtName.Text, Setor = txtSetor.Text };
+            var newItem = new Congregacao 
+            { 
+                Name = txtName.Text.Trim().ToUpper(), 
+                Setor = txtSetor.Text.Trim().ToUpper() 
+            };
             _repository.AddCongregacao(newItem);
         }
 

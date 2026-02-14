@@ -1,5 +1,6 @@
 using ControleEmprestimos.Data;
 using ControleEmprestimos.Models;
+using ControleEmprestimos.Helpers;
 
 namespace ControleEmprestimos.Forms;
 
@@ -12,6 +13,10 @@ public partial class ItemDetailForm : Form
     public ItemDetailForm(Item? item = null, bool isCloning = false)
     {
         InitializeComponent();
+        
+        // Configurar controles para caixa alta
+        FormControlHelper.ConfigureAllTextBoxesToUpperCase(this);
+        
         _item = item;
         _isEditing = item != null && !isCloning;
         _isCloning = isCloning;
@@ -39,7 +44,7 @@ public partial class ItemDetailForm : Form
         if (_isEditing && _item != null)
         {
             // Modo edição
-            _item.Name = txtName.Text;
+            _item.Name = txtName.Text.Trim().ToUpper();
             _item.QuantityInStock = (int)numQuantity.Value;
             DataRepository.Instance.UpdateItem(_item);
         }
@@ -48,7 +53,7 @@ public partial class ItemDetailForm : Form
             // Modo criação (novo ou clonado)
             var newItem = new Item
             {
-                Name = txtName.Text,
+                Name = txtName.Text.Trim().ToUpper(),
                 QuantityInStock = (int)numQuantity.Value
             };
             DataRepository.Instance.AddItem(newItem);

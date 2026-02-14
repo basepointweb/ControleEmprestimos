@@ -1,6 +1,7 @@
 using ControleEmprestimos.Data;
 using ControleEmprestimos.Models;
 using ControleEmprestimos.Reports;
+using ControleEmprestimos.Helpers;
 
 namespace ControleEmprestimos.Forms;
 
@@ -27,6 +28,11 @@ public partial class RecebimentoDetailForm : Form
     public RecebimentoDetailForm(RecebimentoEmprestimo? item = null)
     {
         InitializeComponent();
+        
+        // Configurar controles para caixa alta e navegação de datas
+        FormControlHelper.ConfigureAllTextBoxesToUpperCase(this);
+        FormControlHelper.ConfigureAllDateTimePickers(this);
+        
         _repository = DataRepository.Instance;
         _item = item;
         _isEditing = item != null;
@@ -391,9 +397,9 @@ public partial class RecebimentoDetailForm : Form
         var itemNames = string.Join(", ", itensComQuantidade.Select(i => i.ItemName).Distinct());
         var newItem = new RecebimentoEmprestimo
         {
-            Name = $"Recebimento - {itemNames}",
-            NomeRecebedor = emprestimoSelecionado.Name,
-            NomeQuemRecebeu = txtQuemRecebeu.Text,
+            Name = $"RECEBIMENTO - {itemNames}".ToUpper(),
+            NomeRecebedor = emprestimoSelecionado.Name.ToUpper(),
+            NomeQuemRecebeu = txtQuemRecebeu.Text.Trim().ToUpper(),
             EmprestimoId = emprestimoSelecionado.Id,
             DataEmprestimo = emprestimoSelecionado.DataEmprestimo,
             DataRecebimento = dtpDataRecebimento.Value,
@@ -402,7 +408,7 @@ public partial class RecebimentoDetailForm : Form
             {
                 EmprestimoItemId = i.EmprestimoItemId,
                 ItemId = i.ItemId,
-                ItemName = i.ItemName,
+                ItemName = i.ItemName.ToUpper(),
                 QuantidadeRecebida = i.QuantidadeAReceber
             }).ToList()
         };

@@ -1,6 +1,7 @@
 using ControleEmprestimos.Data;
 using ControleEmprestimos.Models;
 using ControleEmprestimos.Reports;
+using ControleEmprestimos.Helpers;
 
 namespace ControleEmprestimos.Forms;
 
@@ -16,6 +17,11 @@ public partial class EmprestimoDetailForm : Form
     public EmprestimoDetailForm(Emprestimo? item = null, bool isCloning = false)
     {
         InitializeComponent();
+        
+        // Configurar controles para caixa alta e navegação de datas
+        FormControlHelper.ConfigureAllTextBoxesToUpperCase(this);
+        FormControlHelper.ConfigureAllDateTimePickers(this);
+        
         _repository = DataRepository.Instance;
         _item = item;
         _isEditing = item != null && !isCloning;
@@ -331,9 +337,9 @@ public partial class EmprestimoDetailForm : Form
         if (_isEditing && _item != null)
         {
             // Modo edição (apenas dados gerais, não permite alterar itens)
-            _item.Name = txtRecebedor.Text;
-            _item.Motivo = txtMotivo.Text;
-            _item.QuemLiberou = txtQuemLiberou.Text;
+            _item.Name = txtRecebedor.Text.Trim().ToUpper();
+            _item.Motivo = txtMotivo.Text.Trim().ToUpper();
+            _item.QuemLiberou = txtQuemLiberou.Text.Trim().ToUpper();
             _item.CongregacaoId = selectedCongregacao.Id;
             _item.CongregacaoName = selectedCongregacao.Name;
             _item.DataEmprestimo = dtpDataEmprestimo.Value;
@@ -347,9 +353,9 @@ public partial class EmprestimoDetailForm : Form
             // Modo criação (novo ou clonado)
             var newItem = new Emprestimo
             {
-                Name = txtRecebedor.Text,
-                Motivo = txtMotivo.Text,
-                QuemLiberou = txtQuemLiberou.Text,
+                Name = txtRecebedor.Text.Trim().ToUpper(),
+                Motivo = txtMotivo.Text.Trim().ToUpper(),
+                QuemLiberou = txtQuemLiberou.Text.Trim().ToUpper(),
                 CongregacaoId = selectedCongregacao.Id,
                 CongregacaoName = selectedCongregacao.Name,
                 DataEmprestimo = dtpDataEmprestimo.Value,

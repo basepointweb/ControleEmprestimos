@@ -10,6 +10,9 @@ public class Emprestimo
     public DateTime DataEmprestimo { get; set; } = DateTime.Now;
     public StatusEmprestimo Status { get; set; } = StatusEmprestimo.EmAndamento;
     
+    // Quem liberou o bem
+    public string QuemLiberou { get; set; } = string.Empty;
+    
     // Lista de itens do empréstimo (NOVO)
     public List<EmprestimoItem> Itens { get; set; } = new();
     

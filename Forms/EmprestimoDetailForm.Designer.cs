@@ -25,6 +25,8 @@ partial class EmprestimoDetailForm
         this.cmbCongregacao = new ComboBox();
         this.lblDataEmprestimo = new Label();
         this.dtpDataEmprestimo = new DateTimePicker();
+        this.lblQuemLiberou = new Label();
+        this.txtQuemLiberou = new TextBox();
         this.lblStatus = new Label();
         this.txtStatus = new TextBox();
         this.lblItens = new Label();
@@ -110,13 +112,29 @@ partial class EmprestimoDetailForm
         this.dtpDataEmprestimo.Size = new Size(180, 23);
         this.dtpDataEmprestimo.TabIndex = 7;
         // 
+        // lblQuemLiberou
+        // 
+        this.lblQuemLiberou.AutoSize = true;
+        this.lblQuemLiberou.Location = new Point(20, 220);
+        this.lblQuemLiberou.Name = "lblQuemLiberou";
+        this.lblQuemLiberou.Size = new Size(86, 15);
+        this.lblQuemLiberou.TabIndex = 8;
+        this.lblQuemLiberou.Text = "Quem Liberou:";
+        // 
+        // txtQuemLiberou
+        // 
+        this.txtQuemLiberou.Location = new Point(20, 240);
+        this.txtQuemLiberou.Name = "txtQuemLiberou";
+        this.txtQuemLiberou.Size = new Size(360, 23);
+        this.txtQuemLiberou.TabIndex = 9;
+        // 
         // lblStatus
         // 
         this.lblStatus.AutoSize = true;
         this.lblStatus.Location = new Point(400, 220);
         this.lblStatus.Name = "lblStatus";
         this.lblStatus.Size = new Size(42, 15);
-        this.lblStatus.TabIndex = 8;
+        this.lblStatus.TabIndex = 10;
         this.lblStatus.Text = "Status:";
         this.lblStatus.Visible = false;
         // 
@@ -126,7 +144,7 @@ partial class EmprestimoDetailForm
         this.txtStatus.Name = "txtStatus";
         this.txtStatus.ReadOnly = true;
         this.txtStatus.Size = new Size(180, 23);
-        this.txtStatus.TabIndex = 9;
+        this.txtStatus.TabIndex = 11;
         this.txtStatus.BackColor = SystemColors.Control;
         this.txtStatus.Visible = false;
         // 
@@ -134,68 +152,68 @@ partial class EmprestimoDetailForm
         // 
         this.lblItens.AutoSize = true;
         this.lblItens.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-        this.lblItens.Location = new Point(20, 220);
+        this.lblItens.Location = new Point(20, 280);
         this.lblItens.Name = "lblItens";
         this.lblItens.Size = new Size(135, 19);
-        this.lblItens.TabIndex = 10;
+        this.lblItens.TabIndex = 12;
         this.lblItens.Text = "Itens do Empréstimo:";
         // 
         // dgvItens
         // 
         this.dgvItens.AllowUserToAddRows = false;
         this.dgvItens.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        this.dgvItens.Location = new Point(20, 245);
+        this.dgvItens.Location = new Point(20, 305);
         this.dgvItens.Name = "dgvItens";
         this.dgvItens.ReadOnly = true;
         this.dgvItens.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         this.dgvItens.Size = new Size(560, 150);
-        this.dgvItens.TabIndex = 11;
+        this.dgvItens.TabIndex = 13;
         // 
         // lblItem
         // 
         this.lblItem.AutoSize = true;
-        this.lblItem.Location = new Point(20, 410);
+        this.lblItem.Location = new Point(20, 470);
         this.lblItem.Name = "lblItem";
         this.lblItem.Size = new Size(33, 15);
-        this.lblItem.TabIndex = 12;
+        this.lblItem.TabIndex = 14;
         this.lblItem.Text = "Bem:";
         // 
         // cmbItem
         // 
         this.cmbItem.DropDownStyle = ComboBoxStyle.DropDownList;
         this.cmbItem.FormattingEnabled = true;
-        this.cmbItem.Location = new Point(20, 430);
+        this.cmbItem.Location = new Point(20, 490);
         this.cmbItem.Name = "cmbItem";
         this.cmbItem.Size = new Size(300, 23);
-        this.cmbItem.TabIndex = 13;
+        this.cmbItem.TabIndex = 15;
         // 
         // lblQuantity
         // 
         this.lblQuantity.AutoSize = true;
-        this.lblQuantity.Location = new Point(330, 410);
+        this.lblQuantity.Location = new Point(330, 470);
         this.lblQuantity.Name = "lblQuantity";
         this.lblQuantity.Size = new Size(72, 15);
-        this.lblQuantity.TabIndex = 14;
+        this.lblQuantity.TabIndex = 16;
         this.lblQuantity.Text = "Quantidade:";
         // 
         // numQuantity
         // 
-        this.numQuantity.Location = new Point(330, 430);
+        this.numQuantity.Location = new Point(330, 490);
         this.numQuantity.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
         this.numQuantity.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
         this.numQuantity.Name = "numQuantity";
         this.numQuantity.Size = new Size(120, 23);
-        this.numQuantity.TabIndex = 15;
+        this.numQuantity.TabIndex = 17;
         this.numQuantity.Value = new decimal(new int[] { 1, 0, 0, 0 });
         // 
         // btnAdicionarItem
         // 
         this.btnAdicionarItem.BackColor = Color.FromArgb(0, 120, 215);
         this.btnAdicionarItem.ForeColor = Color.White;
-        this.btnAdicionarItem.Location = new Point(460, 428);
+        this.btnAdicionarItem.Location = new Point(460, 488);
         this.btnAdicionarItem.Name = "btnAdicionarItem";
         this.btnAdicionarItem.Size = new Size(120, 27);
-        this.btnAdicionarItem.TabIndex = 16;
+        this.btnAdicionarItem.TabIndex = 18;
         this.btnAdicionarItem.Text = "Adicionar Item";
         this.btnAdicionarItem.UseVisualStyleBackColor = false;
         this.btnAdicionarItem.Click += new EventHandler(this.BtnAdicionarItem_Click);
@@ -204,28 +222,28 @@ partial class EmprestimoDetailForm
         // 
         this.lblTotalItens.AutoSize = true;
         this.lblTotalItens.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-        this.lblTotalItens.Location = new Point(20, 465);
+        this.lblTotalItens.Location = new Point(20, 525);
         this.lblTotalItens.Name = "lblTotalItens";
         this.lblTotalItens.Size = new Size(100, 15);
-        this.lblTotalItens.TabIndex = 17;
+        this.lblTotalItens.TabIndex = 19;
         this.lblTotalItens.Text = "Total de Itens: 0";
         // 
         // btnSave
         // 
-        this.btnSave.Location = new Point(20, 500);
+        this.btnSave.Location = new Point(20, 560);
         this.btnSave.Name = "btnSave";
         this.btnSave.Size = new Size(100, 30);
-        this.btnSave.TabIndex = 18;
+        this.btnSave.TabIndex = 20;
         this.btnSave.Text = "Salvar";
         this.btnSave.UseVisualStyleBackColor = true;
         this.btnSave.Click += new EventHandler(this.BtnSave_Click);
         // 
         // btnCancelar
         // 
-        this.btnCancelar.Location = new Point(126, 500);
+        this.btnCancelar.Location = new Point(126, 560);
         this.btnCancelar.Name = "btnCancelar";
         this.btnCancelar.Size = new Size(140, 30);
-        this.btnCancelar.TabIndex = 19;
+        this.btnCancelar.TabIndex = 21;
         this.btnCancelar.Text = "Cancelar Empréstimo";
         this.btnCancelar.UseVisualStyleBackColor = true;
         this.btnCancelar.Visible = false;
@@ -233,10 +251,10 @@ partial class EmprestimoDetailForm
         // 
         // btnFechar
         // 
-        this.btnFechar.Location = new Point(272, 500);
+        this.btnFechar.Location = new Point(272, 560);
         this.btnFechar.Name = "btnFechar";
         this.btnFechar.Size = new Size(100, 30);
-        this.btnFechar.TabIndex = 20;
+        this.btnFechar.TabIndex = 22;
         this.btnFechar.Text = "Fechar";
         this.btnFechar.UseVisualStyleBackColor = true;
         this.btnFechar.Click += new EventHandler(this.BtnFechar_Click);
@@ -245,7 +263,7 @@ partial class EmprestimoDetailForm
         // 
         this.AutoScaleDimensions = new SizeF(7F, 15F);
         this.AutoScaleMode = AutoScaleMode.Font;
-        this.ClientSize = new Size(600, 550);
+        this.ClientSize = new Size(600, 610);
         this.Controls.Add(this.btnFechar);
         this.Controls.Add(this.btnCancelar);
         this.Controls.Add(this.btnSave);
@@ -259,6 +277,8 @@ partial class EmprestimoDetailForm
         this.Controls.Add(this.lblItens);
         this.Controls.Add(this.txtStatus);
         this.Controls.Add(this.lblStatus);
+        this.Controls.Add(this.txtQuemLiberou);
+        this.Controls.Add(this.lblQuemLiberou);
         this.Controls.Add(this.dtpDataEmprestimo);
         this.Controls.Add(this.lblDataEmprestimo);
         this.Controls.Add(this.cmbCongregacao);
@@ -289,6 +309,8 @@ partial class EmprestimoDetailForm
     private ComboBox cmbCongregacao;
     private Label lblDataEmprestimo;
     private DateTimePicker dtpDataEmprestimo;
+    private Label lblQuemLiberou;
+    private TextBox txtQuemLiberou;
     private Label lblStatus;
     private TextBox txtStatus;
     private Label lblItens;

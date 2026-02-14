@@ -50,6 +50,26 @@ public class ReciboEmprestimoPrinter
         printPreviewDialog.ShowDialog();
     }
 
+    private Image? LoadLogoFromFile()
+    {
+        try
+        {
+            // Buscar logo na mesma pasta do executável
+            var logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logo.png");
+            
+            if (File.Exists(logoPath))
+            {
+                return Image.FromFile(logoPath);
+            }
+        }
+        catch
+        {
+            // Se não conseguir carregar, retorna null
+        }
+        
+        return null;
+    }
+
     private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)
     {
         if (e.Graphics == null) return;
@@ -66,11 +86,35 @@ public class ReciboEmprestimoPrinter
         var normalFont = new Font("Arial", 9, FontStyle.Regular);
         var smallFont = new Font("Arial", 8, FontStyle.Regular);
 
-        // Título
-        graphics.DrawString("RECIBO DE EMPRÉSTIMO", titleFont, Brushes.Black, leftMargin, currentY);
-        currentY += 30;
+        // Título e Logo
+        var titulo = "SEMIADET - EMPRÉSTIMO DE BENS";
+        var titleSize = graphics.MeasureString(titulo, titleFont);
+        
+        // Desenhar título
+        graphics.DrawString(titulo, titleFont, Brushes.Black, leftMargin, currentY);
+        
+        // Carregar e desenhar logo (da pasta do executável)
+        var logoHeight = 0;
+        using (var logo = LoadLogoFromFile())
+        {
+            if (logo != null)
+            {
+                // Calcular tamanho da logo proporcional à altura do título
+                logoHeight = (int)(titleSize.Height * 2.5); // Logo um pouco maior que o título
+                var logoWidth = (int)(logo.Width * ((float)logoHeight / logo.Height));
+                
+                // Posicionar logo à direita, alinhada com o topo do título
+                var logoX = e.PageBounds.Width - leftMargin - logoWidth;
+                var logoY = currentY; // Alinhado com o topo do título (sem ajuste negativo)
+                
+                graphics.DrawImage(logo, logoX, logoY, logoWidth, logoHeight);
+            }
+        }
+        
+        // Avançar para baixo da logo (usar altura da logo ou altura do título)
+        currentY += Math.Max(logoHeight, (int)titleSize.Height) + 10; // +10 para espaçamento extra
 
-        // Linha separadora
+        // Linha separadora (agora abaixo da logo)
         graphics.DrawLine(Pens.Black, leftMargin, currentY, e.PageBounds.Width - leftMargin, currentY);
         currentY += 15;
 
@@ -131,14 +175,21 @@ public class ReciboEmprestimoPrinter
         graphics.DrawLine(Pens.Black, leftMargin, currentY, e.PageBounds.Width - leftMargin, currentY);
         currentY += 20;
 
-        // Assinatura
+        // Assinaturas
         graphics.DrawString("Assinatura do Recebedor:", headerFont, Brushes.Black, leftMargin, currentY);
+        graphics.DrawString("Quem Liberou:", headerFont, Brushes.Black, e.PageBounds.Width / 2 + 20, currentY);
         currentY += 30;
         
-        // Linha para assinatura
-        graphics.DrawLine(Pens.Black, leftMargin, currentY, e.PageBounds.Width - leftMargin - 200, currentY);
-        currentY += 5;
-        graphics.DrawString(_emprestimo.Name, smallFont, Brushes.Gray, leftMargin, currentY);
+        // Linha para assinatura do recebedor
+        graphics.DrawLine(Pens.Black, leftMargin, currentY, e.PageBounds.Width / 2 - 20, currentY);
+        graphics.DrawString(_emprestimo.Name, smallFont, Brushes.Gray, leftMargin, currentY + 5);
+
+        // Linha para assinatura de quem liberou
+        graphics.DrawLine(Pens.Black, e.PageBounds.Width / 2 + 20, currentY, e.PageBounds.Width - leftMargin, currentY);
+        if (!string.IsNullOrEmpty(_emprestimo.QuemLiberou))
+        {
+            graphics.DrawString(_emprestimo.QuemLiberou, smallFont, Brushes.Gray, e.PageBounds.Width / 2 + 20, currentY + 5);
+        }
 
         // Rodapé
         currentY = e.PageBounds.Height - 60;

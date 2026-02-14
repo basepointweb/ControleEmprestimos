@@ -46,6 +46,26 @@ public class RelatorioEmprestimosPrinter
         printPreviewDialog.ShowDialog();
     }
 
+    private Image? LoadLogoFromFile()
+    {
+        try
+        {
+            // Buscar logo na mesma pasta do executável
+            var logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logo.png");
+            
+            if (File.Exists(logoPath))
+            {
+                return Image.FromFile(logoPath);
+            }
+        }
+        catch
+        {
+            // Se não conseguir carregar, retorna null
+        }
+        
+        return null;
+    }
+
     private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)
     {
         if (e.Graphics == null) return;
@@ -67,7 +87,29 @@ public class RelatorioEmprestimosPrinter
         // Título (apenas na primeira página)
         if (_currentEmprestimoIndex == 0)
         {
-            graphics.DrawString("RELATÓRIO DE EMPRÉSTIMOS", titleFont, Brushes.Black, leftMargin, currentY);
+            var titulo = "SEMIADET - RELATÓRIO DE EMPRÉSTIMOS";
+            var titleSize = graphics.MeasureString(titulo, titleFont);
+            
+            // Desenhar título
+            graphics.DrawString(titulo, titleFont, Brushes.Black, leftMargin, currentY);
+            
+            // Carregar e desenhar logo (da pasta do executável)
+            using (var logo = LoadLogoFromFile())
+            {
+                if (logo != null)
+                {
+                    // Calcular tamanho da logo proporcional à altura do título
+                    var logoHeight = (int)(titleSize.Height * 2.5);
+                    var logoWidth = (int)(logo.Width * ((float)logoHeight / logo.Height));
+                    
+                    // Posicionar logo à direita, alinhada com o topo do título
+                    var logoX = rightMargin - logoWidth;
+                    var logoY = currentY; // Alinhado com o topo do título (sem ajuste negativo)
+                    
+                    graphics.DrawImage(logo, logoX, logoY, logoWidth, logoHeight);
+                }
+            }
+            
             currentY += 35;
 
             // Período e filtros

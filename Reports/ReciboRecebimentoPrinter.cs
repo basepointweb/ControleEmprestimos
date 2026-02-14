@@ -52,6 +52,26 @@ public class ReciboRecebimentoPrinter
         printPreviewDialog.ShowDialog();
     }
 
+    private Image? LoadLogoFromFile()
+    {
+        try
+        {
+            // Buscar logo na mesma pasta do executável
+            var logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logo.png");
+            
+            if (File.Exists(logoPath))
+            {
+                return Image.FromFile(logoPath);
+            }
+        }
+        catch
+        {
+            // Se não conseguir carregar, retorna null
+        }
+        
+        return null;
+    }
+
     private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)
     {
         if (e.Graphics == null) return;
@@ -69,12 +89,36 @@ public class ReciboRecebimentoPrinter
         var smallFont = new Font("Arial", 8, FontStyle.Regular);
         var warningFont = new Font("Arial", 9, FontStyle.Bold | FontStyle.Italic);
 
-        // Título
-        var tituloRecebimento = _recebimento.RecebimentoParcial ? "RECIBO DE RECEBIMENTO PARCIAL" : "RECIBO DE RECEBIMENTO";
-        graphics.DrawString(tituloRecebimento, titleFont, Brushes.Black, leftMargin, currentY);
-        currentY += 30;
+        // Título e Logo
+        var tituloBase = "SEMIADET - Recebimento de bens emprestados";
+        var titulo = _recebimento.RecebimentoParcial ? tituloBase + " (PARCIAL)" : tituloBase;
+        var titleSize = graphics.MeasureString(titulo, titleFont);
+        
+        // Desenhar título
+        graphics.DrawString(titulo, titleFont, Brushes.Black, leftMargin, currentY);
+        
+        // Carregar e desenhar logo (da pasta do executável)
+        var logoHeight = 0;
+        using (var logo = LoadLogoFromFile())
+        {
+            if (logo != null)
+            {
+                // Calcular tamanho da logo proporcional à altura do título
+                logoHeight = (int)(titleSize.Height * 2.5); // Logo um pouco maior que o título
+                var logoWidth = (int)(logo.Width * ((float)logoHeight / logo.Height));
+                
+                // Posicionar logo à direita, alinhada com o topo do título
+                var logoX = e.PageBounds.Width - leftMargin - logoWidth;
+                var logoY = currentY; // Alinhado com o topo do título (sem ajuste negativo)
+                
+                graphics.DrawImage(logo, logoX, logoY, logoWidth, logoHeight);
+            }
+        }
+        
+        // Avançar para baixo da logo (usar altura da logo ou altura do título)
+        currentY += Math.Max(logoHeight, (int)titleSize.Height) + 10; // +10 para espaçamento extra
 
-        // Linha separadora
+        // Linha separadora (agora abaixo da logo)
         graphics.DrawLine(Pens.Black, leftMargin, currentY, e.PageBounds.Width - leftMargin, currentY);
         currentY += 15;
 

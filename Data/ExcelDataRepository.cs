@@ -97,11 +97,12 @@ public class ExcelDataRepository
         worksheet.Cells[1, 5].Value = "CongregacaoNome";
         worksheet.Cells[1, 6].Value = "DataEmprestimo";
         worksheet.Cells[1, 7].Value = "Status";
-        worksheet.Cells[1, 8].Value = "DataCriacao";
-        worksheet.Cells[1, 9].Value = "DataAlteracao";
+        worksheet.Cells[1, 8].Value = "QuemLiberou";
+        worksheet.Cells[1, 9].Value = "DataCriacao";
+        worksheet.Cells[1, 10].Value = "DataAlteracao";
         
         // Formatar cabeçalhos
-        using (var range = worksheet.Cells[1, 1, 1, 9])
+        using (var range = worksheet.Cells[1, 1, 1, 10])
         {
             range.Style.Font.Bold = true;
             range.AutoFilter = true;
@@ -277,8 +278,9 @@ public class ExcelDataRepository
             worksheet.Cells[row, 5].Value = emprestimo.CongregacaoName;
             worksheet.Cells[row, 6].Value = emprestimo.DataEmprestimo.ToString("yyyy-MM-dd HH:mm:ss");
             worksheet.Cells[row, 7].Value = (int)emprestimo.Status;
-            worksheet.Cells[row, 8].Value = emprestimo.DataCriacao.ToString("yyyy-MM-dd HH:mm:ss");
-            worksheet.Cells[row, 9].Value = emprestimo.DataAlteracao.ToString("yyyy-MM-dd HH:mm:ss");
+            worksheet.Cells[row, 8].Value = emprestimo.QuemLiberou;
+            worksheet.Cells[row, 9].Value = emprestimo.DataCriacao.ToString("yyyy-MM-dd HH:mm:ss");
+            worksheet.Cells[row, 10].Value = emprestimo.DataAlteracao.ToString("yyyy-MM-dd HH:mm:ss");
             row++;
         }
         
@@ -460,8 +462,9 @@ public class ExcelDataRepository
                         CongregacaoName = emprestimosSheet.Cells[row, 5].Value?.ToString() ?? string.Empty,
                         DataEmprestimo = DateTime.Parse(emprestimosSheet.Cells[row, 6].Value?.ToString() ?? DateTime.Now.ToString()),
                         Status = (StatusEmprestimo)int.Parse(emprestimosSheet.Cells[row, 7].Value?.ToString() ?? "1"),
-                        DataCriacao = DateTime.Parse(emprestimosSheet.Cells[row, 8].Value?.ToString() ?? DateTime.Now.ToString()),
-                        DataAlteracao = DateTime.Parse(emprestimosSheet.Cells[row, 9].Value?.ToString() ?? DateTime.Now.ToString())
+                        QuemLiberou = emprestimosSheet.Cells[row, 8].Value?.ToString() ?? string.Empty,
+                        DataCriacao = DateTime.Parse(emprestimosSheet.Cells[row, 9].Value?.ToString() ?? DateTime.Now.ToString()),
+                        DataAlteracao = DateTime.Parse(emprestimosSheet.Cells[row, 10].Value?.ToString() ?? DateTime.Now.ToString())
                     });
                     
                     if (id >= nextEmprestimoId)

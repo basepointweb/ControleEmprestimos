@@ -17,201 +17,213 @@ partial class RecebimentoListForm
 
     private void InitializeComponent()
     {
-        this.dataGridView1 = new DataGridView();
-        this.btnCreate = new Button();
-        this.btnEdit = new Button();
-        this.btnDelete = new Button();
-        this.btnImprimirRecibo = new Button();
-        this.btnRelatorio = new Button();
-        this.panel1 = new Panel();
-        this.titlePanel = new Panel();
-        this.titleLabel = new Label();
-        this.lblDataInicial = new Label();
-        this.dtpDataInicial = new DateTimePicker();
-        this.lblDataFinal = new Label();
-        this.dtpDataFinal = new DateTimePicker();
-        this.btnFiltrar = new Button();
-        ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-        this.panel1.SuspendLayout();
-        this.titlePanel.SuspendLayout();
-        this.SuspendLayout();
-        // 
-        // titlePanel
-        // 
-        this.titlePanel.BackColor = Color.FromArgb(0, 120, 215);
-        this.titlePanel.Controls.Add(this.btnFiltrar);
-        this.titlePanel.Controls.Add(this.dtpDataFinal);
-        this.titlePanel.Controls.Add(this.lblDataFinal);
-        this.titlePanel.Controls.Add(this.dtpDataInicial);
-        this.titlePanel.Controls.Add(this.lblDataInicial);
-        this.titlePanel.Controls.Add(this.titleLabel);
-        this.titlePanel.Dock = DockStyle.Top;
-        this.titlePanel.Location = new Point(0, 0);
-        this.titlePanel.Name = "titlePanel";
-        this.titlePanel.Size = new Size(800, 50);
-        this.titlePanel.TabIndex = 2;
-        // 
-        // titleLabel
-        // 
-        this.titleLabel.AutoSize = false;
-        this.titleLabel.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
-        this.titleLabel.ForeColor = Color.White;
-        this.titleLabel.Location = new Point(20, 0);
-        this.titleLabel.Name = "titleLabel";
-        this.titleLabel.Size = new Size(320, 50);
-        this.titleLabel.TabIndex = 0;
-        this.titleLabel.Text = "Recebimento de Emprestimo";
-        this.titleLabel.TextAlign = ContentAlignment.MiddleLeft;
-        // 
-        // lblDataInicial
-        // 
-        this.lblDataInicial.Anchor = ((AnchorStyles)((AnchorStyles.Top | AnchorStyles.Right)));
-        this.lblDataInicial.AutoSize = true;
-        this.lblDataInicial.Font = new Font("Segoe UI", 9F);
-        this.lblDataInicial.ForeColor = Color.White;
-        this.lblDataInicial.Location = new Point(420, 8);
-        this.lblDataInicial.Name = "lblDataInicial";
-        this.lblDataInicial.Size = new Size(70, 15);
-        this.lblDataInicial.TabIndex = 1;
-        this.lblDataInicial.Text = "Data Inicial:";
-        // 
-        // dtpDataInicial
-        // 
-        this.dtpDataInicial.Anchor = ((AnchorStyles)((AnchorStyles.Top | AnchorStyles.Right)));
-        this.dtpDataInicial.Format = DateTimePickerFormat.Short;
-        this.dtpDataInicial.Location = new Point(420, 26);
-        this.dtpDataInicial.Name = "dtpDataInicial";
-        this.dtpDataInicial.Size = new Size(110, 23);
-        this.dtpDataInicial.TabIndex = 2;
-        // 
-        // lblDataFinal
-        // 
-        this.lblDataFinal.Anchor = ((AnchorStyles)((AnchorStyles.Top | AnchorStyles.Right)));
-        this.lblDataFinal.AutoSize = true;
-        this.lblDataFinal.Font = new Font("Segoe UI", 9F);
-        this.lblDataFinal.ForeColor = Color.White;
-        this.lblDataFinal.Location = new Point(540, 8);
-        this.lblDataFinal.Name = "lblDataFinal";
-        this.lblDataFinal.Size = new Size(63, 15);
-        this.lblDataFinal.TabIndex = 3;
-        this.lblDataFinal.Text = "Data Final:";
-        // 
-        // dtpDataFinal
-        // 
-        this.dtpDataFinal.Anchor = ((AnchorStyles)((AnchorStyles.Top | AnchorStyles.Right)));
-        this.dtpDataFinal.Format = DateTimePickerFormat.Short;
-        this.dtpDataFinal.Location = new Point(540, 26);
-        this.dtpDataFinal.Name = "dtpDataFinal";
-        this.dtpDataFinal.Size = new Size(110, 23);
-        this.dtpDataFinal.TabIndex = 4;
-        // 
-        // btnFiltrar
-        // 
-        this.btnFiltrar.Anchor = ((AnchorStyles)((AnchorStyles.Top | AnchorStyles.Right)));
-        this.btnFiltrar.BackColor = Color.FromArgb(40, 167, 69);
-        this.btnFiltrar.ForeColor = Color.White;
-        this.btnFiltrar.Location = new Point(660, 23);
-        this.btnFiltrar.Name = "btnFiltrar";
-        this.btnFiltrar.Size = new Size(80, 26);
-        this.btnFiltrar.TabIndex = 5;
-        this.btnFiltrar.Text = "Filtrar";
-        this.btnFiltrar.UseVisualStyleBackColor = false;
-        this.btnFiltrar.Click += new EventHandler(this.BtnFiltrar_Click);
+        dataGridView1 = new DataGridView();
+        btnCreate = new Button();
+        btnEdit = new Button();
+        btnDelete = new Button();
+        btnImprimirRecibo = new Button();
+        btnRelatorio = new Button();
+        panel1 = new Panel();
+        titlePanel = new Panel();
+        btnFiltrar = new Button();
+        dtpDataFinal = new DateTimePicker();
+        lblDataFinal = new Label();
+        dtpDataInicial = new DateTimePicker();
+        lblDataInicial = new Label();
+        titleLabel = new Label();
+        ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+        panel1.SuspendLayout();
+        titlePanel.SuspendLayout();
+        SuspendLayout();
         // 
         // dataGridView1
         // 
-        this.dataGridView1.AllowUserToAddRows = false;
-        this.dataGridView1.AllowUserToDeleteRows = false;
-        this.dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        this.dataGridView1.Dock = DockStyle.Fill;
-        this.dataGridView1.Location = new Point(0, 50);
-        this.dataGridView1.Name = "dataGridView1";
-        this.dataGridView1.ReadOnly = true;
-        this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-        this.dataGridView1.Size = new Size(800, 350);
-        this.dataGridView1.TabIndex = 0;
-        // 
-        // panel1
-        // 
-        this.panel1.Controls.Add(this.btnCreate);
-        this.panel1.Controls.Add(this.btnEdit);
-        this.panel1.Controls.Add(this.btnDelete);
-        this.panel1.Controls.Add(this.btnImprimirRecibo);
-        this.panel1.Controls.Add(this.btnRelatorio);
-        this.panel1.Dock = DockStyle.Bottom;
-        this.panel1.Location = new Point(0, 400);
-        this.panel1.Name = "panel1";
-        this.panel1.Size = new Size(800, 50);
-        this.panel1.TabIndex = 1;
+        dataGridView1.AllowUserToAddRows = false;
+        dataGridView1.AllowUserToDeleteRows = false;
+        dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+        dataGridView1.Dock = DockStyle.Fill;
+        dataGridView1.Location = new Point(0, 67);
+        dataGridView1.Margin = new Padding(3, 4, 3, 4);
+        dataGridView1.Name = "dataGridView1";
+        dataGridView1.ReadOnly = true;
+        dataGridView1.RowHeadersWidth = 51;
+        dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        dataGridView1.Size = new Size(914, 466);
+        dataGridView1.TabIndex = 0;
         // 
         // btnCreate
         // 
-        this.btnCreate.Location = new Point(12, 10);
-        this.btnCreate.Name = "btnCreate";
-        this.btnCreate.Size = new Size(100, 30);
-        this.btnCreate.TabIndex = 0;
-        this.btnCreate.Text = "Criar";
-        this.btnCreate.UseVisualStyleBackColor = true;
-        this.btnCreate.Click += new EventHandler(this.BtnCreate_Click);
+        btnCreate.Location = new Point(14, 13);
+        btnCreate.Margin = new Padding(3, 4, 3, 4);
+        btnCreate.Name = "btnCreate";
+        btnCreate.Size = new Size(114, 40);
+        btnCreate.TabIndex = 0;
+        btnCreate.Text = "Criar";
+        btnCreate.UseVisualStyleBackColor = true;
+        btnCreate.Click += BtnCreate_Click;
         // 
         // btnEdit
         // 
-        this.btnEdit.Location = new Point(118, 10);
-        this.btnEdit.Name = "btnEdit";
-        this.btnEdit.Size = new Size(100, 30);
-        this.btnEdit.TabIndex = 1;
-        this.btnEdit.Text = "Editar";
-        this.btnEdit.UseVisualStyleBackColor = true;
-        this.btnEdit.Click += new EventHandler(this.BtnEdit_Click);
+        btnEdit.Location = new Point(135, 13);
+        btnEdit.Margin = new Padding(3, 4, 3, 4);
+        btnEdit.Name = "btnEdit";
+        btnEdit.Size = new Size(114, 40);
+        btnEdit.TabIndex = 1;
+        btnEdit.Text = "Editar";
+        btnEdit.UseVisualStyleBackColor = true;
+        btnEdit.Click += BtnEdit_Click;
         // 
         // btnDelete
         // 
-        this.btnDelete.Location = new Point(224, 10);
-        this.btnDelete.Name = "btnDelete";
-        this.btnDelete.Size = new Size(100, 30);
-        this.btnDelete.TabIndex = 2;
-        this.btnDelete.Text = "Excluir";
-        this.btnDelete.UseVisualStyleBackColor = true;
-        this.btnDelete.Click += new EventHandler(this.BtnDelete_Click);
+        btnDelete.Location = new Point(256, 13);
+        btnDelete.Margin = new Padding(3, 4, 3, 4);
+        btnDelete.Name = "btnDelete";
+        btnDelete.Size = new Size(114, 40);
+        btnDelete.TabIndex = 2;
+        btnDelete.Text = "Excluir";
+        btnDelete.UseVisualStyleBackColor = true;
+        btnDelete.Click += BtnDelete_Click;
         // 
         // btnImprimirRecibo
         // 
-        this.btnImprimirRecibo.BackColor = Color.FromArgb(23, 162, 184);
-        this.btnImprimirRecibo.ForeColor = Color.White;
-        this.btnImprimirRecibo.Location = new Point(330, 10);
-        this.btnImprimirRecibo.Name = "btnImprimirRecibo";
-        this.btnImprimirRecibo.Size = new Size(120, 30);
-        this.btnImprimirRecibo.TabIndex = 3;
-        this.btnImprimirRecibo.Text = "Imprimir Recibo";
-        this.btnImprimirRecibo.UseVisualStyleBackColor = false;
-        this.btnImprimirRecibo.Click += new EventHandler(this.BtnImprimirRecibo_Click);
+        btnImprimirRecibo.BackColor = Color.FromArgb(23, 162, 184);
+        btnImprimirRecibo.ForeColor = Color.White;
+        btnImprimirRecibo.Location = new Point(377, 13);
+        btnImprimirRecibo.Margin = new Padding(3, 4, 3, 4);
+        btnImprimirRecibo.Name = "btnImprimirRecibo";
+        btnImprimirRecibo.Size = new Size(137, 40);
+        btnImprimirRecibo.TabIndex = 3;
+        btnImprimirRecibo.Text = "Imprimir Recibo";
+        btnImprimirRecibo.UseVisualStyleBackColor = false;
+        btnImprimirRecibo.Click += BtnImprimirRecibo_Click;
         // 
         // btnRelatorio
         // 
-        this.btnRelatorio.BackColor = Color.FromArgb(220, 53, 69);
-        this.btnRelatorio.ForeColor = Color.White;
-        this.btnRelatorio.Location = new Point(456, 10);
-        this.btnRelatorio.Name = "btnRelatorio";
-        this.btnRelatorio.Size = new Size(100, 30);
-        this.btnRelatorio.TabIndex = 4;
-        this.btnRelatorio.Text = "Relatório";
-        this.btnRelatorio.UseVisualStyleBackColor = false;
-        this.btnRelatorio.Click += new EventHandler(this.BtnRelatorio_Click);
+        btnRelatorio.BackColor = Color.FromArgb(220, 53, 69);
+        btnRelatorio.ForeColor = Color.White;
+        btnRelatorio.Location = new Point(521, 13);
+        btnRelatorio.Margin = new Padding(3, 4, 3, 4);
+        btnRelatorio.Name = "btnRelatorio";
+        btnRelatorio.Size = new Size(114, 40);
+        btnRelatorio.TabIndex = 4;
+        btnRelatorio.Text = "Relatório";
+        btnRelatorio.UseVisualStyleBackColor = false;
+        btnRelatorio.Click += BtnRelatorio_Click;
+        // 
+        // panel1
+        // 
+        panel1.Controls.Add(btnCreate);
+        panel1.Controls.Add(btnEdit);
+        panel1.Controls.Add(btnDelete);
+        panel1.Controls.Add(btnImprimirRecibo);
+        panel1.Controls.Add(btnRelatorio);
+        panel1.Dock = DockStyle.Bottom;
+        panel1.Location = new Point(0, 533);
+        panel1.Margin = new Padding(3, 4, 3, 4);
+        panel1.Name = "panel1";
+        panel1.Size = new Size(914, 67);
+        panel1.TabIndex = 1;
+        // 
+        // titlePanel
+        // 
+        titlePanel.BackColor = Color.FromArgb(0, 120, 215);
+        titlePanel.Controls.Add(btnFiltrar);
+        titlePanel.Controls.Add(dtpDataFinal);
+        titlePanel.Controls.Add(lblDataFinal);
+        titlePanel.Controls.Add(dtpDataInicial);
+        titlePanel.Controls.Add(lblDataInicial);
+        titlePanel.Controls.Add(titleLabel);
+        titlePanel.Dock = DockStyle.Top;
+        titlePanel.Location = new Point(0, 0);
+        titlePanel.Margin = new Padding(3, 4, 3, 4);
+        titlePanel.Name = "titlePanel";
+        titlePanel.Size = new Size(914, 67);
+        titlePanel.TabIndex = 2;
+        // 
+        // btnFiltrar
+        // 
+        btnFiltrar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        btnFiltrar.BackColor = Color.FromArgb(40, 167, 69);
+        btnFiltrar.ForeColor = Color.White;
+        btnFiltrar.Location = new Point(754, 31);
+        btnFiltrar.Margin = new Padding(3, 4, 3, 4);
+        btnFiltrar.Name = "btnFiltrar";
+        btnFiltrar.Size = new Size(91, 35);
+        btnFiltrar.TabIndex = 5;
+        btnFiltrar.Text = "Filtrar";
+        btnFiltrar.UseVisualStyleBackColor = false;
+        btnFiltrar.Click += BtnFiltrar_Click;
+        // 
+        // dtpDataFinal
+        // 
+        dtpDataFinal.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        dtpDataFinal.Format = DateTimePickerFormat.Short;
+        dtpDataFinal.Location = new Point(617, 35);
+        dtpDataFinal.Margin = new Padding(3, 4, 3, 4);
+        dtpDataFinal.Name = "dtpDataFinal";
+        dtpDataFinal.Size = new Size(125, 27);
+        dtpDataFinal.TabIndex = 4;
+        // 
+        // lblDataFinal
+        // 
+        lblDataFinal.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        lblDataFinal.AutoSize = true;
+        lblDataFinal.Font = new Font("Segoe UI", 9F);
+        lblDataFinal.ForeColor = Color.White;
+        lblDataFinal.Location = new Point(617, 11);
+        lblDataFinal.Name = "lblDataFinal";
+        lblDataFinal.Size = new Size(79, 20);
+        lblDataFinal.TabIndex = 3;
+        lblDataFinal.Text = "Data Final:";
+        // 
+        // dtpDataInicial
+        // 
+        dtpDataInicial.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        dtpDataInicial.Format = DateTimePickerFormat.Short;
+        dtpDataInicial.Location = new Point(480, 35);
+        dtpDataInicial.Margin = new Padding(3, 4, 3, 4);
+        dtpDataInicial.Name = "dtpDataInicial";
+        dtpDataInicial.Size = new Size(125, 27);
+        dtpDataInicial.TabIndex = 2;
+        // 
+        // lblDataInicial
+        // 
+        lblDataInicial.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        lblDataInicial.AutoSize = true;
+        lblDataInicial.Font = new Font("Segoe UI", 9F);
+        lblDataInicial.ForeColor = Color.White;
+        lblDataInicial.Location = new Point(480, 11);
+        lblDataInicial.Name = "lblDataInicial";
+        lblDataInicial.Size = new Size(87, 20);
+        lblDataInicial.TabIndex = 1;
+        lblDataInicial.Text = "Data Inicial:";
+        // 
+        // titleLabel
+        // 
+        titleLabel.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+        titleLabel.ForeColor = Color.White;
+        titleLabel.Location = new Point(23, 0);
+        titleLabel.Name = "titleLabel";
+        titleLabel.Size = new Size(405, 67);
+        titleLabel.TabIndex = 0;
+        titleLabel.Text = "Recebimento de Emprestimo";
+        titleLabel.TextAlign = ContentAlignment.MiddleLeft;
         // 
         // RecebimentoListForm
         // 
-        this.AutoScaleDimensions = new SizeF(7F, 15F);
-        this.AutoScaleMode = AutoScaleMode.Font;
-        this.Controls.Add(this.dataGridView1);
-        this.Controls.Add(this.panel1);
-        this.Controls.Add(this.titlePanel);
-        this.Name = "RecebimentoListForm";
-        this.Size = new Size(800, 450);
-        ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-        this.panel1.ResumeLayout(false);
-        this.titlePanel.ResumeLayout(false);
-        this.titlePanel.PerformLayout();
-        this.ResumeLayout(false);
+        AutoScaleDimensions = new SizeF(8F, 20F);
+        AutoScaleMode = AutoScaleMode.Font;
+        Controls.Add(dataGridView1);
+        Controls.Add(panel1);
+        Controls.Add(titlePanel);
+        Margin = new Padding(3, 4, 3, 4);
+        Name = "RecebimentoListForm";
+        Size = new Size(914, 600);
+        ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+        panel1.ResumeLayout(false);
+        titlePanel.ResumeLayout(false);
+        titlePanel.PerformLayout();
+        ResumeLayout(false);
     }
 
     #endregion

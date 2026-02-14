@@ -16,15 +16,15 @@ public partial class RecebimentoListForm : UserControl
     {
         InitializeComponent();
         _repository = DataRepository.Instance;
-        
+
         // Inicializar filtro de data com o mês atual
         var hoje = DateTime.Now;
         _dataInicialFiltro = new DateTime(hoje.Year, hoje.Month, 1); // Primeiro dia do mês
         _dataFinalFiltro = new DateTime(hoje.Year, hoje.Month, DateTime.DaysInMonth(hoje.Year, hoje.Month)); // Último dia do mês
-        
+
         dtpDataInicial.Value = _dataInicialFiltro;
         dtpDataFinal.Value = _dataFinalFiltro;
-        
+
         ConfigureDataGridView();
     }
 
@@ -135,8 +135,8 @@ public partial class RecebimentoListForm : UserControl
             return;
 
         // Obter filtros atuais para esta coluna
-        var currentFilters = _columnFilters.ContainsKey(column.Name) 
-            ? _columnFilters[column.Name] 
+        var currentFilters = _columnFilters.ContainsKey(column.Name)
+            ? _columnFilters[column.Name]
             : new List<string>();
 
         // Mostrar dialog de filtro
@@ -165,7 +165,7 @@ public partial class RecebimentoListForm : UserControl
         if (property == null) return string.Empty;
 
         var value = property.GetValue(recebimento);
-        
+
         // Tratamento especial para DateTime
         if (value is DateTime dateValue)
         {
@@ -175,7 +175,7 @@ public partial class RecebimentoListForm : UserControl
             else
                 return dateValue.ToString("dd/MM/yyyy");
         }
-        
+
         return value?.ToString() ?? string.Empty;
     }
 
@@ -184,21 +184,21 @@ public partial class RecebimentoListForm : UserControl
         var filteredRecebimentos = _allRecebimentos.AsEnumerable();
 
         // Aplicar filtro de data (por DataRecebimento, ignorando hora)
-        filteredRecebimentos = filteredRecebimentos.Where(r => 
-            r.DataRecebimento.Date >= _dataInicialFiltro.Date && 
+        filteredRecebimentos = filteredRecebimentos.Where(r =>
+            r.DataRecebimento.Date >= _dataInicialFiltro.Date &&
             r.DataRecebimento.Date <= _dataFinalFiltro.Date);
 
         foreach (var filter in _columnFilters)
         {
             var columnName = filter.Key;
             var selectedValues = filter.Value;
-            
+
             // Encontrar o DataPropertyName da coluna
             var column = dataGridView1.Columns[columnName];
             if (column == null) continue;
 
             var propertyName = column.DataPropertyName;
-            
+
             filteredRecebimentos = filteredRecebimentos.Where(recebimento =>
             {
                 var value = GetPropertyValue(recebimento, propertyName);
@@ -214,7 +214,7 @@ public partial class RecebimentoListForm : UserControl
     {
         // Recarregar dados do Excel
         _repository.ReloadFromExcel();
-        
+
         _allRecebimentos = _repository.RecebimentoEmprestimos.ToList();
         _columnFilters.Clear();
         ApplyFilters();
@@ -246,7 +246,7 @@ public partial class RecebimentoListForm : UserControl
     {
         if (dataGridView1.CurrentRow?.DataBoundItem is RecebimentoEmprestimo recebimento)
         {
-            var emprestimo = recebimento.EmprestimoId.HasValue 
+            var emprestimo = recebimento.EmprestimoId.HasValue
                 ? _repository.Emprestimos.FirstOrDefault(e => e.Id == recebimento.EmprestimoId.Value)
                 : null;
 
@@ -274,7 +274,7 @@ public partial class RecebimentoListForm : UserControl
             {
                 // Usar método do repository que já reverte tudo corretamente
                 _repository.RemoverRecebimento(item);
-                
+
                 LoadData();
 
                 MessageBox.Show(

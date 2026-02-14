@@ -30,6 +30,7 @@ public partial class EmprestimoDetailForm : Form
             txtRecebedor.Text = _item.Name;
             txtMotivo.Text = _item.Motivo;
             dtpDataEmprestimo.Value = _item.DataEmprestimo;
+            txtQuemLiberou.Text = _item.QuemLiberou;
             txtStatus.Text = _item.StatusDescricao;
             
             if (_item.CongregacaoId.HasValue)
@@ -83,6 +84,7 @@ public partial class EmprestimoDetailForm : Form
                 {
                     txtRecebedor.ReadOnly = true;
                     txtMotivo.ReadOnly = true;
+                    txtQuemLiberou.ReadOnly = true;
                     cmbCongregacao.Enabled = false;
                     dtpDataEmprestimo.Enabled = false;
                     cmbItem.Enabled = false;
@@ -306,6 +308,12 @@ public partial class EmprestimoDetailForm : Form
             return;
         }
 
+        if (string.IsNullOrWhiteSpace(txtQuemLiberou.Text))
+        {
+            MessageBox.Show("Por favor, informe quem liberou o bem.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
         if (cmbCongregacao.SelectedItem == null)
         {
             MessageBox.Show("Por favor, selecione uma congregação.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -325,6 +333,7 @@ public partial class EmprestimoDetailForm : Form
             // Modo edição (apenas dados gerais, não permite alterar itens)
             _item.Name = txtRecebedor.Text;
             _item.Motivo = txtMotivo.Text;
+            _item.QuemLiberou = txtQuemLiberou.Text;
             _item.CongregacaoId = selectedCongregacao.Id;
             _item.CongregacaoName = selectedCongregacao.Name;
             _item.DataEmprestimo = dtpDataEmprestimo.Value;
@@ -340,6 +349,7 @@ public partial class EmprestimoDetailForm : Form
             {
                 Name = txtRecebedor.Text,
                 Motivo = txtMotivo.Text,
+                QuemLiberou = txtQuemLiberou.Text,
                 CongregacaoId = selectedCongregacao.Id,
                 CongregacaoName = selectedCongregacao.Name,
                 DataEmprestimo = dtpDataEmprestimo.Value,

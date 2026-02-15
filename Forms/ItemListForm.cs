@@ -280,7 +280,10 @@ public partial class ItemListForm : UserControl
                 
             if (result == DialogResult.Yes)
             {
-                _repository.Items.Remove(item);
+                // ✅ CORREÇÃO: Usar método do repositório que salva automaticamente
+                _repository.RemoverItem(item);
+                
+                // Recarregar dados
                 LoadData();
                 
                 MessageBox.Show(

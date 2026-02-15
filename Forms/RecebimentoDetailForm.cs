@@ -486,12 +486,20 @@ public partial class RecebimentoDetailForm : Form
             return;
         }
 
-        Emprestimo? emprestimoSelecionado = _emprestimoPreSelecionado;
-        if (emprestimoSelecionado == null && cmbEmprestimo.SelectedItem != null)
+        // CORREÇÃO: Obter empréstimo selecionado no combo (se houver), caso contrário usar o pré-selecionado
+        Emprestimo? emprestimoSelecionado = null;
+        
+        if (cmbEmprestimo.SelectedItem != null)
         {
+            // Usuário selecionou algo no combo (pode ter trocado)
             var selectedItem = cmbEmprestimo.SelectedItem;
             var emprestimoProperty = selectedItem.GetType().GetProperty("Emprestimo");
             emprestimoSelecionado = emprestimoProperty?.GetValue(selectedItem) as Emprestimo;
+        }
+        else if (_emprestimoPreSelecionado != null)
+        {
+            // Usa o pré-selecionado apenas se não houver seleção no combo
+            emprestimoSelecionado = _emprestimoPreSelecionado;
         }
 
         if (emprestimoSelecionado == null)
@@ -522,7 +530,7 @@ public partial class RecebimentoDetailForm : Form
         
         _repository.AddRecebimento(newItem);
 
-        // Atualizar status do empréstimo
+        // Atualizar status do empréstimo CORRETO (o que foi efetivamente selecionado)
         _repository.DevolverEmprestimo(emprestimoSelecionado);
 
         // Perguntar se deseja imprimir recibo

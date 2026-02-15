@@ -316,4 +316,20 @@ public class DataRepository
         RecebimentoEmprestimos.Remove(recebimento);
         SaveToExcel();
     }
+
+    public void RemoverItem(Item item)
+    {
+        // Remove o item da lista
+        Items.Remove(item);
+        // Salva as alterações no Excel
+        SaveToExcel();
+    }
+
+    public void RemoverCongregacao(Congregacao congregacao)
+    {
+        // Remove a congregação da lista
+        Congregacoes.Remove(congregacao);
+        // Salva as alterações no Excel
+        SaveToExcel();
+    }
 }

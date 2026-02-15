@@ -269,7 +269,10 @@ public partial class CongregacaoListForm : UserControl
                 
             if (result == DialogResult.Yes)
             {
-                _repository.Congregacoes.Remove(item);
+                // ✅ CORREÇÃO: Usar método do repositório que salva automaticamente
+                _repository.RemoverCongregacao(item);
+                
+                // Recarregar dados
                 LoadData();
                 
                 MessageBox.Show(

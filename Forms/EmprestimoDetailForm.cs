@@ -136,8 +136,39 @@ public partial class EmprestimoDetailForm : Form
         
         if (_itemPreSelecionado != null)
         {
-            cmbItem.SelectedItem = _itemPreSelecionado;
-            numQuantity.Value = 1;
+            // Adicionar item à lista com quantidade 1
+            _itensEmprestimo.Add(new EmprestimoItem
+            {
+                ItemId = _itemPreSelecionado.Id,
+                ItemName = _itemPreSelecionado.Name,
+                Quantidade = 1,
+                QuantidadeRecebida = 0
+            });
+            
+            RefreshItensGrid();
+            dtpDataEmprestimo.Value = DateTime.Now;
+            txtStatus.Text = "Em Andamento";
+        }
+    }
+
+    // Construtor para empréstimo com múltiplos itens pré-selecionados
+    public EmprestimoDetailForm(List<Item> itensPreSelecionados) : this()
+    {
+        if (itensPreSelecionados != null && itensPreSelecionados.Any())
+        {
+            // Adicionar todos os itens à lista com quantidade 1
+            foreach (var item in itensPreSelecionados)
+            {
+                _itensEmprestimo.Add(new EmprestimoItem
+                {
+                    ItemId = item.Id,
+                    ItemName = item.Name,
+                    Quantidade = 1,
+                    QuantidadeRecebida = 0
+                });
+            }
+            
+            RefreshItensGrid();
             dtpDataEmprestimo.Value = DateTime.Now;
             txtStatus.Text = "Em Andamento";
         }

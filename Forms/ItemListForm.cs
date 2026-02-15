@@ -29,6 +29,10 @@ public partial class ItemListForm : UserControl
     {
         dataGridView1.AutoGenerateColumns = false;
         dataGridView1.Columns.Clear();
+        
+        // Habilitar seleção múltipla
+        dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        dataGridView1.MultiSelect = true;
 
         dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
         {
@@ -319,25 +323,58 @@ public partial class ItemListForm : UserControl
 
     private void BtnEmprestar_Click(object sender, EventArgs e)
     {
-        if (dataGridView1.CurrentRow?.DataBoundItem is Item item)
+        // Obter todos os itens selecionados
+        var itensSelecionados = dataGridView1.SelectedRows
+            .Cast<DataGridViewRow>()
+            .Select(row => row.DataBoundItem as Item)
+            .Where(item => item != null)
+            .ToList();
+
+        if (!itensSelecionados.Any())
         {
-            // Verificar se há estoque disponível
-            if (item.QuantityInStock <= 0)
+            MessageBox.Show("Por favor, selecione pelo menos um item para emprestar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        // Filtrar apenas itens com estoque disponível
+        var itensComEstoque = itensSelecionados
+            .Where(item => item!.QuantityInStock > 0)
+            .ToList();
+
+        if (!itensComEstoque.Any())
+        {
+            var nomesSemEstoque = string.Join(", ", itensSelecionados.Select(i => $"'{i!.Name}'"));
+            MessageBox.Show(
+                $"Nenhum dos itens selecionados possui estoque disponível:\n{nomesSemEstoque}", 
+                "Aviso", 
+                MessageBoxButtons.OK, 
+                MessageBoxIcon.Warning);
+            return;
+        }
+
+        // Avisar sobre itens sem estoque (se houver)
+        var itensSemEstoque = itensSelecionados.Except(itensComEstoque).ToList();
+        if (itensSemEstoque.Any())
+        {
+            var nomesSemEstoque = string.Join(", ", itensSemEstoque.Select(i => $"'{i!.Name}'"));
+            var resultado = MessageBox.Show(
+                $"Os seguintes itens não possuem estoque disponível e serão ignorados:\n{nomesSemEstoque}\n\n" +
+                $"Deseja continuar com os {itensComEstoque.Count} item(ns) disponível(is)?",
+                "Itens sem Estoque",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (resultado == DialogResult.No)
             {
-                MessageBox.Show($"Não há estoque disponível de '{item.Name}'.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
-            // Criar um novo empréstimo com o item selecionado
-            var form = new EmprestimoDetailForm(item);
-            if (form.ShowDialog() == DialogResult.OK)
-            {
-                LoadData();
-            }
         }
-        else
+
+        // Criar um novo empréstimo com os itens selecionados
+        var form = new EmprestimoDetailForm(itensComEstoque!);
+        if (form.ShowDialog() == DialogResult.OK)
         {
-            MessageBox.Show("Por favor, selecione um item para emprestar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            LoadData();
         }
     }
 }

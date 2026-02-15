@@ -141,22 +141,28 @@ public partial class RecebimentoDetailForm : Form
             txtQuemPegou.Text = _emprestimoPreSelecionado.Name;
             mtbDataRecebimento.Text = DateTime.Now.ToString("dd/MM/yyyy");
             
-            // Selecionar no ComboBox DEPOIS de carregar itens
-            var dataSource = cmbEmprestimo.DataSource as List<dynamic>;
-            if (dataSource != null)
+            // Selecionar no ComboBox usando reflexão (igual ao modo edição)
+            if (cmbEmprestimo.DataSource != null)
             {
-                var item = dataSource.FirstOrDefault(x => 
+                var dataSource = cmbEmprestimo.DataSource as System.Collections.IEnumerable;
+                if (dataSource != null)
                 {
-                    var emp = x.Emprestimo as Emprestimo;
-                    return emp != null && emp.Id == _emprestimoPreSelecionado.Id;
-                });
-                
-                if (item != null)
-                {
-                    // Temporariamente remover o event handler para evitar recarregar itens
-                    cmbEmprestimo.SelectedIndexChanged -= CmbEmprestimo_SelectedIndexChanged;
-                    cmbEmprestimo.SelectedItem = item;
-                    cmbEmprestimo.SelectedIndexChanged += CmbEmprestimo_SelectedIndexChanged;
+                    foreach (var comboItem in dataSource)
+                    {
+                        var emprestimoProperty = comboItem.GetType().GetProperty("Emprestimo");
+                        if (emprestimoProperty != null)
+                        {
+                            var emp = emprestimoProperty.GetValue(comboItem) as Emprestimo;
+                            if (emp != null && emp.Id == _emprestimoPreSelecionado.Id)
+                            {
+                                // Temporariamente remover o event handler para não disparar SelectedIndexChanged
+                                cmbEmprestimo.SelectedIndexChanged -= CmbEmprestimo_SelectedIndexChanged;
+                                cmbEmprestimo.SelectedItem = comboItem;
+                                cmbEmprestimo.SelectedIndexChanged += CmbEmprestimo_SelectedIndexChanged;
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }

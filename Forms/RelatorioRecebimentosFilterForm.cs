@@ -1,6 +1,7 @@
 using ControleEmprestimos.Data;
 using ControleEmprestimos.Models;
 using ControleEmprestimos.Reports;
+using ControleEmprestimos.Helpers;
 
 namespace ControleEmprestimos.Forms;
 
@@ -16,12 +17,29 @@ public partial class RelatorioRecebimentosFilterForm : Form
     public RelatorioRecebimentosFilterForm()
     {
         InitializeComponent();
+        
+        // Substituir DateTimePickers por MaskedTextBox
+        FormControlHelper.ReplaceAllDateTimePickersWithMaskedTextBox(this);
+        
         _repository = DataRepository.Instance;
 
         // Definir mês atual como padrão
         var hoje = DateTime.Now;
-        dtpDataInicial.Value = new DateTime(hoje.Year, hoje.Month, 1);
-        dtpDataFinal.Value = new DateTime(hoje.Year, hoje.Month, DateTime.DaysInMonth(hoje.Year, hoje.Month));
+        var dataInicial = new DateTime(hoje.Year, hoje.Month, 1);
+        var dataFinal = new DateTime(hoje.Year, hoje.Month, DateTime.DaysInMonth(hoje.Year, hoje.Month));
+        
+        var mtbDataInicial = FormControlHelper.FindDateMaskedTextBox(this, "dtpDataInicial");
+        var mtbDataFinal = FormControlHelper.FindDateMaskedTextBox(this, "dtpDataFinal");
+        
+        if (mtbDataInicial != null)
+        {
+            mtbDataInicial.Text = dataInicial.ToString("dd/MM/yyyy");
+        }
+        
+        if (mtbDataFinal != null)
+        {
+            mtbDataFinal.Text = dataFinal.ToString("dd/MM/yyyy");
+        }
 
         LoadCongregacoes();
         LoadItens();
@@ -63,7 +81,33 @@ public partial class RelatorioRecebimentosFilterForm : Form
 
     private void BtnGerar_Click(object sender, EventArgs e)
     {
-        if (dtpDataInicial.Value.Date > dtpDataFinal.Value.Date)
+        // Obter datas dos MaskedTextBox
+        var mtbDataInicial = FormControlHelper.FindDateMaskedTextBox(this, "dtpDataInicial");
+        var mtbDataFinal = FormControlHelper.FindDateMaskedTextBox(this, "dtpDataFinal");
+
+        if (mtbDataInicial == null || !DateTime.TryParse(mtbDataInicial.Text, out DateTime dataInicial))
+        {
+            MessageBox.Show(
+                "Por favor, informe uma data inicial válida.",
+                "Validação",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            mtbDataInicial?.Focus();
+            return;
+        }
+
+        if (mtbDataFinal == null || !DateTime.TryParse(mtbDataFinal.Text, out DateTime dataFinal))
+        {
+            MessageBox.Show(
+                "Por favor, informe uma data final válida.",
+                "Validação",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            mtbDataFinal?.Focus();
+            return;
+        }
+
+        if (dataInicial.Date > dataFinal.Date)
         {
             MessageBox.Show(
                 "A data inicial não pode ser maior que a data final.",
@@ -73,8 +117,8 @@ public partial class RelatorioRecebimentosFilterForm : Form
             return;
         }
 
-        DataInicial = dtpDataInicial.Value.Date;
-        DataFinal = dtpDataFinal.Value.Date;
+        DataInicial = dataInicial.Date;
+        DataFinal = dataFinal.Date;
 
         var selectedCongregacao = cmbCongregacao.SelectedItem as dynamic;
         CongregacaoId = selectedCongregacao?.Id;

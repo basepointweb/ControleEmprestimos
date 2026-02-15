@@ -18,9 +18,11 @@ public partial class EmprestimoDetailForm : Form
     {
         InitializeComponent();
         
-        // Configurar controles para caixa alta e navegação de datas
+        // Substituir todos DateTimePickers por MaskedTextBox
+        FormControlHelper.ReplaceAllDateTimePickersWithMaskedTextBox(this);
+        
+        // Configurar controles para caixa alta
         FormControlHelper.ConfigureAllTextBoxesToUpperCase(this);
-        FormControlHelper.ConfigureAllDateTimePickers(this);
         
         _repository = DataRepository.Instance;
         _item = item;
@@ -35,7 +37,14 @@ public partial class EmprestimoDetailForm : Form
         {
             txtRecebedor.Text = _item.Name;
             txtMotivo.Text = _item.Motivo;
-            dtpDataEmprestimo.Value = _item.DataEmprestimo;
+            
+            // Buscar MaskedTextBox de data
+            var mtbDataEmprestimo = FormControlHelper.FindDateMaskedTextBox(this, "dtpDataEmprestimo");
+            if (mtbDataEmprestimo != null)
+            {
+                mtbDataEmprestimo.Text = _item.DataEmprestimo.ToString("dd/MM/yyyy");
+            }
+            
             txtQuemLiberou.Text = _item.QuemLiberou;
             txtStatus.Text = _item.StatusDescricao;
             
@@ -92,7 +101,7 @@ public partial class EmprestimoDetailForm : Form
                     txtMotivo.ReadOnly = true;
                     txtQuemLiberou.ReadOnly = true;
                     cmbCongregacao.Enabled = false;
-                    dtpDataEmprestimo.Enabled = false;
+                    if (mtbDataEmprestimo != null) mtbDataEmprestimo.Enabled = false;
                     cmbItem.Enabled = false;
                     numQuantity.Enabled = false;
                     btnAdicionarItem.Visible = false;
@@ -114,7 +123,10 @@ public partial class EmprestimoDetailForm : Form
             else if (_isCloning)
             {
                 // Modo clonagem - atualizar data e status
-                dtpDataEmprestimo.Value = DateTime.Now;
+                if (mtbDataEmprestimo != null)
+                {
+                    mtbDataEmprestimo.Text = DateTime.Now.ToString("dd/MM/yyyy");
+                }
                 txtStatus.Text = "Em Andamento";
                 btnCancelar.Visible = false;
                 this.Text = "Clonar Empréstimo";
@@ -123,7 +135,11 @@ public partial class EmprestimoDetailForm : Form
         else
         {
             // Para novo empréstimo, definir a data atual
-            dtpDataEmprestimo.Value = DateTime.Now;
+            var mtbDataEmprestimo = FormControlHelper.FindDateMaskedTextBox(this, "dtpDataEmprestimo");
+            if (mtbDataEmprestimo != null)
+            {
+                mtbDataEmprestimo.Text = DateTime.Now.ToString("dd/MM/yyyy");
+            }
             txtStatus.Text = "Em Andamento";
             btnCancelar.Visible = false;
         }
@@ -146,7 +162,12 @@ public partial class EmprestimoDetailForm : Form
             });
             
             RefreshItensGrid();
-            dtpDataEmprestimo.Value = DateTime.Now;
+            
+            var mtbDataEmprestimo = FormControlHelper.FindDateMaskedTextBox(this, "dtpDataEmprestimo");
+            if (mtbDataEmprestimo != null)
+            {
+                mtbDataEmprestimo.Text = DateTime.Now.ToString("dd/MM/yyyy");
+            }
             txtStatus.Text = "Em Andamento";
         }
     }
@@ -169,7 +190,12 @@ public partial class EmprestimoDetailForm : Form
             }
             
             RefreshItensGrid();
-            dtpDataEmprestimo.Value = DateTime.Now;
+            
+            var mtbDataEmprestimo = FormControlHelper.FindDateMaskedTextBox(this, "dtpDataEmprestimo");
+            if (mtbDataEmprestimo != null)
+            {
+                mtbDataEmprestimo.Text = DateTime.Now.ToString("dd/MM/yyyy");
+            }
             txtStatus.Text = "Em Andamento";
         }
     }
@@ -363,6 +389,15 @@ public partial class EmprestimoDetailForm : Form
             return;
         }
 
+        // Obter data do MaskedTextBox
+        var mtbDataEmprestimo = FormControlHelper.FindDateMaskedTextBox(this, "dtpDataEmprestimo");
+        if (mtbDataEmprestimo == null || !DateTime.TryParse(mtbDataEmprestimo.Text, out DateTime dataEmprestimo))
+        {
+            MessageBox.Show("Por favor, informe uma data de empréstimo válida.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            mtbDataEmprestimo?.Focus();
+            return;
+        }
+
         var selectedCongregacao = (Congregacao)cmbCongregacao.SelectedItem;
 
         if (_isEditing && _item != null)
@@ -373,7 +408,7 @@ public partial class EmprestimoDetailForm : Form
             _item.QuemLiberou = txtQuemLiberou.Text.Trim().ToUpper();
             _item.CongregacaoId = selectedCongregacao.Id;
             _item.CongregacaoName = selectedCongregacao.Name;
-            _item.DataEmprestimo = dtpDataEmprestimo.Value;
+            _item.DataEmprestimo = dataEmprestimo;
             _repository.UpdateEmprestimo(_item);
             
             this.DialogResult = DialogResult.OK;
@@ -389,7 +424,7 @@ public partial class EmprestimoDetailForm : Form
                 QuemLiberou = txtQuemLiberou.Text.Trim().ToUpper(),
                 CongregacaoId = selectedCongregacao.Id,
                 CongregacaoName = selectedCongregacao.Name,
-                DataEmprestimo = dtpDataEmprestimo.Value,
+                DataEmprestimo = dataEmprestimo,
                 Status = StatusEmprestimo.EmAndamento,
                 Itens = _itensEmprestimo
             };

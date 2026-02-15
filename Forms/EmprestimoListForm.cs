@@ -1,6 +1,7 @@
 using ControleEmprestimos.Data;
 using ControleEmprestimos.Models;
 using ControleEmprestimos.Reports;
+using ControleEmprestimos.Helpers;
 
 namespace ControleEmprestimos.Forms;
 
@@ -15,6 +16,10 @@ public partial class EmprestimoListForm : UserControl
     public EmprestimoListForm()
     {
         InitializeComponent();
+        
+        // Substituir DateTimePickers por MaskedTextBox
+        FormControlHelper.ReplaceAllDateTimePickersWithMaskedTextBox(this);
+        
         _repository = DataRepository.Instance;
         
         // Inicializar filtro de data com o mês atual
@@ -22,8 +27,18 @@ public partial class EmprestimoListForm : UserControl
         _dataInicialFiltro = new DateTime(hoje.Year, hoje.Month, 1); // Primeiro dia do mês
         _dataFinalFiltro = new DateTime(hoje.Year, hoje.Month, DateTime.DaysInMonth(hoje.Year, hoje.Month)); // Último dia do mês
         
-        dtpDataInicial.Value = _dataInicialFiltro;
-        dtpDataFinal.Value = _dataFinalFiltro;
+        var mtbDataInicial = FormControlHelper.FindDateMaskedTextBox(this, "dtpDataInicial");
+        var mtbDataFinal = FormControlHelper.FindDateMaskedTextBox(this, "dtpDataFinal");
+        
+        if (mtbDataInicial != null)
+        {
+            mtbDataInicial.Text = _dataInicialFiltro.ToString("dd/MM/yyyy");
+        }
+        
+        if (mtbDataFinal != null)
+        {
+            mtbDataFinal.Text = _dataFinalFiltro.ToString("dd/MM/yyyy");
+        }
         
         ConfigureDataGridView();
     }
@@ -284,8 +299,34 @@ public partial class EmprestimoListForm : UserControl
 
     private void BtnFiltrar_Click(object sender, EventArgs e)
     {
+        // Obter datas dos MaskedTextBox
+        var mtbDataInicial = FormControlHelper.FindDateMaskedTextBox(this, "dtpDataInicial");
+        var mtbDataFinal = FormControlHelper.FindDateMaskedTextBox(this, "dtpDataFinal");
+
+        if (mtbDataInicial == null || !DateTime.TryParse(mtbDataInicial.Text, out DateTime dataInicial))
+        {
+            MessageBox.Show(
+                "Por favor, informe uma data inicial válida.",
+                "Validação",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            mtbDataInicial?.Focus();
+            return;
+        }
+
+        if (mtbDataFinal == null || !DateTime.TryParse(mtbDataFinal.Text, out DateTime dataFinal))
+        {
+            MessageBox.Show(
+                "Por favor, informe uma data final válida.",
+                "Validação",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            mtbDataFinal?.Focus();
+            return;
+        }
+
         // Validar datas
-        if (dtpDataInicial.Value.Date > dtpDataFinal.Value.Date)
+        if (dataInicial.Date > dataFinal.Date)
         {
             MessageBox.Show(
                 "A data inicial não pode ser maior que a data final.",
@@ -296,8 +337,8 @@ public partial class EmprestimoListForm : UserControl
         }
 
         // Atualizar filtros
-        _dataInicialFiltro = dtpDataInicial.Value.Date;
-        _dataFinalFiltro = dtpDataFinal.Value.Date;
+        _dataInicialFiltro = dataInicial.Date;
+        _dataFinalFiltro = dataFinal.Date;
 
         // Recarregar dados do Excel antes de aplicar filtros
         LoadData();

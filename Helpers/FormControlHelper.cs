@@ -152,6 +152,66 @@ public static class FormControlHelper
     }
 
     /// <summary>
+    /// Substitui todos os DateTimePickers de um controle por MaskedTextBox
+    /// </summary>
+    public static void ReplaceAllDateTimePickersWithMaskedTextBox(Control container)
+    {
+        var dateTimePickers = new List<DateTimePicker>();
+        
+        // Encontrar todos os DateTimePickers
+        FindAllDateTimePickers(container, dateTimePickers);
+        
+        // Substituir cada um
+        foreach (var dtp in dateTimePickers)
+        {
+            ReplaceDateTimePickerWithMaskedTextBox(dtp);
+        }
+    }
+
+    private static void FindAllDateTimePickers(Control container, List<DateTimePicker> found)
+    {
+        foreach (Control control in container.Controls)
+        {
+            if (control is DateTimePicker dtp)
+            {
+                found.Add(dtp);
+            }
+            else if (control.HasChildren)
+            {
+                FindAllDateTimePickers(control, found);
+            }
+        }
+    }
+
+    private static void ReplaceDateTimePickerWithMaskedTextBox(DateTimePicker dtp)
+    {
+        var parent = dtp.Parent;
+        if (parent == null) return;
+
+        // Salvar propriedades
+        var location = dtp.Location;
+        var size = dtp.Size;
+        var tabIndex = dtp.TabIndex;
+        var name = dtp.Name;
+        var value = dtp.Value;
+        var enabled = dtp.Enabled;
+
+        // Criar MaskedTextBox
+        var mtb = CreateDateMaskedTextBox();
+        mtb.Name = name.Replace("dtp", "mtb");
+        mtb.Location = location;
+        mtb.Size = size;
+        mtb.TabIndex = tabIndex;
+        mtb.Text = value.ToString("dd/MM/yyyy");
+        mtb.Enabled = enabled;
+
+        // Remover DateTimePicker e adicionar MaskedTextBox
+        parent.Controls.Remove(dtp);
+        parent.Controls.Add(mtb);
+        dtp.Dispose();
+    }
+
+    /// <summary>
     /// Obtém DateTime de um MaskedTextBox
     /// </summary>
     public static DateTime? GetDateFromMaskedTextBox(MaskedTextBox mtb)
@@ -223,6 +283,16 @@ public static class FormControlHelper
                 ConfigureAllDateTimePickers(control);
             }
         }
+    }
+
+    /// <summary>
+    /// Encontra MaskedTextBox de data pelo nome original do DateTimePicker
+    /// </summary>
+    public static MaskedTextBox? FindDateMaskedTextBox(Control container, string dateTimePickerName)
+    {
+        var maskedTextBoxName = dateTimePickerName.Replace("dtp", "mtb");
+        var controls = container.Controls.Find(maskedTextBoxName, true);
+        return controls.FirstOrDefault() as MaskedTextBox;
     }
 
     /// <summary>

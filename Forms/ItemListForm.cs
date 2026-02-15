@@ -64,6 +64,31 @@ public partial class ItemListForm : UserControl
 
         // Event handler para clique no header
         dataGridView1.ColumnHeaderMouseClick += DataGridView1_ColumnHeaderMouseClick;
+        
+        // Event handler para duplo clique (editar)
+        dataGridView1.CellDoubleClick += DataGridView1_CellDoubleClick;
+        
+        // Event handler para tecla Delete (excluir)
+        dataGridView1.KeyDown += DataGridView1_KeyDown;
+    }
+
+    private void DataGridView1_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
+    {
+        // Ignorar clique no header
+        if (e.RowIndex >= 0)
+        {
+            BtnEdit_Click(sender, EventArgs.Empty);
+        }
+    }
+
+    private void DataGridView1_KeyDown(object? sender, KeyEventArgs e)
+    {
+        // Tecla Delete para excluir
+        if (e.KeyCode == Keys.Delete)
+        {
+            BtnDelete_Click(sender, EventArgs.Empty);
+            e.Handled = true;
+        }
     }
 
     private void DataGridView1_ColumnHeaderMouseClick(object? sender, DataGridViewCellMouseEventArgs e)

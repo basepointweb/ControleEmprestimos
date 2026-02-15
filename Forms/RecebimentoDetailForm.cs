@@ -12,6 +12,9 @@ public partial class RecebimentoDetailForm : Form
     private DataRepository _repository;
     private Emprestimo? _emprestimoPreSelecionado;
     private List<ItemRecebimentoView> _itensParaReceber = new();
+    
+    // MaskedTextBox para data (criado programaticamente)
+    private MaskedTextBox mtbDataRecebimento;
 
     // Classe auxiliar para o grid
     private class ItemRecebimentoView
@@ -29,14 +32,17 @@ public partial class RecebimentoDetailForm : Form
     {
         InitializeComponent();
         
-        // Configurar controles para caixa alta e navegação de datas
+        // Criar e substituir o DateTimePicker por MaskedTextBox
+        CreateDateMaskedTextBox();
+        
+        // Configurar controles para caixa alta
         FormControlHelper.ConfigureAllTextBoxesToUpperCase(this);
-        FormControlHelper.ConfigureAllDateTimePickers(this);
         
         _repository = DataRepository.Instance;
         _item = item;
         _isEditing = item != null;
 
+        // Carregar empréstimos ANTES de configurar o grid e carregar dados
         LoadEmprestimos();
         ConfigureDataGridView();
 
@@ -68,15 +74,40 @@ public partial class RecebimentoDetailForm : Form
                     }).ToList();
                     
                     RefreshItensGrid();
+                    
+                    // Selecionar o empréstimo no combo usando reflexão para acessar tipo anônimo
+                    if (cmbEmprestimo.DataSource != null)
+                    {
+                        var dataSource = cmbEmprestimo.DataSource as System.Collections.IEnumerable;
+                        if (dataSource != null)
+                        {
+                            foreach (var comboItem in dataSource)
+                            {
+                                var emprestimoProperty = comboItem.GetType().GetProperty("Emprestimo");
+                                if (emprestimoProperty != null)
+                                {
+                                    var emp = emprestimoProperty.GetValue(comboItem) as Emprestimo;
+                                    if (emp != null && emp.Id == emprestimo.Id)
+                                    {
+                                        // Temporariamente remover o event handler para não disparar SelectedIndexChanged
+                                        cmbEmprestimo.SelectedIndexChanged -= CmbEmprestimo_SelectedIndexChanged;
+                                        cmbEmprestimo.SelectedItem = comboItem;
+                                        cmbEmprestimo.SelectedIndexChanged += CmbEmprestimo_SelectedIndexChanged;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             
-            dtpDataRecebimento.Value = _item.DataRecebimento;
+            mtbDataRecebimento.Text = _item.DataRecebimento.ToString("dd/MM/yyyy");
             txtQuemRecebeu.Text = _item.NomeQuemRecebeu;
             
             // Desabilitar edição
             cmbEmprestimo.Enabled = false;
-            dtpDataRecebimento.Enabled = false;
+            mtbDataRecebimento.Enabled = false;
             txtQuemRecebeu.ReadOnly = true;
             dgvItensReceber.ReadOnly = true;
             if (dgvItensReceber.Columns.Contains("colQuantidadeAReceber"))
@@ -91,7 +122,7 @@ public partial class RecebimentoDetailForm : Form
         else
         {
             // Novo recebimento - data atual
-            dtpDataRecebimento.Value = DateTime.Now;
+            mtbDataRecebimento.Text = DateTime.Now.ToString("dd/MM/yyyy");
         }
     }
 
@@ -108,7 +139,7 @@ public partial class RecebimentoDetailForm : Form
             // Preencher campos
             txtDataEmprestimo.Text = _emprestimoPreSelecionado.DataEmprestimo.ToString("dd/MM/yyyy");
             txtQuemPegou.Text = _emprestimoPreSelecionado.Name;
-            dtpDataRecebimento.Value = DateTime.Now;
+            mtbDataRecebimento.Text = DateTime.Now.ToString("dd/MM/yyyy");
             
             // Selecionar no ComboBox DEPOIS de carregar itens
             var dataSource = cmbEmprestimo.DataSource as List<dynamic>;
@@ -128,6 +159,41 @@ public partial class RecebimentoDetailForm : Form
                     cmbEmprestimo.SelectedIndexChanged += CmbEmprestimo_SelectedIndexChanged;
                 }
             }
+        }
+    }
+
+    private void CreateDateMaskedTextBox()
+    {
+        // Remover DateTimePicker se existir
+        var dtpToRemove = this.Controls.Find("dtpDataRecebimento", true).FirstOrDefault();
+        if (dtpToRemove != null)
+        {
+            var location = dtpToRemove.Location;
+            var size = dtpToRemove.Size;
+            var tabIndex = dtpToRemove.TabIndex;
+            
+            this.Controls.Remove(dtpToRemove);
+            dtpToRemove.Dispose();
+            
+            // Criar MaskedTextBox
+            mtbDataRecebimento = FormControlHelper.CreateDateMaskedTextBox();
+            mtbDataRecebimento.Name = "mtbDataRecebimento";
+            mtbDataRecebimento.Location = location;
+            mtbDataRecebimento.Size = size;
+            mtbDataRecebimento.TabIndex = tabIndex;
+            
+            this.Controls.Add(mtbDataRecebimento);
+        }
+        else
+        {
+            // Se não encontrou o DTP, criar MaskedTextBox direto
+            mtbDataRecebimento = FormControlHelper.CreateDateMaskedTextBox();
+            mtbDataRecebimento.Name = "mtbDataRecebimento";
+            mtbDataRecebimento.Location = new Point(20, 160);
+            mtbDataRecebimento.Size = new Size(150, 23);
+            mtbDataRecebimento.TabIndex = 7;
+            
+            this.Controls.Add(mtbDataRecebimento);
         }
     }
 
@@ -288,7 +354,34 @@ public partial class RecebimentoDetailForm : Form
                 Emprestimo = e,
                 DisplayText = $"{e.CongregacaoName} - {e.Name} - Total Itens: {e.TotalItens} - Pendente: {e.TotalPendente}"
             })
-            .ToList<dynamic>();
+            .ToList();
+
+        // Se estiver editando, incluir o empréstimo do recebimento mesmo que não esteja "Em Andamento"
+        if (_isEditing && _item?.EmprestimoId.HasValue == true)
+        {
+            var emprestimoDoRecebimento = _repository.Emprestimos
+                .FirstOrDefault(e => e.Id == _item.EmprestimoId.Value);
+            
+            if (emprestimoDoRecebimento != null)
+            {
+                // Verificar se já não está na lista
+                var jaExiste = emprestimosEmAndamento.Any(x => 
+                {
+                    var emp = x.Emprestimo as Emprestimo;
+                    return emp != null && emp.Id == emprestimoDoRecebimento.Id;
+                });
+                
+                if (!jaExiste)
+                {
+                    // Adicionar no início da lista
+                    emprestimosEmAndamento.Insert(0, new
+                    {
+                        Emprestimo = emprestimoDoRecebimento,
+                        DisplayText = $"{emprestimoDoRecebimento.CongregacaoName} - {emprestimoDoRecebimento.Name} - {emprestimoDoRecebimento.StatusDescricao}"
+                    });
+                }
+            }
+        }
 
         cmbEmprestimo.DataSource = emprestimosEmAndamento;
         cmbEmprestimo.DisplayMember = "DisplayText";
@@ -372,6 +465,14 @@ public partial class RecebimentoDetailForm : Form
             return;
         }
 
+        // Validar data do recebimento
+        if (!DateTime.TryParse(mtbDataRecebimento.Text, out DateTime dataRecebimento))
+        {
+            MessageBox.Show("Por favor, informe uma data de recebimento válida.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            mtbDataRecebimento.Focus();
+            return;
+        }
+
         var itensComQuantidade = _itensParaReceber.Where(i => i.QuantidadeAReceber > 0).ToList();
         if (!itensComQuantidade.Any())
         {
@@ -402,7 +503,7 @@ public partial class RecebimentoDetailForm : Form
             NomeQuemRecebeu = txtQuemRecebeu.Text.Trim().ToUpper(),
             EmprestimoId = emprestimoSelecionado.Id,
             DataEmprestimo = emprestimoSelecionado.DataEmprestimo,
-            DataRecebimento = dtpDataRecebimento.Value,
+            DataRecebimento = dataRecebimento,
             RecebimentoParcial = itensComQuantidade.Sum(i => i.QuantidadeAReceber) < emprestimoSelecionado.TotalPendente,
             ItensRecebidos = itensComQuantidade.Select(i => new RecebimentoItem
             {

@@ -1,6 +1,5 @@
 using System;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
 
 namespace ControleEmprestimos.Helpers;
 
@@ -9,13 +8,6 @@ namespace ControleEmprestimos.Helpers;
 /// </summary>
 public static class FormControlHelper
 {
-    // Import necessário para simular teclas
-    [DllImport("user32.dll")]
-    private static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
-
-    private const int VK_RIGHT = 0x27;
-    private const uint KEYEVENTF_KEYUP = 0x0002;
-
     /// <summary>
     /// Converte texto de TextBox para maiúsculas automaticamente
     /// </summary>
@@ -44,57 +36,149 @@ public static class FormControlHelper
     }
 
     /// <summary>
-    /// Configura DateTimePicker para navegação automática ao digitar
+    /// Cria e configura um MaskedTextBox para data com navegação automática
+    /// </summary>
+    public static MaskedTextBox CreateDateMaskedTextBox()
+    {
+        var mtb = new MaskedTextBox
+        {
+            Mask = "00/00/0000",
+            ValidatingType = typeof(DateTime),
+            BeepOnError = false,
+            InsertKeyMode = InsertKeyMode.Overwrite
+        };
+
+        // Evento para validação e navegação automática
+        mtb.KeyPress += (sender, e) =>
+        {
+            if (sender is MaskedTextBox maskedTextBox)
+            {
+                // Se pressionar Enter, avançar para próximo controle
+                if (e.KeyChar == (char)Keys.Enter)
+                {
+                    e.Handled = true;
+                    maskedTextBox.FindForm()?.SelectNextControl(maskedTextBox, true, true, true, true);
+                }
+            }
+        };
+
+        // Validação ao sair do campo
+        mtb.TypeValidationCompleted += (sender, e) =>
+        {
+            if (e.IsValidInput)
+            {
+                if (e.ReturnValue is DateTime data)
+                {
+                    // Validar data razoável
+                    if (data.Year < 1900 || data.Year > 2100)
+                    {
+                        e.Cancel = true;
+                        MessageBox.Show(
+                            "Por favor, informe uma data válida entre 1900 e 2100.",
+                            "Data Inválida",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                    }
+                }
+            }
+            else if (!string.IsNullOrWhiteSpace(((MaskedTextBox)sender!).Text.Replace("/", "").Replace(" ", "")))
+            {
+                // Só mostrar erro se realmente digitou algo
+                MessageBox.Show(
+                    "Data inválida. Use o formato: DD/MM/AAAA",
+                    "Data Inválida",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        };
+
+        // Ao ganhar foco, posicionar no início
+        mtb.Enter += (sender, e) =>
+        {
+            if (sender is MaskedTextBox maskedTextBox)
+            {
+                maskedTextBox.SelectionStart = 0;
+            }
+        };
+
+        return mtb;
+    }
+
+    /// <summary>
+    /// Substitui DateTimePicker por MaskedTextBox para data
+    /// </summary>
+    public static MaskedTextBox ReplaceDateTimePickerWithMaskedTextBox(
+        Control container,
+        string dateTimePickerName,
+        Point location,
+        Size size,
+        int tabIndex)
+    {
+        // Encontrar o DateTimePicker
+        var dtp = container.Controls.Find(dateTimePickerName, false).FirstOrDefault() as DateTimePicker;
+        
+        if (dtp != null)
+        {
+            // Criar MaskedTextBox
+            var mtb = CreateDateMaskedTextBox();
+            mtb.Name = dateTimePickerName.Replace("dtp", "mtb");
+            mtb.Location = location;
+            mtb.Size = size;
+            mtb.TabIndex = tabIndex;
+            mtb.Font = dtp.Font;
+            
+            // Copiar valor se houver
+            mtb.Text = dtp.Value.ToString("dd/MM/yyyy");
+            
+            // Remover DateTimePicker e adicionar MaskedTextBox
+            container.Controls.Remove(dtp);
+            container.Controls.Add(mtb);
+            dtp.Dispose();
+            
+            return mtb;
+        }
+        else
+        {
+            // Se não encontrou o DTP, criar novo MaskedTextBox
+            var mtb = CreateDateMaskedTextBox();
+            mtb.Name = dateTimePickerName.Replace("dtp", "mtb");
+            mtb.Location = location;
+            mtb.Size = size;
+            mtb.TabIndex = tabIndex;
+            container.Controls.Add(mtb);
+            
+            return mtb;
+        }
+    }
+
+    /// <summary>
+    /// Obtém DateTime de um MaskedTextBox
+    /// </summary>
+    public static DateTime? GetDateFromMaskedTextBox(MaskedTextBox mtb)
+    {
+        if (mtb.MaskCompleted && DateTime.TryParse(mtb.Text, out DateTime result))
+        {
+            return result;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Define DateTime em um MaskedTextBox
+    /// </summary>
+    public static void SetDateToMaskedTextBox(MaskedTextBox mtb, DateTime date)
+    {
+        mtb.Text = date.ToString("dd/MM/yyyy");
+    }
+
+    /// <summary>
+    /// Configura DateTimePicker para navegação com Enter (fallback)
     /// </summary>
     public static void ConfigureDateTimePickerNavigation(DateTimePicker dtp)
     {
         dtp.Format = DateTimePickerFormat.Short;
         
-        // Variável para rastrear digitação
-        string lastText = string.Empty;
-        int digitCount = 0;
-        string currentPart = "day"; // day, month, year
-        
-        // Evento KeyPress para detectar digitação
-        dtp.KeyPress += (sender, e) =>
-        {
-            if (sender is DateTimePicker picker)
-            {
-                // Apenas processar dígitos
-                if (char.IsDigit(e.KeyChar))
-                {
-                    digitCount++;
-                    
-                    // Criar um timer para processar após a digitação ser aplicada
-                    var timer = new System.Threading.Timer(_ =>
-                    {
-                        picker.Invoke((Action)(() =>
-                        {
-                            try
-                            {
-                                // Verificar qual parte está sendo editada
-                                var currentText = picker.Text;
-                                
-                                // Se digitou 2 dígitos, avançar automaticamente
-                                if (digitCount == 2)
-                                {
-                                    // Simular seta para direita para avançar
-                                    SendRightArrow();
-                                    digitCount = 0;
-                                }
-                            }
-                            catch { }
-                        }));
-                    }, null, 50, System.Threading.Timeout.Infinite);
-                }
-                else
-                {
-                    digitCount = 0;
-                }
-            }
-        };
-
-        // Evento KeyDown para outras teclas
+        // Adicionar evento KeyDown para navegação com Enter
         dtp.KeyDown += (sender, e) =>
         {
             if (sender is DateTimePicker picker)
@@ -104,13 +188,6 @@ public static class FormControlHelper
                 {
                     e.SuppressKeyPress = true;
                     picker.FindForm()?.SelectNextControl(picker, true, true, true, true);
-                    digitCount = 0;
-                }
-                // Resetar contador em outras teclas de navegação
-                else if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right || 
-                         e.KeyCode == Keys.Tab || e.KeyCode == Keys.Back)
-                {
-                    digitCount = 0;
                 }
             }
         };
@@ -127,30 +204,6 @@ public static class FormControlHelper
                 }
             }
         };
-
-        // Resetar contador quando ganhar foco
-        dtp.Enter += (sender, e) =>
-        {
-            digitCount = 0;
-            currentPart = "day";
-        };
-
-        // Resetar contador quando perder foco
-        dtp.Leave += (sender, e) =>
-        {
-            digitCount = 0;
-        };
-    }
-
-    /// <summary>
-    /// Simula o pressionamento da seta direita
-    /// </summary>
-    private static void SendRightArrow()
-    {
-        // Pressionar seta direita
-        keybd_event(VK_RIGHT, 0, 0, UIntPtr.Zero);
-        // Soltar seta direita
-        keybd_event(VK_RIGHT, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
     }
 
     /// <summary>

@@ -12,6 +12,7 @@ public class ExcelDataRepository
     private const string EMPRESTIMO_ITENS_SHEET = "EmprestimoItens";
     private const string RECEBIMENTOS_SHEET = "Recebimentos";
     private const string RECEBIMENTO_ITENS_SHEET = "RecebimentoItens";
+    private const string INSTRUCOES_SHEET = "Instrucoes";
 
     public ExcelDataRepository(string filePath)
     {
@@ -31,7 +32,10 @@ public class ExcelDataRepository
     {
         using var package = new ExcelPackage();
         
-        // Criar abas
+        // Criar aba de instruções PRIMEIRO (para aparecer como primeira aba)
+        CreateInstrucoesSheet(package);
+        
+        // Criar abas de dados
         CreateItemsSheet(package);
         CreateCongregacoesSheet(package);
         CreateEmprestimosSheet(package);
@@ -41,6 +45,623 @@ public class ExcelDataRepository
         
         // Salvar arquivo
         package.SaveAs(new FileInfo(_filePath));
+    }
+
+    private void CreateInstrucoesSheet(ExcelPackage package)
+    {
+        var worksheet = package.Workbook.Worksheets.Add(INSTRUCOES_SHEET);
+        
+        int row = 1;
+        
+        // Título
+        worksheet.Cells[row, 1].Value = "INSTRUÇÕES - CONTROLE DE EMPRÉSTIMOS DE BENS";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        worksheet.Cells[row, 1].Style.Font.Size = 16;
+        worksheet.Cells[row, 1, row, 4].Merge = true;
+        row += 2;
+        
+        // Seção 1: Visão Geral
+        worksheet.Cells[row, 1].Value = "1. VISÃO GERAL DO SISTEMA";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        worksheet.Cells[row, 1].Style.Font.Size = 12;
+        worksheet.Cells[row, 1].Style.Fill.SetBackground(System.Drawing.Color.LightBlue);
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Este sistema controla empréstimos de bens patrimoniais para congregações.";
+        row++;
+        worksheet.Cells[row, 1].Value = "Os dados são armazenados em 6 abas principais:";
+        row++;
+        worksheet.Cells[row, 1].Value = "  • Itens: Cadastro dos bens disponíveis";
+        row++;
+        worksheet.Cells[row, 1].Value = "  • Congregacoes: Cadastro das congregações";
+        row++;
+        worksheet.Cells[row, 1].Value = "  • Emprestimos: Registro dos empréstimos realizados";
+        row++;
+        worksheet.Cells[row, 1].Value = "  • EmprestimoItens: Detalhamento dos bens emprestados";
+        row++;
+        worksheet.Cells[row, 1].Value = "  • Recebimentos: Registro das devoluções";
+        row++;
+        worksheet.Cells[row, 1].Value = "  • RecebimentoItens: Detalhamento dos bens devolvidos";
+        row += 2;
+        
+        // Seção 2: Aba Itens
+        worksheet.Cells[row, 1].Value = "2. ABA: ITENS (Bens Patrimoniais)";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        worksheet.Cells[row, 1].Style.Font.Size = 12;
+        worksheet.Cells[row, 1].Style.Fill.SetBackground(System.Drawing.Color.LightGreen);
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Campo";
+        worksheet.Cells[row, 2].Value = "Tipo";
+        worksheet.Cells[row, 3].Value = "Descrição";
+        worksheet.Cells[row, 4].Value = "Exemplo";
+        worksheet.Cells[row, 1, row, 4].Style.Font.Bold = true;
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Id";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "Identificador único do bem (sequencial)";
+        worksheet.Cells[row, 4].Value = "1";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Nome";
+        worksheet.Cells[row, 2].Value = "Texto";
+        worksheet.Cells[row, 3].Value = "Nome do bem";
+        worksheet.Cells[row, 4].Value = "CADEIRA";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "QuantidadeEstoque";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "Quantidade disponível em estoque";
+        worksheet.Cells[row, 4].Value = "50";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "DataCriacao";
+        worksheet.Cells[row, 2].Value = "Data/Hora";
+        worksheet.Cells[row, 3].Value = "Data de cadastro do bem";
+        worksheet.Cells[row, 4].Value = "2025-01-15 10:30:00";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "DataAlteracao";
+        worksheet.Cells[row, 2].Value = "Data/Hora";
+        worksheet.Cells[row, 3].Value = "Data da última modificação";
+        worksheet.Cells[row, 4].Value = "2025-01-15 10:30:00";
+        row += 2;
+        
+        // Seção 3: Aba Congregacoes
+        worksheet.Cells[row, 1].Value = "3. ABA: CONGREGACOES";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        worksheet.Cells[row, 1].Style.Font.Size = 12;
+        worksheet.Cells[row, 1].Style.Fill.SetBackground(System.Drawing.Color.LightGreen);
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Campo";
+        worksheet.Cells[row, 2].Value = "Tipo";
+        worksheet.Cells[row, 3].Value = "Descrição";
+        worksheet.Cells[row, 4].Value = "Exemplo";
+        worksheet.Cells[row, 1, row, 4].Style.Font.Bold = true;
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Id";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "Identificador único da congregação";
+        worksheet.Cells[row, 4].Value = "1";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Nome";
+        worksheet.Cells[row, 2].Value = "Texto";
+        worksheet.Cells[row, 3].Value = "Nome da congregação";
+        worksheet.Cells[row, 4].Value = "CONGREGAÇÃO CENTRAL";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Setor";
+        worksheet.Cells[row, 2].Value = "Texto";
+        worksheet.Cells[row, 3].Value = "Setor ou região da congregação";
+        worksheet.Cells[row, 4].Value = "ZONA SUL";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "DataCriacao";
+        worksheet.Cells[row, 2].Value = "Data/Hora";
+        worksheet.Cells[row, 3].Value = "Data de cadastro";
+        worksheet.Cells[row, 4].Value = "2025-01-15 10:30:00";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "DataAlteracao";
+        worksheet.Cells[row, 2].Value = "Data/Hora";
+        worksheet.Cells[row, 3].Value = "Data da última modificação";
+        worksheet.Cells[row, 4].Value = "2025-01-15 10:30:00";
+        row += 2;
+        
+        // Seção 4: Aba Emprestimos
+        worksheet.Cells[row, 1].Value = "4. ABA: EMPRESTIMOS";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        worksheet.Cells[row, 1].Style.Font.Size = 12;
+        worksheet.Cells[row, 1].Style.Fill.SetBackground(System.Drawing.Color.LightGreen);
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Campo";
+        worksheet.Cells[row, 2].Value = "Tipo";
+        worksheet.Cells[row, 3].Value = "Descrição";
+        worksheet.Cells[row, 4].Value = "Exemplo";
+        worksheet.Cells[row, 1, row, 4].Style.Font.Bold = true;
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Id";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "Identificador único do empréstimo";
+        worksheet.Cells[row, 4].Value = "1";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Nome";
+        worksheet.Cells[row, 2].Value = "Texto";
+        worksheet.Cells[row, 3].Value = "Nome da pessoa que recebeu o empréstimo";
+        worksheet.Cells[row, 4].Value = "JOÃO SILVA";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Motivo";
+        worksheet.Cells[row, 2].Value = "Texto";
+        worksheet.Cells[row, 3].Value = "Motivo do empréstimo";
+        worksheet.Cells[row, 4].Value = "EVENTO ESPECIAL";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "CongregacaoId";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "ID da congregação (referência à aba Congregacoes)";
+        worksheet.Cells[row, 4].Value = "1";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "CongregacaoNome";
+        worksheet.Cells[row, 2].Value = "Texto";
+        worksheet.Cells[row, 3].Value = "Nome da congregação (cópia para facilitar)";
+        worksheet.Cells[row, 4].Value = "CONGREGAÇÃO CENTRAL";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "DataEmprestimo";
+        worksheet.Cells[row, 2].Value = "Data/Hora";
+        worksheet.Cells[row, 3].Value = "Data em que o empréstimo foi realizado";
+        worksheet.Cells[row, 4].Value = "2025-01-15 10:30:00";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Status";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "Status: 1=Em Andamento, 2=Devolvido, 3=Cancelado";
+        worksheet.Cells[row, 4].Value = "1";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "QuemLiberou";
+        worksheet.Cells[row, 2].Value = "Texto";
+        worksheet.Cells[row, 3].Value = "Nome de quem autorizou o empréstimo";
+        worksheet.Cells[row, 4].Value = "MARIA SANTOS";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "DataCriacao";
+        worksheet.Cells[row, 2].Value = "Data/Hora";
+        worksheet.Cells[row, 3].Value = "Data de registro do empréstimo";
+        worksheet.Cells[row, 4].Value = "2025-01-15 10:30:00";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "DataAlteracao";
+        worksheet.Cells[row, 2].Value = "Data/Hora";
+        worksheet.Cells[row, 3].Value = "Data da última modificação";
+        worksheet.Cells[row, 4].Value = "2025-01-15 10:30:00";
+        row += 2;
+        
+        // Seção 5: Aba EmprestimoItens
+        worksheet.Cells[row, 1].Value = "5. ABA: EMPRESTIMOITENS (Detalhamento dos Bens Emprestados)";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        worksheet.Cells[row, 1].Style.Font.Size = 12;
+        worksheet.Cells[row, 1].Style.Fill.SetBackground(System.Drawing.Color.LightGreen);
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Campo";
+        worksheet.Cells[row, 2].Value = "Tipo";
+        worksheet.Cells[row, 3].Value = "Descrição";
+        worksheet.Cells[row, 4].Value = "Exemplo";
+        worksheet.Cells[row, 1, row, 4].Style.Font.Bold = true;
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Id";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "Identificador único do item emprestado";
+        worksheet.Cells[row, 4].Value = "1";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "EmprestimoId";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "ID do empréstimo (referência à aba Emprestimos)";
+        worksheet.Cells[row, 4].Value = "1";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "ItemId";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "ID do bem (referência à aba Itens)";
+        worksheet.Cells[row, 4].Value = "1";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "ItemNome";
+        worksheet.Cells[row, 2].Value = "Texto";
+        worksheet.Cells[row, 3].Value = "Nome do bem (cópia para facilitar)";
+        worksheet.Cells[row, 4].Value = "CADEIRA";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Quantidade";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "Quantidade emprestada deste bem";
+        worksheet.Cells[row, 4].Value = "10";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "QuantidadeRecebida";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "Quantidade já devolvida deste bem";
+        worksheet.Cells[row, 4].Value = "5";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "DataCriacao";
+        worksheet.Cells[row, 2].Value = "Data/Hora";
+        worksheet.Cells[row, 3].Value = "Data de registro";
+        worksheet.Cells[row, 4].Value = "2025-01-15 10:30:00";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "DataAlteracao";
+        worksheet.Cells[row, 2].Value = "Data/Hora";
+        worksheet.Cells[row, 3].Value = "Data da última modificação";
+        worksheet.Cells[row, 4].Value = "2025-01-15 10:30:00";
+        row += 2;
+        
+        // Seção 6: Aba Recebimentos
+        worksheet.Cells[row, 1].Value = "6. ABA: RECEBIMENTOS (Devoluções)";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        worksheet.Cells[row, 1].Style.Font.Size = 12;
+        worksheet.Cells[row, 1].Style.Fill.SetBackground(System.Drawing.Color.LightGreen);
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Campo";
+        worksheet.Cells[row, 2].Value = "Tipo";
+        worksheet.Cells[row, 3].Value = "Descrição";
+        worksheet.Cells[row, 4].Value = "Exemplo";
+        worksheet.Cells[row, 1, row, 4].Style.Font.Bold = true;
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Id";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "Identificador único da devolução";
+        worksheet.Cells[row, 4].Value = "1";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Nome";
+        worksheet.Cells[row, 2].Value = "Texto";
+        worksheet.Cells[row, 3].Value = "Descrição da devolução";
+        worksheet.Cells[row, 4].Value = "RECEBIMENTO - CADEIRA";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "NomeRecebedor";
+        worksheet.Cells[row, 2].Value = "Texto";
+        worksheet.Cells[row, 3].Value = "Nome de quem pegou emprestado";
+        worksheet.Cells[row, 4].Value = "JOÃO SILVA";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "NomeQuemRecebeu";
+        worksheet.Cells[row, 2].Value = "Texto";
+        worksheet.Cells[row, 3].Value = "Nome de quem recebeu a devolução";
+        worksheet.Cells[row, 4].Value = "MARIA SANTOS";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "EmprestimoId";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "ID do empréstimo relacionado";
+        worksheet.Cells[row, 4].Value = "1";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "DataEmprestimo";
+        worksheet.Cells[row, 2].Value = "Data/Hora";
+        worksheet.Cells[row, 3].Value = "Data do empréstimo original";
+        worksheet.Cells[row, 4].Value = "2025-01-15 10:30:00";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "DataRecebimento";
+        worksheet.Cells[row, 2].Value = "Data/Hora";
+        worksheet.Cells[row, 3].Value = "Data em que a devolução foi realizada";
+        worksheet.Cells[row, 4].Value = "2025-01-20 14:00:00";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "RecebimentoParcial";
+        worksheet.Cells[row, 2].Value = "Sim/Não";
+        worksheet.Cells[row, 3].Value = "Indica se foi devolução parcial (TRUE/FALSE)";
+        worksheet.Cells[row, 4].Value = "FALSE";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "DataCriacao";
+        worksheet.Cells[row, 2].Value = "Data/Hora";
+        worksheet.Cells[row, 3].Value = "Data de registro";
+        worksheet.Cells[row, 4].Value = "2025-01-20 14:00:00";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "DataAlteracao";
+        worksheet.Cells[row, 2].Value = "Data/Hora";
+        worksheet.Cells[row, 3].Value = "Data da última modificação";
+        worksheet.Cells[row, 4].Value = "2025-01-20 14:00:00";
+        row += 2;
+        
+        // Seção 7: Aba RecebimentoItens
+        worksheet.Cells[row, 1].Value = "7. ABA: RECEBIMENTOITENS (Detalhamento das Devoluções)";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        worksheet.Cells[row, 1].Style.Font.Size = 12;
+        worksheet.Cells[row, 1].Style.Fill.SetBackground(System.Drawing.Color.LightGreen);
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Campo";
+        worksheet.Cells[row, 2].Value = "Tipo";
+        worksheet.Cells[row, 3].Value = "Descrição";
+        worksheet.Cells[row, 4].Value = "Exemplo";
+        worksheet.Cells[row, 1, row, 4].Style.Font.Bold = true;
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Id";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "Identificador único do item devolvido";
+        worksheet.Cells[row, 4].Value = "1";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "RecebimentoEmprestimoId";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "ID da devolução (referência à aba Recebimentos)";
+        worksheet.Cells[row, 4].Value = "1";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "EmprestimoItemId";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "ID do item emprestado original";
+        worksheet.Cells[row, 4].Value = "1";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "ItemId";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "ID do bem (referência à aba Itens)";
+        worksheet.Cells[row, 4].Value = "1";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "ItemNome";
+        worksheet.Cells[row, 2].Value = "Texto";
+        worksheet.Cells[row, 3].Value = "Nome do bem (cópia para facilitar)";
+        worksheet.Cells[row, 4].Value = "CADEIRA";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "QuantidadeRecebida";
+        worksheet.Cells[row, 2].Value = "Número";
+        worksheet.Cells[row, 3].Value = "Quantidade devolvida nesta operação";
+        worksheet.Cells[row, 4].Value = "10";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "DataCriacao";
+        worksheet.Cells[row, 2].Value = "Data/Hora";
+        worksheet.Cells[row, 3].Value = "Data de registro";
+        worksheet.Cells[row, 4].Value = "2025-01-20 14:00:00";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "DataAlteracao";
+        worksheet.Cells[row, 2].Value = "Data/Hora";
+        worksheet.Cells[row, 3].Value = "Data da última modificação";
+        worksheet.Cells[row, 4].Value = "2025-01-20 14:00:00";
+        row += 2;
+        
+        // Seção 8: Como fazer empréstimo manual
+        worksheet.Cells[row, 1].Value = "8. COMO FAZER UM EMPRÉSTIMO MANUALMENTE";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        worksheet.Cells[row, 1].Style.Font.Size = 12;
+        worksheet.Cells[row, 1].Style.Fill.SetBackground(System.Drawing.Color.Yellow);
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "PASSO 1: Verifique o estoque disponível na aba 'Itens'";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Confirme que há quantidade suficiente em 'QuantidadeEstoque'";
+        row += 2;
+        
+        worksheet.Cells[row, 1].Value = "PASSO 2: Adicione um registro na aba 'Emprestimos'";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Id: Próximo número sequencial (ex: se o último é 5, use 6)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Nome: JOÃO SILVA (quem está recebendo)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Motivo: EVENTO ESPECIAL";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - CongregacaoId: 1 (deve existir na aba Congregacoes)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - CongregacaoNome: CONGREGAÇÃO CENTRAL (copie da aba)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - DataEmprestimo: 2025-01-15 10:30:00";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Status: 1 (Em Andamento)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - QuemLiberou: MARIA SANTOS";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - DataCriacao: 2025-01-15 10:30:00";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - DataAlteracao: 2025-01-15 10:30:00";
+        row += 2;
+        
+        worksheet.Cells[row, 1].Value = "PASSO 3: Adicione registros na aba 'EmprestimoItens' (um por bem)";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Id: Próximo número sequencial";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - EmprestimoId: 6 (o Id do empréstimo criado no passo 2)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - ItemId: 1 (deve existir na aba Itens)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - ItemNome: CADEIRA (copie da aba Itens)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Quantidade: 10 (quantidade emprestada)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - QuantidadeRecebida: 0 (ainda não foi devolvido)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - DataCriacao: 2025-01-15 10:30:00";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - DataAlteracao: 2025-01-15 10:30:00";
+        row += 2;
+        
+        worksheet.Cells[row, 1].Value = "PASSO 4: ATUALIZE o estoque na aba 'Itens'";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Reduza 'QuantidadeEstoque' pela quantidade emprestada";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Exemplo: Se tinha 50 cadeiras e emprestou 10, deixe 40";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Atualize 'DataAlteracao' para a data/hora atual";
+        row += 2;
+        
+        // Seção 9: Como fazer devolução manual
+        worksheet.Cells[row, 1].Value = "9. COMO FAZER UMA DEVOLUÇÃO MANUALMENTE";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        worksheet.Cells[row, 1].Style.Font.Size = 12;
+        worksheet.Cells[row, 1].Style.Fill.SetBackground(System.Drawing.Color.Yellow);
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "PASSO 1: Localize o empréstimo na aba 'Emprestimos'";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Anote o Id do empréstimo (ex: 6)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Verifique que o Status é 1 (Em Andamento)";
+        row += 2;
+        
+        worksheet.Cells[row, 1].Value = "PASSO 2: Adicione um registro na aba 'Recebimentos'";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Id: Próximo número sequencial";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Nome: RECEBIMENTO - CADEIRA";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - NomeRecebedor: JOÃO SILVA (copie do empréstimo)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - NomeQuemRecebeu: MARIA SANTOS (quem recebeu de volta)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - EmprestimoId: 6 (o Id do empréstimo)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - DataEmprestimo: 2025-01-15 10:30:00 (copie do empréstimo)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - DataRecebimento: 2025-01-20 14:00:00 (data atual)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - RecebimentoParcial: FALSE (se devolver tudo) ou TRUE (parcial)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - DataCriacao: 2025-01-20 14:00:00";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - DataAlteracao: 2025-01-20 14:00:00";
+        row += 2;
+        
+        worksheet.Cells[row, 1].Value = "PASSO 3: Adicione registros na aba 'RecebimentoItens'";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Id: Próximo número sequencial";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - RecebimentoEmprestimoId: (Id do recebimento criado no passo 2)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - EmprestimoItemId: (busque na aba EmprestimoItens)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - ItemId: 1";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - ItemNome: CADEIRA";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - QuantidadeRecebida: 10 (quanto está devolvendo)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - DataCriacao: 2025-01-20 14:00:00";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - DataAlteracao: 2025-01-20 14:00:00";
+        row += 2;
+        
+        worksheet.Cells[row, 1].Value = "PASSO 4: ATUALIZE a aba 'EmprestimoItens'";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Localize o registro correspondente ao empréstimo";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Aumente 'QuantidadeRecebida' pela quantidade devolvida";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Exemplo: Se estava 0 e devolveu 10, deixe 10";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Atualize 'DataAlteracao'";
+        row += 2;
+        
+        worksheet.Cells[row, 1].Value = "PASSO 5: ATUALIZE o estoque na aba 'Itens'";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Aumente 'QuantidadeEstoque' pela quantidade devolvida";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Exemplo: Se tinha 40 cadeiras e recebeu 10, deixe 50";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Atualize 'DataAlteracao'";
+        row += 2;
+        
+        worksheet.Cells[row, 1].Value = "PASSO 6: ATUALIZE o status na aba 'Emprestimos' (se necessário)";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Se todos os itens foram devolvidos, altere Status para 2 (Devolvido)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Se foi devolução parcial, mantenha Status 1 (Em Andamento)";
+        row++;
+        worksheet.Cells[row, 1].Value = "  - Atualize 'DataAlteracao'";
+        row += 2;
+        
+        // Seção 10: Avisos importantes
+        worksheet.Cells[row, 1].Value = "10. AVISOS IMPORTANTES";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        worksheet.Cells[row, 1].Style.Font.Size = 12;
+        worksheet.Cells[row, 1].Style.Fill.SetBackground(System.Drawing.Color.Red);
+        worksheet.Cells[row, 1].Style.Font.Color.SetColor(System.Drawing.Color.White);
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "?? NÃO DELETE as linhas de cabeçalho (primeira linha de cada aba)";
+        row++;
+        worksheet.Cells[row, 1].Value = "?? NÃO altere os nomes das abas (Itens, Congregacoes, etc.)";
+        row++;
+        worksheet.Cells[row, 1].Value = "?? Use SEMPRE o formato de data: yyyy-MM-dd HH:mm:ss";
+        row++;
+        worksheet.Cells[row, 1].Value = "?? IDs devem ser números ÚNICOS e sequenciais";
+        row++;
+        worksheet.Cells[row, 1].Value = "?? Referências entre abas (IDs) devem ser VÁLIDAS";
+        row++;
+        worksheet.Cells[row, 1].Value = "?? O estoque NUNCA pode ficar negativo";
+        row++;
+        worksheet.Cells[row, 1].Value = "?? QuantidadeRecebida NUNCA pode ser maior que Quantidade";
+        row++;
+        worksheet.Cells[row, 1].Value = "?? SEMPRE atualize DataAlteracao ao modificar um registro";
+        row++;
+        worksheet.Cells[row, 1].Value = "?? É RECOMENDADO usar o sistema ao invés de editar manualmente";
+        row += 2;
+        
+        // Seção 11: Códigos de Status
+        worksheet.Cells[row, 1].Value = "11. CÓDIGOS DE STATUS (Aba Emprestimos)";
+        worksheet.Cells[row, 1].Style.Font.Bold = true;
+        worksheet.Cells[row, 1].Style.Font.Size = 12;
+        worksheet.Cells[row, 1].Style.Fill.SetBackground(System.Drawing.Color.LightGray);
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "Código";
+        worksheet.Cells[row, 2].Value = "Significado";
+        worksheet.Cells[row, 1, row, 2].Style.Font.Bold = true;
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "1";
+        worksheet.Cells[row, 2].Value = "Em Andamento (empréstimo ativo)";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "2";
+        worksheet.Cells[row, 2].Value = "Devolvido (todos os itens foram devolvidos)";
+        row++;
+        
+        worksheet.Cells[row, 1].Value = "3";
+        worksheet.Cells[row, 2].Value = "Cancelado (empréstimo foi cancelado)";
+        row += 2;
+        
+        // Ajustar largura das colunas
+        worksheet.Column(1).Width = 30;
+        worksheet.Column(2).Width = 15;
+        worksheet.Column(3).Width = 60;
+        worksheet.Column(4).Width = 30;
+        
+        // Proteger a aba contra alterações acidentais (opcional)
+        // worksheet.Protection.IsProtected = true;
+        // worksheet.Protection.AllowSelectLockedCells = true;
     }
 
     private void CreateItemsSheet(ExcelPackage package)
@@ -194,6 +815,12 @@ public class ExcelDataRepository
         List<RecebimentoItem> recebimentoItens)
     {
         using var package = new ExcelPackage(new FileInfo(_filePath));
+        
+        // Verificar e criar aba de instruções se não existir
+        if (package.Workbook.Worksheets[INSTRUCOES_SHEET] == null)
+        {
+            CreateInstrucoesSheet(package);
+        }
         
         // Salvar cada entidade em sua aba
         SaveItems(package, items);

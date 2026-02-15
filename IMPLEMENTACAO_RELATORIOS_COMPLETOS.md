@@ -1,81 +1,81 @@
-# Implementação de Relatórios de Empréstimos e Recebimentos
+ï»¿# ImplementaÃ§Ã£o de RelatÃ³rios de EmprÃ©stimos e Recebimentos
 
 ## Data: 2025-01-XX
 
-## Descrição
-Implementação de relatórios completos com filtros para Empréstimos e Recebimentos, com impressão em formato A4 e filtros avançados (Data, Congregação e Bem).
+## DescriÃ§Ã£o
+ImplementaÃ§Ã£o de relatÃ³rios completos com filtros para EmprÃ©stimos e Recebimentos, com impressÃ£o em formato A4 e filtros avanÃ§ados (Data, CongregaÃ§Ã£o e Bem).
 
 ## Arquivos Criados
 
-### 1. Formulários de Filtro
+### 1. FormulÃ¡rios de Filtro
 
 #### Forms\RelatorioEmprestimosFilterForm.cs
-- **Funcionalidade**: Formulário modal para filtrar dados do relatório de empréstimos
-- **Filtros Disponíveis**:
-  - Data Inicial e Data Final (padrão: mês atual)
-  - Congregação (ComboBox com opção "Todas")
-  - Bem (ComboBox com opção "Todos")
-- **Validações**:
-  - Data inicial não pode ser maior que data final
-  - Verifica se há registros antes de gerar relatório
-- **Ação**: Ao clicar em "Gerar Relatório", filtra os dados e abre a impressão
+- **Funcionalidade**: FormulÃ¡rio modal para filtrar dados do relatÃ³rio de emprÃ©stimos
+- **Filtros DisponÃ­veis**:
+  - Data Inicial e Data Final (padrÃ£o: mÃªs atual)
+  - CongregaÃ§Ã£o (ComboBox com opÃ§Ã£o "Todas")
+  - Bem (ComboBox com opÃ§Ã£o "Todos")
+- **ValidaÃ§Ãµes**:
+  - Data inicial nÃ£o pode ser maior que data final
+  - Verifica se hÃ¡ registros antes de gerar relatÃ³rio
+- **AÃ§Ã£o**: Ao clicar em "Gerar RelatÃ³rio", filtra os dados e abre a impressÃ£o
 
 #### Forms\RelatorioEmprestimosFilterForm.Designer.cs
-- Layout do formulário de filtro de empréstimos
+- Layout do formulÃ¡rio de filtro de emprÃ©stimos
 - Tamanho: 360x320 pixels
 - Estilo: FixedDialog, centralizado na tela
 - **Controles**:
-  - Título grande e destacado
-  - 2 DateTimePickers para período
+  - TÃ­tulo grande e destacado
+  - 2 DateTimePickers para perÃ­odo
   - 2 ComboBoxes para filtros
-  - Botão "Gerar Relatório" (azul) e "Cancelar"
+  - BotÃ£o "Gerar RelatÃ³rio" (azul) e "Cancelar"
 
 #### Forms\RelatorioRecebimentosFilterForm.cs
-- **Funcionalidade**: Formulário modal para filtrar dados do relatório de recebimentos
-- **Filtros Disponíveis**:
-  - Data Inicial e Data Final (padrão: mês atual)
-  - Congregação (ComboBox com opção "Todas")
-  - Bem (ComboBox com opção "Todos")
-- **Validações**:
-  - Data inicial não pode ser maior que data final
-  - Verifica se há registros antes de gerar relatório
-- **Filtro Especial**: Filtra recebimentos por congregação através do empréstimo vinculado
+- **Funcionalidade**: FormulÃ¡rio modal para filtrar dados do RelatÃ³rio de DevoluÃ§Ãµes
+- **Filtros DisponÃ­veis**:
+  - Data Inicial e Data Final (padrÃ£o: mÃªs atual)
+  - CongregaÃ§Ã£o (ComboBox com opÃ§Ã£o "Todas")
+  - Bem (ComboBox com opÃ§Ã£o "Todos")
+- **ValidaÃ§Ãµes**:
+  - Data inicial nÃ£o pode ser maior que data final
+  - Verifica se hÃ¡ registros antes de gerar relatÃ³rio
+- **Filtro Especial**: Filtra recebimentos por congregaÃ§Ã£o atravÃ©s do emprÃ©stimo vinculado
 
 #### Forms\RelatorioRecebimentosFilterForm.Designer.cs
-- Layout do formulário de filtro de recebimentos
+- Layout do formulÃ¡rio de filtro de recebimentos
 - Tamanho: 360x320 pixels
 - Estilo: FixedDialog, centralizado na tela
-- Mesma estrutura do formulário de empréstimos
+- Mesma estrutura do formulÃ¡rio de emprÃ©stimos
 
-### 2. Classes de Impressão
+### 2. Classes de ImpressÃ£o
 
 #### Reports\RelatorioEmprestimosPrinter.cs
-- **Funcionalidade**: Geração e impressão do relatório de empréstimos em A4
+- **Funcionalidade**: GeraÃ§Ã£o e impressÃ£o do relatÃ³rio de emprÃ©stimos em A4
 - **Formato**: Retrato (Portrait), tamanho A4 (827x1169)
-- **Estrutura do Relatório**:
-  - **Cabeçalho**: Título "RELATÓRIO DE EMPRÉSTIMOS"
-  - **Filtros Aplicados**: Período, Congregação e Bem
+- **Estrutura do RelatÃ³rio**:
+  - **CabeÃ§alho**: TÃ­tulo "RELATÃ“RIO DE EMPRÃ‰STIMOS"
+  - **Filtros Aplicados**: PerÃ­odo, CongregaÃ§Ã£o e Bem
   - **Resumo**:
-    - Total de Empréstimos
+    - Total de EmprÃ©stimos
     - Total de Itens Emprestados
-    - Empréstimos Em Andamento
-    - Empréstimos Devolvidos
+    - EmprÃ©stimos Em Andamento
+    - EmprÃ©stimos Devolvidos
   - **Detalhamento** (Tabela):
-    - Data | Recebedor | Congregação | Bens | Qtd | Status
-  - **Rodapé**: Data/hora de emissão e total de registros
+    - Data | Recebedor | CongregaÃ§Ã£o | Bens | Qtd | Status
+  - **RodapÃ©**: Data/hora de emissÃ£o e total de registros
 
-**Características Técnicas**:
-- Ordenação por data de empréstimo
+**CaracterÃ­sticas TÃ©cnicas**:
+- OrdenaÃ§Ã£o por data de emprÃ©stimo
 - Truncamento de textos longos com "..."
-- Suporte a paginação (quando necessário)
+- Suporte a paginaÃ§Ã£o (quando necessÃ¡rio)
 - Fontes variadas: Title (16pt), Header (11pt), Normal (9pt), Small (8pt)
 
 #### Reports\RelatorioRecebimentosPrinter.cs
-- **Funcionalidade**: Geração e impressão do relatório de recebimentos em A4
+- **Funcionalidade**: GeraÃ§Ã£o e impressÃ£o do RelatÃ³rio de DevoluÃ§Ãµes em A4
 - **Formato**: Retrato (Portrait), tamanho A4 (827x1169)
-- **Estrutura do Relatório**:
-  - **Cabeçalho**: Título "RELATÓRIO DE RECEBIMENTOS"
-  - **Filtros Aplicados**: Período, Congregação e Bem
+- **Estrutura do RelatÃ³rio**:
+  - **CabeÃ§alho**: TÃ­tulo "RelatÃ³rio de DevoluÃ§Ãµes"
+  - **Filtros Aplicados**: PerÃ­odo, CongregaÃ§Ã£o e Bem
   - **Resumo**:
     - Total de Recebimentos
     - Total de Itens Recebidos
@@ -83,25 +83,25 @@ Implementação de relatórios completos com filtros para Empréstimos e Recebimento
     - Recebimentos Completos
   - **Detalhamento** (Tabela):
     - Data | Quem Pegou | Quem Recebeu | Bens | Qtd | Tipo
-  - **Rodapé**: Data/hora de emissão e total de registros
+  - **RodapÃ©**: Data/hora de emissÃ£o e total de registros
 
-**Características Técnicas**:
-- Ordenação por data de recebimento
+**CaracterÃ­sticas TÃ©cnicas**:
+- OrdenaÃ§Ã£o por data de recebimento
 - Truncamento de textos longos com "..."
-- Suporte a paginação (quando necessário)
+- Suporte a paginaÃ§Ã£o (quando necessÃ¡rio)
 - Fontes variadas: Title (16pt), Header (11pt), Normal (9pt), Small (8pt)
 
-### 3. Alterações em Formulários Existentes
+### 3. AlteraÃ§Ãµes em FormulÃ¡rios Existentes
 
 #### Forms\EmprestimoListForm.Designer.cs
-**Novo Botão**:
-- `btnRelatorio`: Botão vermelho (RGB 220, 53, 69)
-- Texto: "Relatório"
-- Posição: X=688, após o botão "Receber de Volta"
+**Novo BotÃ£o**:
+- `btnRelatorio`: BotÃ£o vermelho (RGB 220, 53, 69)
+- Texto: "RelatÃ³rio"
+- PosiÃ§Ã£o: X=688, apÃ³s o botÃ£o "Receber de Volta"
 - Tamanho: 100x30 pixels
 
 #### Forms\EmprestimoListForm.cs
-**Novo Método**:
+**Novo MÃ©todo**:
 ```csharp
 private void BtnRelatorio_Click(object sender, EventArgs e)
 {
@@ -111,14 +111,14 @@ private void BtnRelatorio_Click(object sender, EventArgs e)
 ```
 
 #### Forms\RecebimentoListForm.Designer.cs
-**Novo Botão**:
-- `btnRelatorio`: Botão vermelho (RGB 220, 53, 69)
-- Texto: "Relatório"
-- Posição: X=456, após o botão "Imprimir Recibo"
+**Novo BotÃ£o**:
+- `btnRelatorio`: BotÃ£o vermelho (RGB 220, 53, 69)
+- Texto: "RelatÃ³rio"
+- PosiÃ§Ã£o: X=456, apÃ³s o botÃ£o "Imprimir Recibo"
 - Tamanho: 100x30 pixels
 
 #### Forms\RecebimentoListForm.cs
-**Novo Método**:
+**Novo MÃ©todo**:
 ```csharp
 private void BtnRelatorio_Click(object sender, EventArgs e)
 {
@@ -129,87 +129,87 @@ private void BtnRelatorio_Click(object sender, EventArgs e)
 
 ## Funcionalidades Implementadas
 
-### 1. Relatório de Empréstimos
+### 1. RelatÃ³rio de EmprÃ©stimos
 
 **Fluxo de Uso**:
-1. Usuário clica no botão "Relatório" (vermelho) na listagem de empréstimos
-2. Abre formulário modal com filtros:
-   - Data Inicial e Final (pré-preenchido com mês atual)
-   - Congregação (dropdown com todas as congregações)
+1. UsuÃ¡rio clica no botÃ£o "RelatÃ³rio" (vermelho) na listagem de emprÃ©stimos
+2. Abre formulÃ¡rio modal com filtros:
+   - Data Inicial e Final (prÃ©-preenchido com mÃªs atual)
+   - CongregaÃ§Ã£o (dropdown com todas as congregaÃ§Ãµes)
    - Bem (dropdown com todos os bens)
-3. Usuário ajusta filtros conforme necessário
-4. Clica em "Gerar Relatório"
+3. UsuÃ¡rio ajusta filtros conforme necessÃ¡rio
+4. Clica em "Gerar RelatÃ³rio"
 5. Sistema valida as datas
-6. Sistema filtra os empréstimos pelos critérios
-7. Exibe mensagem se não houver registros
-8. Abre preview de impressão do relatório
+6. Sistema filtra os emprÃ©stimos pelos critÃ©rios
+7. Exibe mensagem se nÃ£o houver registros
+8. Abre preview de impressÃ£o do relatÃ³rio
 
 **Filtros**:
-- **Por Período**: Filtra pela DataEmprestimo
-- **Por Congregação**: Filtra pelo CongregacaoId do empréstimo
-- **Por Bem**: Filtra empréstimos que contenham o bem específico nos itens
+- **Por PerÃ­odo**: Filtra pela DataEmprestimo
+- **Por CongregaÃ§Ã£o**: Filtra pelo CongregacaoId do emprÃ©stimo
+- **Por Bem**: Filtra emprÃ©stimos que contenham o bem especÃ­fico nos itens
 
-**Estatísticas no Relatório**:
-- Total de empréstimos no período
+**EstatÃ­sticas no RelatÃ³rio**:
+- Total de emprÃ©stimos no perÃ­odo
 - Total de itens emprestados
-- Quantidade de empréstimos em andamento
-- Quantidade de empréstimos devolvidos
+- Quantidade de emprÃ©stimos em andamento
+- Quantidade de emprÃ©stimos devolvidos
 
-### 2. Relatório de Recebimentos
+### 2. RelatÃ³rio de DevoluÃ§Ãµes
 
 **Fluxo de Uso**:
-1. Usuário clica no botão "Relatório" (vermelho) na listagem de recebimentos
-2. Abre formulário modal com filtros:
-   - Data Inicial e Final (pré-preenchido com mês atual)
-   - Congregação (dropdown com todas as congregações)
+1. UsuÃ¡rio clica no botÃ£o "RelatÃ³rio" (vermelho) na listagem de recebimentos
+2. Abre formulÃ¡rio modal com filtros:
+   - Data Inicial e Final (prÃ©-preenchido com mÃªs atual)
+   - CongregaÃ§Ã£o (dropdown com todas as congregaÃ§Ãµes)
    - Bem (dropdown com todos os bens)
-3. Usuário ajusta filtros conforme necessário
-4. Clica em "Gerar Relatório"
+3. UsuÃ¡rio ajusta filtros conforme necessÃ¡rio
+4. Clica em "Gerar RelatÃ³rio"
 5. Sistema valida as datas
-6. Sistema filtra os recebimentos pelos critérios
-7. Exibe mensagem se não houver registros
-8. Abre preview de impressão do relatório
+6. Sistema filtra os recebimentos pelos critÃ©rios
+7. Exibe mensagem se nÃ£o houver registros
+8. Abre preview de impressÃ£o do relatÃ³rio
 
 **Filtros**:
-- **Por Período**: Filtra pela DataRecebimento
-- **Por Congregação**: Filtra através do empréstimo vinculado
-- **Por Bem**: Filtra recebimentos que contenham o bem específico nos itens recebidos
+- **Por PerÃ­odo**: Filtra pela DataRecebimento
+- **Por CongregaÃ§Ã£o**: Filtra atravÃ©s do emprÃ©stimo vinculado
+- **Por Bem**: Filtra recebimentos que contenham o bem especÃ­fico nos itens recebidos
 
-**Estatísticas no Relatório**:
-- Total de recebimentos no período
+**EstatÃ­sticas no RelatÃ³rio**:
+- Total de recebimentos no perÃ­odo
 - Total de itens recebidos
 - Quantidade de recebimentos parciais
 - Quantidade de recebimentos completos
 
-## Layout dos Relatórios
+## Layout dos RelatÃ³rios
 
-### Cabeçalho
+### CabeÃ§alho
 ```
-RELATÓRIO DE EMPRÉSTIMOS / RECEBIMENTOS
-??????????????????????????????????????????
-Período: 01/01/2025 a 31/01/2025
-Congregação: Todas / [Nome da Congregação]
+RELATÃ“RIO DE EMPRÃ‰STIMOS / RECEBIMENTOS
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+PerÃ­odo: 01/01/2025 a 31/01/2025
+CongregaÃ§Ã£o: Todas / [Nome da CongregaÃ§Ã£o]
 Bem: Todos / [Nome do Bem]
-??????????????????????????????????????????
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 ```
 
 ### Resumo
 ```
 RESUMO
-  Total de Empréstimos/Recebimentos: 15
+  Total de EmprÃ©stimos/Recebimentos: 15
   Total de Itens: 45
   Em Andamento / Parciais: 8
   Devolvidos / Completos: 7
-??????????????????????????????????????????
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 ```
 
-### Detalhamento (Empréstimos)
+### Detalhamento (EmprÃ©stimos)
 ```
 DETALHAMENTO
 
-Data    | Recebedor | Congregação | Bens          | Qtd | Status
-???????????????????????????????????????????????????????????????
-01/01   | João...   | Sede       | Cadeiras...   | 10  | Andamento
+Data    | Recebedor | CongregaÃ§Ã£o | Bens          | Qtd | Status
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+01/01   | JoÃ£o...   | Sede       | Cadeiras...   | 10  | Andamento
 02/01   | Maria...  | Bonsuce... | Mesas...      | 5   | Devolvido
 ...
 ```
@@ -219,216 +219,216 @@ Data    | Recebedor | Congregação | Bens          | Qtd | Status
 DETALHAMENTO
 
 Data    | Quem Pegou | Quem Recebeu | Bens       | Qtd | Tipo
-?????????????????????????????????????????????????????????????
-01/01   | João...    | Pedro...     | Cadeiras.. | 10  | Completo
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+01/01   | JoÃ£o...    | Pedro...     | Cadeiras.. | 10  | Completo
 02/01   | Maria...   | Ana...       | Mesas...   | 3   | Parcial
 ...
 ```
 
-### Rodapé
+### RodapÃ©
 ```
-??????????????????????????????????????????
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Emitido em: 15/01/2025 14:30        Total de registros: 15
 ```
 
-## Validações e Tratamentos
+## ValidaÃ§Ãµes e Tratamentos
 
-### Validação de Datas
-- Data inicial não pode ser maior que data final
-- Mensagem de erro clara ao usuário
-- Impede geração do relatório se inválido
+### ValidaÃ§Ã£o de Datas
+- Data inicial nÃ£o pode ser maior que data final
+- Mensagem de erro clara ao usuÃ¡rio
+- Impede geraÃ§Ã£o do relatÃ³rio se invÃ¡lido
 
-### Validação de Dados
-- Verifica se há registros com os filtros selecionados
-- Exibe mensagem informativa se não houver dados
-- Não abre preview vazio
+### ValidaÃ§Ã£o de Dados
+- Verifica se hÃ¡ registros com os filtros selecionados
+- Exibe mensagem informativa se nÃ£o houver dados
+- NÃ£o abre preview vazio
 
 ### Tratamento de Textos Longos
-- Nomes longos são truncados com "..."
-- Mantém legibilidade do relatório
+- Nomes longos sÃ£o truncados com "..."
+- MantÃ©m legibilidade do relatÃ³rio
 - Exemplos:
-  - "João da Silva e Souza" ? "João da Silva..."
-  - "Bonsucesso - SETOR E" ? "Bonsuce..."
+  - "JoÃ£o da Silva e Souza" â†’ "JoÃ£o da Silva..."
+  - "Bonsucesso - SETOR E" â†’ "Bonsuce..."
 
 ### Compatibilidade
-- Suporta empréstimos antigos (formato legado)
-- Suporta empréstimos novos (com múltiplos itens)
-- Exibe "N/A" quando dados não disponíveis
+- Suporta emprÃ©stimos antigos (formato legado)
+- Suporta emprÃ©stimos novos (com mÃºltiplos itens)
+- Exibe "N/A" quando dados nÃ£o disponÃ­veis
 
 ## Cores e Estilos
 
-### Botão Relatório
+### BotÃ£o RelatÃ³rio
 - **Cor de Fundo**: RGB(220, 53, 69) - Vermelho Bootstrap (danger)
 - **Texto**: Branco
-- **Destaque**: Cor diferente para chamar atenção
-- **Posicionamento**: Última posição no painel de botões
+- **Destaque**: Cor diferente para chamar atenÃ§Ã£o
+- **Posicionamento**: Ãšltima posiÃ§Ã£o no painel de botÃµes
 
-### Botão Gerar Relatório (Filtro)
-- **Cor de Fundo**: RGB(0, 120, 215) - Azul padrão
+### BotÃ£o Gerar RelatÃ³rio (Filtro)
+- **Cor de Fundo**: RGB(0, 120, 215) - Azul padrÃ£o
 - **Texto**: Branco
-- **Estilo**: Botão primário destacado
+- **Estilo**: BotÃ£o primÃ¡rio destacado
 
-## Benefícios
+## BenefÃ­cios
 
-### 1. Análise de Dados
-- Visão consolidada de empréstimos/recebimentos
-- Estatísticas automáticas
-- Filtros flexíveis
-- Exportação para impressão
+### 1. AnÃ¡lise de Dados
+- VisÃ£o consolidada de emprÃ©stimos/recebimentos
+- EstatÃ­sticas automÃ¡ticas
+- Filtros flexÃ­veis
+- ExportaÃ§Ã£o para impressÃ£o
 
-### 2. Gestão
-- Acompanhamento de períodos específicos
-- Identificação de congregações mais ativas
+### 2. GestÃ£o
+- Acompanhamento de perÃ­odos especÃ­ficos
+- IdentificaÃ§Ã£o de congregaÃ§Ãµes mais ativas
 - Controle de bens mais emprestados
-- Análise de recebimentos parciais
+- AnÃ¡lise de recebimentos parciais
 
-### 3. Documentação
-- Relatórios impressos para arquivamento
+### 3. DocumentaÃ§Ã£o
+- RelatÃ³rios impressos para arquivamento
 - Formato profissional A4
-- Informações completas e organizadas
-- Data de emissão registrada
+- InformaÃ§Ãµes completas e organizadas
+- Data de emissÃ£o registrada
 
 ### 4. Usabilidade
 - Interface intuitiva
-- Filtros pré-preenchidos com mês atual
+- Filtros prÃ©-preenchidos com mÃªs atual
 - Preview antes de imprimir
-- Validações claras
+- ValidaÃ§Ãµes claras
 
 ## Exemplos de Uso
 
-### Exemplo 1: Relatório Mensal de Empréstimos
-**Cenário**: Gerar relatório de todos os empréstimos de janeiro/2025
+### Exemplo 1: RelatÃ³rio Mensal de EmprÃ©stimos
+**CenÃ¡rio**: Gerar relatÃ³rio de todos os emprÃ©stimos de janeiro/2025
 
 **Passos**:
-1. Ir para "Empréstimos"
-2. Clicar em "Relatório" (vermelho)
+1. Ir para "EmprÃ©stimos"
+2. Clicar em "RelatÃ³rio" (vermelho)
 3. Verificar datas: 01/01/2025 a 31/01/2025
-4. Deixar "Todas" nas congregações
+4. Deixar "Todas" nas congregaÃ§Ãµes
 5. Deixar "Todos" nos bens
-6. Clicar em "Gerar Relatório"
+6. Clicar em "Gerar RelatÃ³rio"
 
-**Resultado**: Relatório completo com todos os empréstimos do mês
+**Resultado**: RelatÃ³rio completo com todos os emprÃ©stimos do mÃªs
 
-### Exemplo 2: Relatório de Congregação Específica
-**Cenário**: Verificar todos os recebimentos da congregação "Sede"
+### Exemplo 2: RelatÃ³rio de CongregaÃ§Ã£o EspecÃ­fica
+**CenÃ¡rio**: Verificar todos os recebimentos da congregaÃ§Ã£o "Sede"
 
 **Passos**:
 1. Ir para "Recebimento de Emprestimo"
-2. Clicar em "Relatório" (vermelho)
-3. Ajustar período conforme necessário
-4. Selecionar "Sede" no dropdown Congregação
+2. Clicar em "RelatÃ³rio" (vermelho)
+3. Ajustar perÃ­odo conforme necessÃ¡rio
+4. Selecionar "Sede" no dropdown CongregaÃ§Ã£o
 5. Deixar "Todos" nos bens
-6. Clicar em "Gerar Relatório"
+6. Clicar em "Gerar RelatÃ³rio"
 
-**Resultado**: Relatório apenas com recebimentos da Sede
+**Resultado**: RelatÃ³rio apenas com recebimentos da Sede
 
-### Exemplo 3: Relatório de Bem Específico
-**Cenário**: Analisar empréstimos de "Cadeiras" no ano
+### Exemplo 3: RelatÃ³rio de Bem EspecÃ­fico
+**CenÃ¡rio**: Analisar emprÃ©stimos de "Cadeiras" no ano
 
 **Passos**:
-1. Ir para "Empréstimos"
-2. Clicar em "Relatório" (vermelho)
+1. Ir para "EmprÃ©stimos"
+2. Clicar em "RelatÃ³rio" (vermelho)
 3. Ajustar para 01/01/2025 a 31/12/2025
-4. Deixar "Todas" nas congregações
+4. Deixar "Todas" nas congregaÃ§Ãµes
 5. Selecionar "Cadeiras" no dropdown Bem
-6. Clicar em "Gerar Relatório"
+6. Clicar em "Gerar RelatÃ³rio"
 
-**Resultado**: Todos os empréstimos de cadeiras no ano
+**Resultado**: Todos os emprÃ©stimos de cadeiras no ano
 
-### Exemplo 4: Relatório Filtro Combinado
-**Cenário**: Recebimentos de "Mesas" da "Bonsucesso" em fevereiro
+### Exemplo 4: RelatÃ³rio Filtro Combinado
+**CenÃ¡rio**: Recebimentos de "Mesas" da "Bonsucesso" em fevereiro
 
 **Passos**:
 1. Ir para "Recebimento de Emprestimo"
-2. Clicar em "Relatório" (vermelho)
+2. Clicar em "RelatÃ³rio" (vermelho)
 3. Ajustar para 01/02/2025 a 29/02/2025
-4. Selecionar "Bonsucesso" na congregação
+4. Selecionar "Bonsucesso" na congregaÃ§Ã£o
 5. Selecionar "Mesas" no bem
-6. Clicar em "Gerar Relatório"
+6. Clicar em "Gerar RelatÃ³rio"
 
-**Resultado**: Recebimentos específicos filtrados
+**Resultado**: Recebimentos especÃ­ficos filtrados
 
-## Observações Técnicas
+## ObservaÃ§Ãµes TÃ©cnicas
 
-### Impressão
+### ImpressÃ£o
 - Usa `PrintDocument` do .NET
 - Preview com `PrintPreviewDialog`
 - Tamanho A4: 827x1169 (100 dpi)
-- Orientação: Retrato (Portrait)
+- OrientaÃ§Ã£o: Retrato (Portrait)
 - Margens: 50 pixels (esquerda/direita/topo)
 
-### Paginação
-- Suporte a múltiplas páginas (se necessário)
-- Quebra automática quando atinge limite
-- Rodapé repetido em cada página
-- `e.HasMorePages` gerencia continuação
+### PaginaÃ§Ã£o
+- Suporte a mÃºltiplas pÃ¡ginas (se necessÃ¡rio)
+- Quebra automÃ¡tica quando atinge limite
+- RodapÃ© repetido em cada pÃ¡gina
+- `e.HasMorePages` gerencia continuaÃ§Ã£o
 
 ### Performance
-- Filtros aplicados em memória (LINQ)
-- Ordenação antes da impressão
-- Cálculos estatísticos otimizados
-- Sem consultas repetidas ao repositório
+- Filtros aplicados em memÃ³ria (LINQ)
+- OrdenaÃ§Ã£o antes da impressÃ£o
+- CÃ¡lculos estatÃ­sticos otimizados
+- Sem consultas repetidas ao repositÃ³rio
 
 ### Fontes
 - **Arial** usada em todos os tamanhos
-- Tamanhos: 16pt (título), 11pt (header), 9pt (normal), 8pt (small)
-- Estilos: Bold para títulos e headers
-- Regular para conteúdo
+- Tamanhos: 16pt (tÃ­tulo), 11pt (header), 9pt (normal), 8pt (small)
+- Estilos: Bold para tÃ­tulos e headers
+- Regular para conteÃºdo
 
 ## Melhorias Futuras Sugeridas
 
-1. **Exportação para PDF**: Salvar relatório como arquivo PDF
-2. **Exportação para Excel**: Dados em planilha para análise
-3. **Gráficos**: Visualizações gráficas de estatísticas
-4. **Filtro por Status**: Adicionar filtro de status de empréstimo
-5. **Filtro por Setor**: Filtrar por setor da congregação
-6. **Agrupamento**: Agrupar por congregação/bem no relatório
+1. **ExportaÃ§Ã£o para PDF**: Salvar relatÃ³rio como arquivo PDF
+2. **ExportaÃ§Ã£o para Excel**: Dados em planilha para anÃ¡lise
+3. **GrÃ¡ficos**: VisualizaÃ§Ãµes grÃ¡ficas de estatÃ­sticas
+4. **Filtro por Status**: Adicionar filtro de status de emprÃ©stimo
+5. **Filtro por Setor**: Filtrar por setor da congregaÃ§Ã£o
+6. **Agrupamento**: Agrupar por congregaÃ§Ã£o/bem no relatÃ³rio
 7. **Totalizadores**: Subtotais por grupo
-8. **Filtro de Data de Empréstimo**: Para recebimentos, filtrar também pela data do empréstimo original
-9. **Preview Customizado**: Permitir zoom e navegação entre páginas
-10. **Salvamento de Filtros**: Salvar combinações de filtros favoritas
+8. **Filtro de Data de EmprÃ©stimo**: Para recebimentos, filtrar tambÃ©m pela data do emprÃ©stimo original
+9. **Preview Customizado**: Permitir zoom e navegaÃ§Ã£o entre pÃ¡ginas
+10. **Salvamento de Filtros**: Salvar combinaÃ§Ãµes de filtros favoritas
 
 ## Testes Sugeridos
 
-### Relatório de Empréstimos
-1. ? Gerar relatório do mês atual (padrão)
-2. ? Filtrar por congregação específica
-3. ? Filtrar por bem específico
-4. ? Filtrar por período personalizado
-5. ? Combinar múltiplos filtros
-6. ? Tentar gerar com data inválida (inicial > final)
-7. ? Tentar gerar sem registros (deve mostrar mensagem)
-8. ? Verificar estatísticas no resumo
-9. ? Verificar detalhamento na tabela
-10. ? Imprimir relatório
+### RelatÃ³rio de EmprÃ©stimos
+1. âœ… Gerar relatÃ³rio do mÃªs atual (padrÃ£o)
+2. âœ… Filtrar por congregaÃ§Ã£o especÃ­fica
+3. âœ… Filtrar por bem especÃ­fico
+4. âœ… Filtrar por perÃ­odo personalizado
+5. âœ… Combinar mÃºltiplos filtros
+6. âœ… Tentar gerar com data invÃ¡lida (inicial > final)
+7. âœ… Tentar gerar sem registros (deve mostrar mensagem)
+8. âœ… Verificar estatÃ­sticas no resumo
+9. âœ… Verificar detalhamento na tabela
+10. âœ… Imprimir relatÃ³rio
 
-### Relatório de Recebimentos
-1. ? Gerar relatório do mês atual (padrão)
-2. ? Filtrar por congregação através do empréstimo
-3. ? Filtrar por bem recebido
-4. ? Filtrar por período personalizado
-5. ? Combinar múltiplos filtros
-6. ? Verificar recebimentos parciais vs completos
-7. ? Verificar estatísticas corretas
-8. ? Imprimir relatório com muitos registros (testar paginação)
+### RelatÃ³rio de DevoluÃ§Ãµes
+1. âœ… Gerar relatÃ³rio do mÃªs atual (padrÃ£o)
+2. âœ… Filtrar por congregaÃ§Ã£o atravÃ©s do emprÃ©stimo
+3. âœ… Filtrar por bem recebido
+4. âœ… Filtrar por perÃ­odo personalizado
+5. âœ… Combinar mÃºltiplos filtros
+6. âœ… Verificar recebimentos parciais vs completos
+7. âœ… Verificar estatÃ­sticas corretas
+8. âœ… Imprimir relatÃ³rio com muitos registros (testar paginaÃ§Ã£o)
 
 ### Interface
-1. ? Botão "Relatório" visível e destacado
-2. ? Formulário de filtro abre corretamente
-3. ? ComboBoxes carregam dados corretos
-4. ? Datas pré-preenchidas com mês atual
-5. ? Validações funcionam corretamente
-6. ? Preview abre em tamanho adequado
-7. ? Cancelar fecha sem gerar relatório
+1. âœ… BotÃ£o "RelatÃ³rio" visÃ­vel e destacado
+2. âœ… FormulÃ¡rio de filtro abre corretamente
+3. âœ… ComboBoxes carregam dados corretos
+4. âœ… Datas prÃ©-preenchidas com mÃªs atual
+5. âœ… ValidaÃ§Ãµes funcionam corretamente
+6. âœ… Preview abre em tamanho adequado
+7. âœ… Cancelar fecha sem gerar relatÃ³rio
 
-## Conclusão
+## ConclusÃ£o
 
-Os relatórios implementados oferecem uma solução completa para análise e documentação de empréstimos e recebimentos, com:
-- **Interface intuitiva** e fácil de usar
-- **Filtros flexíveis** para diferentes necessidades
-- **Formato profissional** A4 para impressão
-- **Estatísticas automáticas** para análise rápida
-- **Validações robustas** para evitar erros
+Os relatÃ³rios implementados oferecem uma soluÃ§Ã£o completa para anÃ¡lise e documentaÃ§Ã£o de emprÃ©stimos e recebimentos, com:
+- **Interface intuitiva** e fÃ¡cil de usar
+- **Filtros flexÃ­veis** para diferentes necessidades
+- **Formato profissional** A4 para impressÃ£o
+- **EstatÃ­sticas automÃ¡ticas** para anÃ¡lise rÃ¡pida
+- **ValidaÃ§Ãµes robustas** para evitar erros
 - **Compatibilidade** com dados antigos e novos
 
-A funcionalidade está pronta para uso em produção e pode ser expandida conforme as necessidades futuras do sistema.
+A funcionalidade estÃ¡ pronta para uso em produÃ§Ã£o e pode ser expandida conforme as necessidades futuras do sistema.

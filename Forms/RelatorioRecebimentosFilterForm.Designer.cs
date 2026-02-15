@@ -38,7 +38,7 @@ partial class RelatorioRecebimentosFilterForm
         this.lblTitulo.Name = "lblTitulo";
         this.lblTitulo.Size = new Size(280, 25);
         this.lblTitulo.TabIndex = 0;
-        this.lblTitulo.Text = "Relatório de Recebimentos";
+        this.lblTitulo.Text = "Relatório de Devoluções";
         // 
         // lblDataInicial
         // 
@@ -153,7 +153,7 @@ partial class RelatorioRecebimentosFilterForm
         this.MinimizeBox = false;
         this.Name = "RelatorioRecebimentosFilterForm";
         this.StartPosition = FormStartPosition.CenterScreen;
-        this.Text = "Filtros - Relatório de Recebimentos";
+        this.Text = "Filtros - Relatório de Devoluções";
         this.ResumeLayout(false);
         this.PerformLayout();
     }

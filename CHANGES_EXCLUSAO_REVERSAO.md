@@ -561,7 +561,7 @@ ID | Nome     | Estoque | Emprestado
 
 ### 11.3. Relatórios
 - ?? Relatório de empréstimos excluídos
-- ?? Relatório de recebimentos excluídos
+- ?? Relatório de Devoluções excluídos
 - ?? Histórico de reversões de estoque
 
 ### 11.4. Interface

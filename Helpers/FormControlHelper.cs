@@ -195,6 +195,9 @@ public static class FormControlHelper
         var name = dtp.Name;
         var value = dtp.Value;
         var enabled = dtp.Enabled;
+        var anchor = dtp.Anchor;
+        var dock = dtp.Dock;
+        var font = dtp.Font;
 
         // Criar MaskedTextBox
         var mtb = CreateDateMaskedTextBox();
@@ -204,10 +207,16 @@ public static class FormControlHelper
         mtb.TabIndex = tabIndex;
         mtb.Text = value.ToString("dd/MM/yyyy");
         mtb.Enabled = enabled;
+        mtb.Anchor = anchor;
+        mtb.Dock = dock;
+        mtb.Font = font;
 
-        // Remover DateTimePicker e adicionar MaskedTextBox
+        // Remover DateTimePicker e adicionar MaskedTextBox no mesmo índice
+        var controlIndex = parent.Controls.GetChildIndex(dtp);
         parent.Controls.Remove(dtp);
         parent.Controls.Add(mtb);
+        parent.Controls.SetChildIndex(mtb, controlIndex);
+        
         dtp.Dispose();
     }
 

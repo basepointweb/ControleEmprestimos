@@ -98,7 +98,7 @@ partial class RecebimentoDetailForm
         this.lblDataRecebimento.Name = "lblDataRecebimento";
         this.lblDataRecebimento.Size = new Size(126, 15);
         this.lblDataRecebimento.TabIndex = 6;
-        this.lblDataRecebimento.Text = "Data do Recebimento:";
+        this.lblDataRecebimento.Text = "Data da Devolução:";
         // 
         // dtpDataRecebimento
         // 
@@ -115,7 +115,7 @@ partial class RecebimentoDetailForm
         this.lblQuemRecebeu.Name = "lblQuemRecebeu";
         this.lblQuemRecebeu.Size = new Size(115, 15);
         this.lblQuemRecebeu.TabIndex = 8;
-        this.lblQuemRecebeu.Text = "Quem Recebeu Volta:";
+        this.lblQuemRecebeu.Text = "Quem Recebeu de Volta:";
         // 
         // txtQuemRecebeu
         // 
@@ -132,7 +132,7 @@ partial class RecebimentoDetailForm
         this.lblItensReceber.Name = "lblItensReceber";
         this.lblItensReceber.Size = new Size(110, 19);
         this.lblItensReceber.TabIndex = 10;
-        this.lblItensReceber.Text = "Itens a Receber:";
+        this.lblItensReceber.Text = "Bens a Devolver:";
         // 
         // dgvItensReceber
         // 
@@ -153,7 +153,7 @@ partial class RecebimentoDetailForm
         this.lblTotalRecebido.Name = "lblTotalRecebido";
         this.lblTotalRecebido.Size = new Size(150, 15);
         this.lblTotalRecebido.TabIndex = 12;
-        this.lblTotalRecebido.Text = "Total a Receber: 0 itens";
+        this.lblTotalRecebido.Text = "Total a Devolver: 0 itens";
         // 
         // btnSave
         // 
@@ -214,7 +214,7 @@ partial class RecebimentoDetailForm
         this.MinimizeBox = false;
         this.Name = "RecebimentoDetailForm";
         this.StartPosition = FormStartPosition.CenterScreen;
-        this.Text = "Detalhes do Recebimento";
+        this.Text = "Devolução de Bens";
         ((System.ComponentModel.ISupportInitialize)(this.dgvItensReceber)).EndInit();
         this.ResumeLayout(false);
         this.PerformLayout();

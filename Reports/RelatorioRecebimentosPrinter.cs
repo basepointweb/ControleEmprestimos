@@ -1,5 +1,5 @@
-using System.Drawing.Printing;
 using ControleEmprestimos.Models;
+using System.Drawing.Printing;
 
 namespace ControleEmprestimos.Reports;
 
@@ -13,8 +13,8 @@ public class RelatorioRecebimentosPrinter
     private int _currentRecebimentoIndex = 0;
 
     public RelatorioRecebimentosPrinter(
-        List<RecebimentoEmprestimo> recebimentos, 
-        DateTime dataInicial, 
+        List<RecebimentoEmprestimo> recebimentos,
+        DateTime dataInicial,
         DateTime dataFinal,
         string congregacaoFiltro,
         string itemFiltro)
@@ -30,11 +30,11 @@ public class RelatorioRecebimentosPrinter
     {
         var printDocument = new PrintDocument();
         printDocument.PrintPage += PrintDocument_PrintPage;
-        
+
         // Configurar para A4
         printDocument.DefaultPageSettings.PaperSize = new PaperSize("A4", 827, 1169);
         printDocument.DefaultPageSettings.Landscape = false;
-        
+
         var printPreviewDialog = new PrintPreviewDialog
         {
             Document = printDocument,
@@ -52,7 +52,7 @@ public class RelatorioRecebimentosPrinter
         {
             // Buscar logo na mesma pasta do executável
             var logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logo.png");
-            
+
             if (File.Exists(logoPath))
             {
                 return Image.FromFile(logoPath);
@@ -62,7 +62,7 @@ public class RelatorioRecebimentosPrinter
         {
             // Se não conseguir carregar, retorna null
         }
-        
+
         return null;
     }
 
@@ -87,12 +87,12 @@ public class RelatorioRecebimentosPrinter
         // Título (apenas na primeira página)
         if (_currentRecebimentoIndex == 0)
         {
-            var titulo = "SEMIADET - RELATÓRIO DE RECEBIMENTOS";
+            var titulo = "SEMIADET - Relatório de Devoluções";
             var titleSize = graphics.MeasureString(titulo, titleFont);
-            
+
             // Desenhar título
             graphics.DrawString(titulo, titleFont, Brushes.Black, leftMargin, currentY);
-            
+
             // Carregar e desenhar logo (da pasta do executável)
             using (var logo = LoadLogoFromFile())
             {
@@ -101,15 +101,15 @@ public class RelatorioRecebimentosPrinter
                     // Calcular tamanho da logo proporcional à altura do título
                     var logoHeight = (int)(titleSize.Height * 2.5);
                     var logoWidth = (int)(logo.Width * ((float)logoHeight / logo.Height));
-                    
+
                     // Posicionar logo à direita, alinhada com o topo do título
                     var logoX = rightMargin - logoWidth;
                     var logoY = currentY; // Alinhado com o topo do título (sem ajuste negativo)
-                    
+
                     graphics.DrawImage(logo, logoX, logoY, logoWidth, logoHeight);
                 }
             }
-            
+
             currentY += 35;
 
             // Período e filtros
@@ -192,7 +192,7 @@ public class RelatorioRecebimentosPrinter
             {
                 _currentRecebimentoIndex = i;
                 e.HasMorePages = true;
-                
+
                 // Rodapé da página
                 var rodapeY = e.PageBounds.Height - 60;
                 graphics.DrawString($"Emitido em: {DateTime.Now:dd/MM/yyyy HH:mm}", smallFont, Brushes.Gray, leftMargin, rodapeY);
@@ -202,18 +202,18 @@ public class RelatorioRecebimentosPrinter
 
             // Linha principal do recebimento
             graphics.DrawString(recebimento.DataRecebimento.ToString("dd/MM/yy"), smallFont, Brushes.Black, colData, currentY);
-            
+
             var nomeQuemPegou = recebimento.NomeRecebedor.Length > 14 ? recebimento.NomeRecebedor.Substring(0, 14) + "..." : recebimento.NomeRecebedor;
             graphics.DrawString(nomeQuemPegou, smallFont, Brushes.Black, colQuemPegou, currentY);
-            
+
             var nomeQuemRecebeu = recebimento.NomeQuemRecebeu.Length > 14 ? recebimento.NomeQuemRecebeu.Substring(0, 14) + "..." : recebimento.NomeQuemRecebeu;
             graphics.DrawString(nomeQuemRecebeu, smallFont, Brushes.Black, colQuemRecebeu, currentY);
-            
+
             graphics.DrawString(recebimento.TotalItensRecebidos.ToString(), smallFont, Brushes.Black, colQtd, currentY);
-            
+
             var tipo = recebimento.RecebimentoParcial ? "Parcial" : "Completo";
             graphics.DrawString(tipo, smallFont, Brushes.Black, colTipo, currentY);
-            
+
             currentY += lineHeight;
 
             // Bens recebidos em linhas separadas (indentados)

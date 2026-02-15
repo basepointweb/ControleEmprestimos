@@ -1,27 +1,27 @@
-# Implementa��o de Logo SEMIADET e T�tulos Atualizados
+﻿# Implementação de Logo SEMIADET e Títulos Atualizados
 
 ## Resumo
-Atualizados todos os recibos e relat�rios com o prefixo "SEMIADET" nos t�tulos e adicionado suporte para exibi��o da logo da organiza��o no canto superior direito de todas as impress�es.
+Atualizados todos os recibos e relatórios com o prefixo "SEMIADET" nos títulos e adicionado suporte para exibição da logo da organização no canto superior direito de todas as impressões.
 
-## Mudan�as Implementadas
+## Mudanças Implementadas
 
-### 1. Recibo de Empr�stimo (`ReciboEmprestimoPrinter.cs`)
+### 1. Recibo de Empréstimo (`ReciboEmprestimoPrinter.cs`)
 
-#### T�tulo Atualizado:
+#### Título Atualizado:
 ```
-Antes: "RECIBO DE EMPR�STIMO"
-Depois: "SEMIADET - EMPR�STIMO DE BENS"
+Antes: "RECIBO DE EMPRÉSTIMO"
+Depois: "SEMIADET - EMPRÉSTIMO DE BENS"
 ```
 
 #### Logo Adicionada:
-- **Posi��o**: Canto superior direito, alinhada com o t�tulo
-- **Tamanho**: Proporcional � altura do t�tulo (2.5x)
+- **Posição**: Canto superior direito, alinhada com o título
+- **Tamanho**: Proporcional à altura do título (2.5x)
 - **Caminho**: `Resources/logo.png`
-- **Fallback**: Se n�o encontrar a logo, continua sem erro
+- **Fallback**: Se não encontrar a logo, continua sem erro
 
 ### 2. Recibo de Recebimento (`ReciboRecebimentoPrinter.cs`)
 
-#### T�tulo Atualizado:
+#### Título Atualizado:
 ```
 Antes: "RECIBO DE RECEBIMENTO" / "RECIBO DE RECEBIMENTO PARCIAL"
 Depois: "SEMIADET - Recebimento de bens emprestados" / 
@@ -29,42 +29,42 @@ Depois: "SEMIADET - Recebimento de bens emprestados" /
 ```
 
 #### Logo Adicionada:
-- **Posi��o**: Canto superior direito, alinhada com o t�tulo
-- **Tamanho**: Proporcional � altura do t�tulo (2.5x)
+- **Posição**: Canto superior direito, alinhada com o título
+- **Tamanho**: Proporcional à altura do título (2.5x)
 - **Caminho**: `Resources/logo.png`
-- **Fallback**: Se n�o encontrar a logo, continua sem erro
+- **Fallback**: Se não encontrar a logo, continua sem erro
 
-### 3. Relat�rio de Empr�stimos (`RelatorioEmprestimosPrinter.cs`)
+### 3. Relatório de Empréstimos (`RelatorioEmprestimosPrinter.cs`)
 
-#### T�tulo Atualizado:
+#### Título Atualizado:
 ```
-Antes: "RELAT�RIO DE EMPR�STIMOS"
-Depois: "SEMIADET - RELAT�RIO DE EMPR�STIMOS"
+Antes: "RELATÓRIO DE EMPRÉSTIMOS"
+Depois: "SEMIADET - RELATÓRIO DE EMPRÉSTIMOS"
 ```
 
 #### Logo Adicionada:
-- **Posi��o**: Canto superior direito, alinhada com o t�tulo
-- **Tamanho**: Proporcional � altura do t�tulo (2.5x)
+- **Posição**: Canto superior direito, alinhada com o título
+- **Tamanho**: Proporcional à altura do título (2.5x)
 - **Caminho**: `Resources/logo.png`
-- **Exibi��o**: Apenas na primeira p�gina
+- **Exibição**: Apenas na primeira página
 
-### 4. Relat�rio de Recebimentos (`RelatorioRecebimentosPrinter.cs`)
+### 4. Relatório de Devoluções (`RelatorioRecebimentosPrinter.cs`)
 
-#### T�tulo Atualizado:
+#### Título Atualizado:
 ```
-Antes: "RELAT�RIO DE RECEBIMENTOS"
-Depois: "SEMIADET - RELAT�RIO DE RECEBIMENTOS"
+Antes: "Relatório de Devoluções"
+Depois: "SEMIADET - Relatório de Devoluções"
 ```
 
 #### Logo Adicionada:
-- **Posi��o**: Canto superior direito, alinhada com o t�tulo
-- **Tamanho**: Proporcional � altura do t�tulo (2.5x)
+- **Posição**: Canto superior direito, alinhada com o título
+- **Tamanho**: Proporcional à altura do título (2.5x)
 - **Caminho**: `Resources/logo.png`
-- **Exibi��o**: Apenas na primeira p�gina
+- **Exibição**: Apenas na primeira página
 
-## Implementa��o T�cnica
+## Implementação Técnica
 
-### C�digo de Exibi��o da Logo:
+### Código de Exibição da Logo:
 
 ```csharp
 // Carregar e desenhar logo (se existir)
@@ -75,11 +75,11 @@ try
     {
         using (var logo = Image.FromFile(logoPath))
         {
-            // Calcular tamanho da logo proporcional � altura do t�tulo
+            // Calcular tamanho da logo proporcional à altura do título
             var logoHeight = (int)(titleSize.Height * 2.5);
             var logoWidth = (int)(logo.Width * ((float)logoHeight / logo.Height));
             
-            // Posicionar logo � direita, alinhada com o t�tulo
+            // Posicionar logo à direita, alinhada com o título
             var logoX = rightMargin - logoWidth; // ou e.PageBounds.Width - leftMargin - logoWidth
             var logoY = currentY - 5; // Pequeno ajuste vertical
             
@@ -89,32 +89,32 @@ try
 }
 catch
 {
-    // Se n�o conseguir carregar a logo, continua sem ela
+    // Se não conseguir carregar a logo, continua sem ela
 }
 ```
 
-### Caracter�sticas da Implementa��o:
+### Características da Implementação:
 
-1. **Redimensionamento Autom�tico**: A logo � redimensionada proporcionalmente
-2. **Alinhamento Preciso**: Alinhada com a linha do t�tulo
-3. **Fallback Silencioso**: N�o exibe erro se logo n�o existir
-4. **Otimiza��o**: Logo � descartada ap�s uso (using statement)
+1. **Redimensionamento Automático**: A logo é redimensionada proporcionalmente
+2. **Alinhamento Preciso**: Alinhada com a linha do título
+3. **Fallback Silencioso**: Não exibe erro se logo não existir
+4. **Otimização**: Logo é descartada após uso (using statement)
 
 ## Estrutura de Arquivos
 
 ```
 ControleEmprestimos/
-??? Resources/
-?   ??? logo.png          ? Logo da SEMIADET
-??? Reports/
-?   ??? ReciboEmprestimoPrinter.cs
-?   ??? ReciboRecebimentoPrinter.cs
-?   ??? RelatorioEmprestimosPrinter.cs
-?   ??? RelatorioRecebimentosPrinter.cs
-??? ...
+├── Resources/
+│   └── logo.png          ← Logo da SEMIADET
+├── Reports/
+│   ├── ReciboEmprestimoPrinter.cs
+│   ├── ReciboRecebimentoPrinter.cs
+│   ├── RelatorioEmprestimosPrinter.cs
+│   └── RelatorioRecebimentosPrinter.cs
+└── ...
 ```
 
-## Instala��o da Logo
+## Instalação da Logo
 
 ### Passos para Adicionar a Logo:
 
@@ -133,136 +133,136 @@ ControleEmprestimos/
    - Build Action: `Content`
    - Copy to Output Directory: `Copy if newer`
 
-4. **Para Distribui��o**:
-   - Incluir pasta `Resources` com `logo.png` junto ao execut�vel
+4. **Para Distribuição**:
+   - Incluir pasta `Resources` com `logo.png` junto ao executável
    - Estrutura ao distribuir:
      ```
      ControleEmprestimos.exe
      Resources/
-       ??? logo.png
+       └── logo.png
      ```
 
-## Especifica��es da Logo
+## Especificações da Logo
 
 ### Logo SEMIADET Fornecida:
-- **Descri��o**: Globo terrestre com livro aberto e monte
-- **Texto**: "Levando �s Na��es a Salva��o de Deus" e "SEMIADET"
+- **Descrição**: Globo terrestre com livro aberto e monte
+- **Texto**: "Levando às Nações a Salvação de Deus" e "SEMIADET"
 - **Cores**: Verde, azul, marrom
 - **Formato**: Circular/Escudo
 
-### Redimensionamento Autom�tico:
-| Documento | Altura do T�tulo | Altura da Logo | Largura Aproximada |
+### Redimensionamento Automático:
+| Documento | Altura do Título | Altura da Logo | Largura Aproximada |
 |-----------|------------------|----------------|--------------------|
-| Recibo Empr�stimo | ~20px | ~50px | ~50px (quadrada) |
+| Recibo Empréstimo | ~20px | ~50px | ~50px (quadrada) |
 | Recibo Recebimento | ~20px | ~50px | ~50px (quadrada) |
-| Relat�rio Empr�stimos | ~24px | ~60px | ~60px (quadrada) |
-| Relat�rio Recebimentos | ~24px | ~60px | ~60px (quadrada) |
+| Relatório Empréstimos | ~24px | ~60px | ~60px (quadrada) |
+| Relatório Recebimentos | ~24px | ~60px | ~60px (quadrada) |
 
-**Nota**: Valores reais dependem da resolu��o da impressora/visualiza��o
+**Nota**: Valores reais dependem da resolução da impressora/visualização
 
 ## Layout Visual
 
-### Exemplo de Cabe�alho (Recibo):
+### Exemplo de Cabeçalho (Recibo):
 ```
-???????????????????????????????????????????????????????????
-?  SEMIADET - EMPR�STIMO DE BENS            [LOGO]        ?
-???????????????????????????????????????????????????????????
-?  N� Empr�stimo: 1                                       ?
-?  Data: 15/12/2024                                       ?
-?  ...                                                    ?
-???????????????????????????????????????????????????????????
+┌─────────────────────────────────────────────────────────┐
+│  SEMIADET - EMPRÉSTIMO DE BENS            [LOGO]        │
+│─────────────────────────────────────────────────────────│
+│  Nº Empréstimo: 1                                       │
+│  Data: 15/12/2024                                       │
+│  ...                                                    │
+└─────────────────────────────────────────────────────────┘
 ```
 
-### Exemplo de Cabe�alho (Relat�rio):
+### Exemplo de Cabeçalho (Relatório):
 ```
-???????????????????????????????????????????????????????????
-?  SEMIADET - RELAT�RIO DE EMPR�STIMOS      [LOGO]        ?
-?                                                          ?
-?  Per�odo: 01/12/2024 a 31/12/2024                      ?
-?  Congrega��o: Todas                                     ?
-?  ...                                                    ?
-???????????????????????????????????????????????????????????
+┌─────────────────────────────────────────────────────────┐
+│  SEMIADET - RELATÓRIO DE EMPRÉSTIMOS      [LOGO]        │
+│                                                          │
+│  Período: 01/12/2024 a 31/12/2024                      │
+│  Congregação: Todas                                     │
+│  ...                                                    │
+└─────────────────────────────────────────────────────────┘
 ```
 
 ## Compatibilidade
 
 ### Com Logo Presente:
-- ? Logo exibida no canto superior direito
-- ? Alinhada com o t�tulo
-- ? Tamanho proporcional e leg�vel
+- ✅ Logo exibida no canto superior direito
+- ✅ Alinhada com o título
+- ✅ Tamanho proporcional e legível
 
 ### Sem Logo (Arquivo Ausente):
-- ? Sistema funciona normalmente
-- ? Sem mensagens de erro
-- ? Apenas t�tulo � exibido
-- ? Layout permanece consistente
+- ✅ Sistema funciona normalmente
+- ✅ Sem mensagens de erro
+- ✅ Apenas título é exibido
+- ✅ Layout permanece consistente
 
 ## Testagem
 
-### Teste 1: Recibo de Empr�stimo
-1. ? Criar novo empr�stimo
-2. ? Imprimir recibo
-3. ? Verificar t�tulo "SEMIADET - EMPR�STIMO DE BENS"
-4. ? Verificar logo no canto superior direito
-5. ? Confirmar alinhamento com t�tulo
+### Teste 1: Recibo de Empréstimo
+1. ✅ Criar novo empréstimo
+2. ✅ Imprimir recibo
+3. ✅ Verificar título "SEMIADET - EMPRÉSTIMO DE BENS"
+4. ✅ Verificar logo no canto superior direito
+5. ✅ Confirmar alinhamento com título
 
 ### Teste 2: Recibo de Recebimento
-1. ? Registrar recebimento
-2. ? Imprimir recibo
-3. ? Verificar t�tulo "SEMIADET - Recebimento de bens emprestados"
-4. ? Verificar logo no canto superior direito
-5. ? Confirmar alinhamento com t�tulo
+1. ✅ Registrar recebimento
+2. ✅ Imprimir recibo
+3. ✅ Verificar título "SEMIADET - Recebimento de bens emprestados"
+4. ✅ Verificar logo no canto superior direito
+5. ✅ Confirmar alinhamento com título
 
-### Teste 3: Relat�rio de Empr�stimos
-1. ? Gerar relat�rio de empr�stimos
-2. ? Verificar t�tulo "SEMIADET - RELAT�RIO DE EMPR�STIMOS"
-3. ? Verificar logo apenas na primeira p�gina
-4. ? Confirmar alinhamento com t�tulo
+### Teste 3: Relatório de Empréstimos
+1. ✅ Gerar relatório de empréstimos
+2. ✅ Verificar título "SEMIADET - RELATÓRIO DE EMPRÉSTIMOS"
+3. ✅ Verificar logo apenas na primeira página
+4. ✅ Confirmar alinhamento com título
 
-### Teste 4: Relat�rio de Recebimentos
-1. ? Gerar relat�rio de recebimentos
-2. ? Verificar t�tulo "SEMIADET - RELAT�RIO DE RECEBIMENTOS"
-3. ? Verificar logo apenas na primeira p�gina
-4. ? Confirmar alinhamento com t�tulo
+### Teste 4: Relatório de Devoluções
+1. ✅ Gerar Relatório de Devoluções
+2. ✅ Verificar título "SEMIADET - Relatório de Devoluções"
+3. ✅ Verificar logo apenas na primeira página
+4. ✅ Confirmar alinhamento com título
 
 ### Teste 5: Sem Logo
-1. ? Remover ou renomear arquivo logo.png
-2. ? Imprimir qualquer recibo/relat�rio
-3. ? Verificar que sistema funciona normalmente
-4. ? Apenas t�tulo � exibido, sem erros
+1. ✅ Remover ou renomear arquivo logo.png
+2. ✅ Imprimir qualquer recibo/relatório
+3. ✅ Verificar que sistema funciona normalmente
+4. ✅ Apenas título é exibido, sem erros
 
 ## Build Status
-? **Build bem-sucedido** - Sem erros de compila��o
+✅ **Build bem-sucedido** - Sem erros de compilação
 
-## Observa��es Importantes
+## Observações Importantes
 
-### Distribui��o do Sistema:
-Ao distribuir o execut�vel, certifique-se de incluir:
+### Distribuição do Sistema:
+Ao distribuir o executável, certifique-se de incluir:
 ```
 ControleEmprestimos.exe
 ControleEmprestimos.xlsx
 Resources/
-  ??? logo.png
+  └── logo.png
 ```
 
-### Atualiza��o da Logo:
+### Atualização da Logo:
 Para atualizar a logo, basta substituir o arquivo `Resources/logo.png` e reiniciar o aplicativo.
 
 ### Formato da Imagem:
 - **Recomendado**: PNG com fundo transparente
 - **Alternativo**: JPG (mas pode ter fundo branco)
-- **Tamanho**: M�nimo 256x256, ideal 512x512 ou maior
-- **Propor��o**: Quadrada ou pr�xima (1:1) funciona melhor
+- **Tamanho**: Mínimo 256x256, ideal 512x512 ou maior
+- **Proporção**: Quadrada ou próxima (1:1) funciona melhor
 
 ### Performance:
-A logo � carregada a cada impress�o, mas como s�o documentos pequenos (recibos) ou carregados uma vez por sess�o (relat�rios), o impacto � m�nimo.
+A logo é carregada a cada impressão, mas como são documentos pequenos (recibos) ou carregados uma vez por sessão (relatórios), o impacto é mínimo.
 
-## Conclus�o
+## Conclusão
 
-A implementa��o adiciona identidade visual profissional aos documentos impressos:
-- ? **T�tulos Padronizados**: Todos com prefixo "SEMIADET"
-- ? **Logo Vis�vel**: Canto superior direito em todos os documentos
-- ? **Alinhamento Perfeito**: Logo alinhada com a linha do t�tulo
-- ? **Tamanho Adequado**: Logo proporcional e leg�vel
-- ? **Fallback Robusto**: Funciona com ou sem logo
-- ? **F�cil Manuten��o**: Basta substituir arquivo PNG
+A implementação adiciona identidade visual profissional aos documentos impressos:
+- ✅ **Títulos Padronizados**: Todos com prefixo "SEMIADET"
+- ✅ **Logo Visível**: Canto superior direito em todos os documentos
+- ✅ **Alinhamento Perfeito**: Logo alinhada com a linha do título
+- ✅ **Tamanho Adequado**: Logo proporcional e legível
+- ✅ **Fallback Robusto**: Funciona com ou sem logo
+- ✅ **Fácil Manutenção**: Basta substituir arquivo PNG

@@ -304,7 +304,7 @@ public partial class RecebimentoListForm : UserControl
         if (dataGridView1.CurrentRow?.DataBoundItem is RecebimentoEmprestimo item)
         {
             var result = MessageBox.Show(
-                $"Tem certeza que deseja excluir este recebimento?\n\n" +
+                $"Tem certeza que deseja excluir esta devolução?\n\n" +
                 $"ATENÇÃO: As quantidades serão revertidas e o empréstimo voltará ao status anterior.",
                 "Confirmar Exclusão",
                 MessageBoxButtons.YesNo,
@@ -318,7 +318,7 @@ public partial class RecebimentoListForm : UserControl
                 LoadData();
 
                 MessageBox.Show(
-                    "Recebimento excluído com sucesso!\n" +
+                    "Devolução excluída com sucesso!\n" +
                     "As quantidades foram revertidas e o empréstimo foi atualizado.",
                     "Sucesso",
                     MessageBoxButtons.OK,

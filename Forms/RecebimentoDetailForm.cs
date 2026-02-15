@@ -347,7 +347,7 @@ public partial class RecebimentoDetailForm : Form
     private void UpdateTotalAReceber()
     {
         var totalAReceber = _itensParaReceber.Sum(i => i.QuantidadeAReceber);
-        lblTotalRecebido.Text = $"Total a Receber: {totalAReceber} itens";
+        lblTotalRecebido.Text = $"Total a Devolver: {totalAReceber} itens";
     }
 
     private void LoadEmprestimos()
@@ -474,7 +474,7 @@ public partial class RecebimentoDetailForm : Form
         // Validar data do recebimento
         if (!DateTime.TryParse(mtbDataRecebimento.Text, out DateTime dataRecebimento))
         {
-            MessageBox.Show("Por favor, informe uma data de recebimento válida.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show("Por favor, informe uma data de devolução válida.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             mtbDataRecebimento.Focus();
             return;
         }
@@ -482,7 +482,7 @@ public partial class RecebimentoDetailForm : Form
         var itensComQuantidade = _itensParaReceber.Where(i => i.QuantidadeAReceber > 0).ToList();
         if (!itensComQuantidade.Any())
         {
-            MessageBox.Show("Por favor, informe a quantidade a receber de pelo menos um item.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show("Por favor, informe a quantidade a devolver de pelo menos um item.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
 
@@ -527,7 +527,7 @@ public partial class RecebimentoDetailForm : Form
 
         // Perguntar se deseja imprimir recibo
         var resultado = MessageBox.Show(
-            $"Recebimento registrado com sucesso!\n\n" +
+            $"Devolução registrada com sucesso!\n\n" +
             $"Status do empréstimo: {(emprestimoSelecionado.TodosItensRecebidos ? "Devolvido (completo)" : "Em Andamento (parcial)")}\n\n" +
             $"Deseja imprimir o recibo?",
             "Sucesso",

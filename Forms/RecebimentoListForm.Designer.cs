@@ -206,7 +206,7 @@ partial class RecebimentoListForm
         titleLabel.Name = "titleLabel";
         titleLabel.Size = new Size(405, 67);
         titleLabel.TabIndex = 0;
-        titleLabel.Text = "Recebimento de Emprestimo";
+        titleLabel.Text = "Devolução de Bens";
         titleLabel.TextAlign = ContentAlignment.MiddleLeft;
         // 
         // RecebimentoListForm

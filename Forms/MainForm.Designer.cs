@@ -68,7 +68,7 @@ partial class MainForm
         // 
         this.menuRecebimento.Name = "menuRecebimento";
         this.menuRecebimento.Size = new Size(169, 20);
-        this.menuRecebimento.Text = "Recebimento de Emprestimo";
+        this.menuRecebimento.Text = "Devolução de Bens";
         this.menuRecebimento.Click += new EventHandler(this.MenuRecebimento_Click);
         // 
         // menuCongregacoes

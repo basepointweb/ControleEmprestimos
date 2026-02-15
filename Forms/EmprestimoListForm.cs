@@ -70,7 +70,7 @@ public partial class EmprestimoListForm : UserControl
             DataPropertyName = "Name",
             HeaderText = "Recebedor",
             Name = "colRecebedor",
-            Width = 130
+            Width = 120
         });
 
         // Coluna de Bens (concatenados) - não tem DataPropertyName pois será preenchida manualmente
@@ -78,7 +78,7 @@ public partial class EmprestimoListForm : UserControl
         {
             HeaderText = "Bem",
             Name = "colItem",
-            Width = 200
+            Width = 150
         };
         dataGridView1.Columns.Add(colBem);
 
@@ -96,7 +96,15 @@ public partial class EmprestimoListForm : UserControl
             DataPropertyName = "CongregacaoName",
             HeaderText = "Congregação",
             Name = "colCongregacao",
-            Width = 120
+            Width = 100
+        });
+
+        dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = "QuemLiberou",
+            HeaderText = "Quem Liberou",
+            Name = "colQuemLiberou",
+            Width = 100
         });
 
         dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
@@ -104,7 +112,7 @@ public partial class EmprestimoListForm : UserControl
             DataPropertyName = "DataEmprestimo",
             HeaderText = "Data",
             Name = "colData",
-            Width = 90,
+            Width = 80,
             DefaultCellStyle = new DataGridViewCellStyle { Format = "dd/MM/yyyy" }
         });
 
@@ -113,7 +121,7 @@ public partial class EmprestimoListForm : UserControl
             DataPropertyName = "StatusDescricao",
             HeaderText = "Status",
             Name = "colStatus",
-            Width = 100
+            Width = 90
         });
 
         dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
@@ -121,7 +129,7 @@ public partial class EmprestimoListForm : UserControl
             DataPropertyName = "Motivo",
             HeaderText = "Motivo",
             Name = "colMotivo",
-            Width = 150,
+            Width = 120,
             AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
         });
 

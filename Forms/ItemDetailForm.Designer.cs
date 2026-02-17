@@ -58,6 +58,7 @@ partial class ItemDetailForm
         this.numQuantity.Name = "numQuantity";
         this.numQuantity.Size = new Size(120, 23);
         this.numQuantity.TabIndex = 3;
+        this.numQuantity.Value = 1;
         // 
         // btnSave
         // 

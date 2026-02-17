@@ -394,4 +394,10 @@ public partial class ItemListForm : UserControl
         var form = new RelatorioItensFilterForm();
         form.ShowDialog();
     }
+
+    private void BtnEtiquetas_Click(object sender, EventArgs e)
+    {
+        var form = new EtiquetasFilterForm();
+        form.ShowDialog();
+    }
 }

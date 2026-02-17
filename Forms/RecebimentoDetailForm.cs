@@ -459,6 +459,9 @@ public partial class RecebimentoDetailForm : Form
 
     private void BtnSave_Click(object sender, EventArgs e)
     {
+        // Aplicar trim em todos os campos de texto
+        txtQuemRecebeu.Text = txtQuemRecebeu.Text.Trim();
+        
         if (cmbEmprestimo.SelectedItem == null && _emprestimoPreSelecionado == null)
         {
             MessageBox.Show("Por favor, selecione um empréstimo.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);

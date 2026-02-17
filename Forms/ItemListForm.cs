@@ -66,6 +66,14 @@ public partial class ItemListForm : UserControl
             Width = 120
         });
 
+        dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = "QuantidadeTotal",
+            HeaderText = "Quantidade Total",
+            Name = "colQuantidadeTotal",
+            Width = 120
+        });
+
         // Event handler para clique no header
         dataGridView1.ColumnHeaderMouseClick += DataGridView1_ColumnHeaderMouseClick;
         
@@ -379,5 +387,11 @@ public partial class ItemListForm : UserControl
         {
             LoadData();
         }
+    }
+
+    private void BtnRelatorio_Click(object sender, EventArgs e)
+    {
+        var form = new RelatorioItensFilterForm();
+        form.ShowDialog();
     }
 }

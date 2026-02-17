@@ -23,6 +23,7 @@ partial class ItemListForm
         this.btnDelete = new Button();
         this.btnClonar = new Button();
         this.btnEmprestar = new Button();
+        this.btnRelatorio = new Button();
         this.btnListar = new Button();
         this.panel1 = new Panel();
         this.titlePanel = new Panel();
@@ -76,6 +77,7 @@ partial class ItemListForm
         this.panel1.Controls.Add(this.btnDelete);
         this.panel1.Controls.Add(this.btnClonar);
         this.panel1.Controls.Add(this.btnEmprestar);
+        this.panel1.Controls.Add(this.btnRelatorio);
         this.panel1.Controls.Add(this.btnListar);
         this.panel1.Dock = DockStyle.Bottom;
         this.panel1.Location = new Point(0, 400);
@@ -137,14 +139,26 @@ partial class ItemListForm
         this.btnEmprestar.UseVisualStyleBackColor = false;
         this.btnEmprestar.Click += new EventHandler(this.BtnEmprestar_Click);
         // 
+        // btnRelatorio
+        // 
+        this.btnRelatorio.BackColor = Color.FromArgb(220, 53, 69);
+        this.btnRelatorio.ForeColor = Color.White;
+        this.btnRelatorio.Location = new Point(542, 10);
+        this.btnRelatorio.Name = "btnRelatorio";
+        this.btnRelatorio.Size = new Size(100, 30);
+        this.btnRelatorio.TabIndex = 5;
+        this.btnRelatorio.Text = "Relatório";
+        this.btnRelatorio.UseVisualStyleBackColor = false;
+        this.btnRelatorio.Click += new EventHandler(this.BtnRelatorio_Click);
+        // 
         // btnListar
         // 
         this.btnListar.BackColor = Color.FromArgb(40, 167, 69);
         this.btnListar.ForeColor = Color.White;
-        this.btnListar.Location = new Point(542, 10);
+        this.btnListar.Location = new Point(648, 10);
         this.btnListar.Name = "btnListar";
         this.btnListar.Size = new Size(100, 30);
-        this.btnListar.TabIndex = 5;
+        this.btnListar.TabIndex = 6;
         this.btnListar.Text = "Listar";
         this.btnListar.UseVisualStyleBackColor = false;
         this.btnListar.Click += new EventHandler(this.BtnListar_Click);
@@ -172,6 +186,7 @@ partial class ItemListForm
     private Button btnDelete;
     private Button btnClonar;
     private Button btnEmprestar;
+    private Button btnRelatorio;
     private Button btnListar;
     private Panel panel1;
     private Panel titlePanel;

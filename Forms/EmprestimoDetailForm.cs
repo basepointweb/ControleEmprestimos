@@ -24,6 +24,9 @@ public partial class EmprestimoDetailForm : Form
         // Configurar controles para caixa alta
         FormControlHelper.ConfigureAllTextBoxesToUpperCase(this);
         
+        // Configurar evento KeyPress do txtItemId
+        ConfigureItemIdTextBox();
+        
         _repository = DataRepository.Instance;
         _item = item;
         _isEditing = item != null && !isCloning;
@@ -365,6 +368,11 @@ public partial class EmprestimoDetailForm : Form
 
     private void BtnSave_Click(object sender, EventArgs e)
     {
+        // Aplicar trim em todos os campos de texto
+        txtRecebedor.Text = txtRecebedor.Text.Trim();
+        txtMotivo.Text = txtMotivo.Text.Trim();
+        txtQuemLiberou.Text = txtQuemLiberou.Text.Trim();
+        
         if (string.IsNullOrWhiteSpace(txtRecebedor.Text))
         {
             MessageBox.Show("Por favor, informe o nome do recebedor.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -403,9 +411,9 @@ public partial class EmprestimoDetailForm : Form
         if (_isEditing && _item != null)
         {
             // Modo edição (apenas dados gerais, não permite alterar itens)
-            _item.Name = txtRecebedor.Text.Trim().ToUpper();
-            _item.Motivo = txtMotivo.Text.Trim().ToUpper();
-            _item.QuemLiberou = txtQuemLiberou.Text.Trim().ToUpper();
+            _item.Name = txtRecebedor.Text.ToUpper();
+            _item.Motivo = txtMotivo.Text.ToUpper();
+            _item.QuemLiberou = txtQuemLiberou.Text.ToUpper();
             _item.CongregacaoId = selectedCongregacao.Id;
             _item.CongregacaoName = selectedCongregacao.Name;
             _item.DataEmprestimo = dataEmprestimo;
@@ -419,9 +427,9 @@ public partial class EmprestimoDetailForm : Form
             // Modo criação (novo ou clonado)
             var newItem = new Emprestimo
             {
-                Name = txtRecebedor.Text.Trim().ToUpper(),
-                Motivo = txtMotivo.Text.Trim().ToUpper(),
-                QuemLiberou = txtQuemLiberou.Text.Trim().ToUpper(),
+                Name = txtRecebedor.Text.ToUpper(),
+                Motivo = txtMotivo.Text.ToUpper(),
+                QuemLiberou = txtQuemLiberou.Text.ToUpper(),
                 CongregacaoId = selectedCongregacao.Id,
                 CongregacaoName = selectedCongregacao.Name,
                 DataEmprestimo = dataEmprestimo,
@@ -473,5 +481,94 @@ public partial class EmprestimoDetailForm : Form
     {
         this.DialogResult = DialogResult.Cancel;
         this.Close();
+    }
+
+    private void ConfigureItemIdTextBox()
+    {
+        // Configurar para aceitar apenas números
+        txtItemId.KeyPress += TxtItemId_KeyPress;
+    }
+
+    private void TxtItemId_KeyPress(object? sender, KeyPressEventArgs e)
+    {
+        // Permitir apenas números, backspace e Enter
+        if (!char.IsDigit(e.KeyChar) && e.KeyChar != (char)Keys.Back && e.KeyChar != (char)Keys.Enter)
+        {
+            e.Handled = true;
+            return;
+        }
+
+        // Se pressionou Enter, adicionar item
+        if (e.KeyChar == (char)Keys.Enter)
+        {
+            e.Handled = true;
+            AdicionarItemPorId();
+        }
+    }
+
+    private void AdicionarItemPorId()
+    {
+        if (string.IsNullOrWhiteSpace(txtItemId.Text))
+        {
+            return;
+        }
+
+        if (!int.TryParse(txtItemId.Text, out int itemId))
+        {
+            MessageBox.Show("Por favor, digite um ID válido.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            txtItemId.Clear();
+            txtItemId.Focus();
+            return;
+        }
+
+        var selectedItem = _repository.Items.FirstOrDefault(i => i.Id == itemId);
+        
+        if (selectedItem == null)
+        {
+            MessageBox.Show($"Bem com ID {itemId} não encontrado.", "Não Encontrado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            txtItemId.Clear();
+            txtItemId.Focus();
+            return;
+        }
+
+        // Validar estoque disponível
+        if (selectedItem.QuantityInStock < 1)
+        {
+            MessageBox.Show($"Bem '{selectedItem.Name}' sem estoque disponível.", "Estoque Insuficiente", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            txtItemId.Clear();
+            txtItemId.Focus();
+            return;
+        }
+
+        // Verificar se item já foi adicionado
+        var itemExistente = _itensEmprestimo.FirstOrDefault(i => i.ItemId == selectedItem.Id);
+        if (itemExistente != null)
+        {
+            itemExistente.Quantidade += 1;
+            
+            // Validar estoque total
+            if (selectedItem.QuantityInStock < itemExistente.Quantidade)
+            {
+                itemExistente.Quantidade -= 1;
+                MessageBox.Show($"Estoque insuficiente. Disponível: {selectedItem.QuantityInStock}", "Estoque Insuficiente", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtItemId.Clear();
+                txtItemId.Focus();
+                return;
+            }
+        }
+        else
+        {
+            _itensEmprestimo.Add(new EmprestimoItem
+            {
+                ItemId = selectedItem.Id,
+                ItemName = selectedItem.Name,
+                Quantidade = 1,
+                QuantidadeRecebida = 0
+            });
+        }
+
+        RefreshItensGrid();
+        txtItemId.Clear();
+        txtItemId.Focus();
     }
 }

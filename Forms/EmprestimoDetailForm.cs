@@ -2,6 +2,7 @@ using ControleEmprestimos.Data;
 using ControleEmprestimos.Models;
 using ControleEmprestimos.Reports;
 using ControleEmprestimos.Helpers;
+using System.ComponentModel;
 
 namespace ControleEmprestimos.Forms;
 
@@ -13,6 +14,7 @@ public partial class EmprestimoDetailForm : Form
     private DataRepository _repository;
     private Item? _itemPreSelecionado;
     private List<EmprestimoItem> _itensEmprestimo = new();
+    private bool _validationFailed = false; // Flag para controlar se a validação falhou
 
     public EmprestimoDetailForm(Emprestimo? item = null, bool isCloning = false)
     {
@@ -106,6 +108,12 @@ public partial class EmprestimoDetailForm : Form
                 lblQuantity.Visible = false;
                 numQuantity.Visible = false;
                 btnAdicionarItem.Visible = false;
+                
+                // Tornar coluna de quantidade ReadOnly em modo edição
+                if (dgvItens.Columns["colQuantidade"] != null)
+                {
+                    dgvItens.Columns["colQuantidade"].ReadOnly = true;
+                }
                 
                 // Ocultar botão remover do grid
                 if (dgvItens.Columns["colRemover"] != null)
@@ -204,6 +212,14 @@ public partial class EmprestimoDetailForm : Form
     {
         dgvItens.AutoGenerateColumns = false;
         dgvItens.Columns.Clear();
+        
+        // Configurar para permitir edição
+        dgvItens.EditMode = DataGridViewEditMode.EditOnEnter;
+        dgvItens.AllowUserToAddRows = false;
+        dgvItens.AllowUserToDeleteRows = false;
+        
+        // Configurar tecla Enter para confirmar edição e ir para próxima linha
+        dgvItens.KeyDown += DgvItens_KeyDown;
 
         dgvItens.Columns.Add(new DataGridViewTextBoxColumn
         {
@@ -220,7 +236,7 @@ public partial class EmprestimoDetailForm : Form
             HeaderText = "Quantidade",
             Name = "colQuantidade",
             Width = 100,
-            ReadOnly = true
+            ReadOnly = false // Permitir edição
         });
 
         if (_isEditing)
@@ -255,6 +271,199 @@ public partial class EmprestimoDetailForm : Form
         dgvItens.Columns.Add(btnColumn);
 
         dgvItens.CellClick += DgvItens_CellClick;
+        dgvItens.CellValidating += DgvItens_CellValidating;
+        dgvItens.CellValidated += DgvItens_CellValidated;
+        dgvItens.CellEndEdit += DgvItens_CellEndEdit;
+    }
+
+    private void DgvItens_KeyDown(object? sender, KeyEventArgs e)
+    {
+        // Permitir que Enter confirme a edição e mova para próxima linha
+        if (e.KeyCode == Keys.Enter && dgvItens.IsCurrentCellInEditMode)
+        {
+            // Resetar flag antes de tentar validar
+            _validationFailed = false;
+            
+            // Evitar o comportamento padrão do Enter
+            e.Handled = true;
+            e.SuppressKeyPress = true;
+            
+            // Tentar finalizar a edição (isso dispara CellValidating)
+            bool editSuccessful = dgvItens.EndEdit();
+            
+            // Se EndEdit() retornou false, a validação falhou
+            if (!editSuccessful)
+            {
+                _validationFailed = true;
+            }
+            
+            // Usar BeginInvoke para garantir que todas as validações terminaram
+            BeginInvoke(new Action(() =>
+            {
+                // Apenas mover para próxima linha se a validação passou
+                if (!_validationFailed && dgvItens.CurrentCell != null)
+                {
+                    int currentRow = dgvItens.CurrentCell.RowIndex;
+                    int currentCol = dgvItens.CurrentCell.ColumnIndex;
+                    
+                    // Ir para a mesma coluna na próxima linha
+                    if (currentRow + 1 < dgvItens.Rows.Count)
+                    {
+                        dgvItens.CurrentCell = dgvItens.Rows[currentRow + 1].Cells[currentCol];
+                        
+                        // Se a próxima célula for editável, entrar em modo de edição
+                        if (!dgvItens.Rows[currentRow + 1].Cells[currentCol].ReadOnly)
+                        {
+                            dgvItens.BeginEdit(true);
+                        }
+                    }
+                }
+                else if (_validationFailed && dgvItens.CurrentCell != null)
+                {
+                    // Se a validação falhou, voltar para modo de edição na mesma célula
+                    if (!dgvItens.CurrentCell.ReadOnly)
+                    {
+                        dgvItens.BeginEdit(true);
+                    }
+                }
+            }));
+        }
+    }
+
+    private void DgvItens_CellValidating(object? sender, DataGridViewCellValidatingEventArgs e)
+    {
+        // Validar apenas a coluna de quantidade
+        if (dgvItens.Columns[e.ColumnIndex].Name == "colQuantidade")
+        {
+            var newValue = e.FormattedValue.ToString();
+            
+            // Validar se é um número válido
+            if (!int.TryParse(newValue, out int quantidade) || quantidade < 0)
+            {
+                e.Cancel = true;
+                _validationFailed = true;
+                MessageBox.Show(
+                    "Por favor, informe uma quantidade válida (número inteiro maior ou igual a zero).",
+                    "Validação",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+            
+            // Se chegou aqui, o valor é válido numericamente
+            // Agora validar regras de negócio
+            var item = dgvItens.Rows[e.RowIndex].DataBoundItem as EmprestimoItem;
+            if (item == null)
+            {
+                e.Cancel = true;
+                _validationFailed = true;
+                return;
+            }
+            
+            int novaQuantidade = quantidade;
+            
+            // Se a quantidade não mudou, permitir
+            if (novaQuantidade == item.Quantidade)
+            {
+                return;
+            }
+            
+            // Se quantidade for 0, permitir (será removido no CellValidated)
+            if (novaQuantidade == 0)
+            {
+                _validationFailed = false;
+                return;
+            }
+            
+            // Verificar se item já tem recebimentos (modo edição)
+            if (_isEditing && item.QuantidadeRecebida > 0)
+            {
+                if (novaQuantidade < item.QuantidadeRecebida)
+                {
+                    e.Cancel = true;
+                    _validationFailed = true;
+                    MessageBox.Show(
+                        $"Não é possível reduzir a quantidade para {novaQuantidade} porque já foram recebidas {item.QuantidadeRecebida} unidades.",
+                        "Validação",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+            
+            // Validar estoque disponível
+            var itemEstoque = _repository.Items.FirstOrDefault(i => i.Id == item.ItemId);
+            if (itemEstoque != null)
+            {
+                // Calcular quanto será adicionado/removido
+                int diferenca = novaQuantidade - item.Quantidade;
+                
+                // Se está aumentando a quantidade, verificar estoque
+                if (diferenca > 0)
+                {
+                    // Estoque disponível = estoque atual + quantidade original do item (que já foi descontada)
+                    int estoqueDisponivel = itemEstoque.QuantityInStock + item.Quantidade;
+                    
+                    if (novaQuantidade > estoqueDisponivel)
+                    {
+                        e.Cancel = true;
+                        _validationFailed = true;
+                        MessageBox.Show(
+                            $"Estoque insuficiente para '{item.ItemName}'.\n" +
+                            $"Quantidade solicitada: {novaQuantidade}\n" +
+                            $"Disponível em estoque: {estoqueDisponivel}",
+                            "Estoque Insuficiente",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+            }
+            
+            // Se chegou aqui, todas as validações passaram
+            _validationFailed = false;
+        }
+    }
+
+    private void DgvItens_CellValidated(object? sender, DataGridViewCellEventArgs e)
+    {
+        // Atualizar o total após validação bem-sucedida
+        if (dgvItens.Columns[e.ColumnIndex].Name == "colQuantidade")
+        {
+            var item = dgvItens.Rows[e.RowIndex].DataBoundItem as EmprestimoItem;
+            if (item == null) return;
+            
+            var cell = dgvItens.Rows[e.RowIndex].Cells[e.ColumnIndex];
+            if (int.TryParse(cell.Value?.ToString(), out int novaQuantidade))
+            {
+                // Se quantidade for 0, remover o item automaticamente
+                if (novaQuantidade == 0)
+                {
+                    _itensEmprestimo.Remove(item);
+                    RefreshItensGrid();
+                    return;
+                }
+                
+                // Atualizar a quantidade do item
+                if (novaQuantidade != item.Quantidade && novaQuantidade > 0)
+                {
+                    item.Quantidade = novaQuantidade;
+                }
+                
+                // Atualizar o total imediatamente
+                lblTotalItens.Text = $"Total de Itens: {_itensEmprestimo.Sum(i => i.Quantidade)}";
+            }
+        }
+    }
+
+    private void DgvItens_CellEndEdit(object? sender, DataGridViewCellEventArgs e)
+    {
+        if (dgvItens.Columns[e.ColumnIndex].Name == "colQuantidade")
+        {
+            // Apenas garantir que o total está correto
+            // A quantidade já foi atualizada ou o item já foi removido no CellValidated
+            lblTotalItens.Text = $"Total de Itens: {_itensEmprestimo.Sum(i => i.Quantidade)}";
+        }
     }
 
     private void DgvItens_CellClick(object? sender, DataGridViewCellEventArgs e)
@@ -358,9 +567,25 @@ public partial class EmprestimoDetailForm : Form
 
     private void RefreshItensGrid()
     {
-        dgvItens.DataSource = null;
-        dgvItens.DataSource = _itensEmprestimo;
-        lblTotalItens.Text = $"Total de Itens: {_itensEmprestimo.Sum(i => i.Quantidade)}";
+        // Evitar refresh se estiver em modo de edição
+        if (dgvItens.IsCurrentCellInEditMode)
+        {
+            dgvItens.EndEdit();
+        }
+        
+        // Suspender layout para evitar flickering
+        dgvItens.SuspendLayout();
+        
+        try
+        {
+            var bindingList = new BindingList<EmprestimoItem>(_itensEmprestimo);
+            dgvItens.DataSource = bindingList;
+            lblTotalItens.Text = $"Total de Itens: {_itensEmprestimo.Sum(i => i.Quantidade)}";
+        }
+        finally
+        {
+            dgvItens.ResumeLayout();
+        }
     }
 
     private void BtnSave_Click(object sender, EventArgs e)

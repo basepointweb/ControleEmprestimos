@@ -165,7 +165,7 @@ partial class EmprestimoDetailForm
         this.dgvItens.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
         this.dgvItens.Location = new Point(20, 305);
         this.dgvItens.Name = "dgvItens";
-        this.dgvItens.ReadOnly = true;
+        this.dgvItens.ReadOnly = false;
         this.dgvItens.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         this.dgvItens.Size = new Size(560, 150);
         this.dgvItens.TabIndex = 13;

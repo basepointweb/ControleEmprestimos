@@ -87,41 +87,40 @@ public partial class EmprestimoDetailForm : Form
 
             if (_isEditing)
             {
-                // Modo visualização
+                // Modo visualização - SEMPRE SOMENTE LEITURA
                 lblStatus.Visible = true;
                 txtStatus.Visible = true;
                 
-                // Mostrar botão Cancelar apenas se estiver Em Andamento
-                if (_item.Status == StatusEmprestimo.EmAndamento)
+                // Tornar todos os campos somente leitura
+                txtRecebedor.ReadOnly = true;
+                txtMotivo.ReadOnly = true;
+                txtQuemLiberou.ReadOnly = true;
+                cmbCongregacao.Enabled = false;
+                if (mtbDataEmprestimo != null) mtbDataEmprestimo.Enabled = false;
+                
+                // Ocultar completamente os controles de adição de itens
+                lblItem.Visible = false;
+                txtItemId.Visible = false;
+                lblBem.Visible = false;
+                cmbItem.Visible = false;
+                lblQuantity.Visible = false;
+                numQuantity.Visible = false;
+                btnAdicionarItem.Visible = false;
+                
+                // Ocultar botão remover do grid
+                if (dgvItens.Columns["colRemover"] != null)
                 {
-                    btnCancelar.Visible = true;
+                    dgvItens.Columns["colRemover"].Visible = false;
                 }
                 
-                // Se já foi devolvido ou cancelado, desabilitar edição
-                if (_item.Status != StatusEmprestimo.EmAndamento)
-                {
-                    txtRecebedor.ReadOnly = true;
-                    txtMotivo.ReadOnly = true;
-                    txtQuemLiberou.ReadOnly = true;
-                    cmbCongregacao.Enabled = false;
-                    if (mtbDataEmprestimo != null) mtbDataEmprestimo.Enabled = false;
-                    cmbItem.Enabled = false;
-                    numQuantity.Enabled = false;
-                    btnAdicionarItem.Visible = false;
-                    dgvItens.Columns["colRemover"].Visible = false;
-                    btnSave.Visible = false;
-                    btnCancelar.Visible = false;
-                }
-                else
-                {
-                    // Em andamento mas não permite adicionar/remover itens já com recebimentos
-                    btnAdicionarItem.Visible = false;
-                    dgvItens.Columns["colRemover"].Visible = false;
-                    lblItem.Visible = false;
-                    cmbItem.Visible = false;
-                    lblQuantity.Visible = false;
-                    numQuantity.Visible = false;
-                }
+                // Ocultar botão salvar - somente visualização
+                btnSave.Visible = false;
+                
+                // Alterar texto do botão fechar para "Voltar"
+                btnFechar.Text = "Voltar";
+                
+                // Alterar título do formulário
+                this.Text = "Visualizar Empréstimo";
             }
             else if (_isCloning)
             {
@@ -131,7 +130,6 @@ public partial class EmprestimoDetailForm : Form
                     mtbDataEmprestimo.Text = DateTime.Now.ToString("dd/MM/yyyy");
                 }
                 txtStatus.Text = "Em Andamento";
-                btnCancelar.Visible = false;
                 this.Text = "Clonar Empréstimo";
             }
         }
@@ -144,7 +142,6 @@ public partial class EmprestimoDetailForm : Form
                 mtbDataEmprestimo.Text = DateTime.Now.ToString("dd/MM/yyyy");
             }
             txtStatus.Text = "Em Andamento";
-            btnCancelar.Visible = false;
         }
     }
 
@@ -453,25 +450,6 @@ public partial class EmprestimoDetailForm : Form
                 printer.PrintPreview();
             }
 
-            this.DialogResult = DialogResult.OK;
-            this.Close();
-        }
-    }
-
-    private void BtnCancelarEmprestimo_Click(object sender, EventArgs e)
-    {
-        if (_item == null) return;
-
-        var result = MessageBox.Show(
-            "Tem certeza que deseja cancelar este empréstimo?",
-            "Confirmar Cancelamento",
-            MessageBoxButtons.YesNo,
-            MessageBoxIcon.Question);
-
-        if (result == DialogResult.Yes)
-        {
-            _item.Status = StatusEmprestimo.Cancelado;
-            _repository.UpdateEmprestimo(_item);
             this.DialogResult = DialogResult.OK;
             this.Close();
         }

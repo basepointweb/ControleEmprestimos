@@ -164,7 +164,7 @@ partial class EmprestimoListForm
         this.btnEdit.Name = "btnEdit";
         this.btnEdit.Size = new Size(100, 30);
         this.btnEdit.TabIndex = 1;
-        this.btnEdit.Text = "Editar";
+        this.btnEdit.Text = "Visualizar";
         this.btnEdit.UseVisualStyleBackColor = true;
         this.btnEdit.Click += new EventHandler(this.BtnEdit_Click);
         // 

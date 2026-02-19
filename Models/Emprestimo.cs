@@ -21,7 +21,6 @@ public class Emprestimo
     {
         StatusEmprestimo.EmAndamento => "Em Andamento",
         StatusEmprestimo.Devolvido => "Devolvido",
-        StatusEmprestimo.Cancelado => "Cancelado",
         _ => "Desconhecido"
     };
     

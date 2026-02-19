@@ -40,7 +40,6 @@ partial class EmprestimoDetailForm
         this.btnAdicionarItem = new Button();
         this.lblTotalItens = new Label();
         this.btnSave = new Button();
-        this.btnCancelar = new Button();
         this.btnFechar = new Button();
         ((System.ComponentModel.ISupportInitialize)(this.dgvItens)).BeginInit();
         ((System.ComponentModel.ISupportInitialize)(this.numQuantity)).BeginInit();
@@ -257,20 +256,9 @@ partial class EmprestimoDetailForm
         this.btnSave.UseVisualStyleBackColor = true;
         this.btnSave.Click += new EventHandler(this.BtnSave_Click);
         // 
-        // btnCancelar
-        // 
-        this.btnCancelar.Location = new Point(126, 560);
-        this.btnCancelar.Name = "btnCancelar";
-        this.btnCancelar.Size = new Size(140, 30);
-        this.btnCancelar.TabIndex = 23;
-        this.btnCancelar.Text = "Cancelar Empréstimo";
-        this.btnCancelar.UseVisualStyleBackColor = true;
-        this.btnCancelar.Visible = false;
-        this.btnCancelar.Click += new EventHandler(this.BtnCancelarEmprestimo_Click);
-        // 
         // btnFechar
         // 
-        this.btnFechar.Location = new Point(272, 560);
+        this.btnFechar.Location = new Point(126, 560);
         this.btnFechar.Name = "btnFechar";
         this.btnFechar.Size = new Size(100, 30);
         this.btnFechar.TabIndex = 24;
@@ -284,7 +272,6 @@ partial class EmprestimoDetailForm
         this.AutoScaleMode = AutoScaleMode.Font;
         this.ClientSize = new Size(600, 610);
         this.Controls.Add(this.btnFechar);
-        this.Controls.Add(this.btnCancelar);
         this.Controls.Add(this.btnSave);
         this.Controls.Add(this.lblTotalItens);
         this.Controls.Add(this.btnAdicionarItem);
@@ -345,6 +332,5 @@ partial class EmprestimoDetailForm
     private Button btnAdicionarItem;
     private Label lblTotalItens;
     private Button btnSave;
-    private Button btnCancelar;
     private Button btnFechar;
 }
